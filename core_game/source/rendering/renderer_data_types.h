@@ -4,6 +4,7 @@
 #include "source/utilities/equal_to.h"
 
 #include "source/assets/shader_asset.h"
+#include "source/assets/texture_asset.h"
 
 #include <set>
 #include <unordered_map>
@@ -18,11 +19,15 @@ namespace rendering
 	struct pipeline_config
 	{
 		assets::shader* shader = nullptr;
+		std::vector<graphics_abstraction::texture*> textures;
 		std::set<graphics_abstraction::functionalities> enabled_functionalities;
 
 		bool operator== (const pipeline_config& rhs) const
 		{
-			return this->shader == rhs.shader && this->enabled_functionalities == rhs.enabled_functionalities;
+			return 
+				this->shader == rhs.shader && 
+				textures == rhs.textures &&
+				this->enabled_functionalities == rhs.enabled_functionalities;
 		}
 	};
 

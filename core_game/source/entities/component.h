@@ -4,7 +4,7 @@
 namespace rendering
 {
 	class renderer;
-	struct buffer_iterator;
+	struct vertices_buffer_iterator;
 }
 
 namespace entities

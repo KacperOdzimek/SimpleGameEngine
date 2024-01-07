@@ -19,6 +19,8 @@ struct renderer::implementation
     GLFWwindow* window;
 
     graphics_abstraction::api* api;
+    graphics_abstraction::textures_selection* textures;
+
     pipelines pipelines;
     geometry_sources geometry_sources;
 };
@@ -36,6 +38,7 @@ renderer::~renderer()
         impl->api->free(pipeline.second.indicies);
     }
 
+    impl->api->free(impl->textures);
     delete impl->api;
 
     glfwTerminate();
@@ -65,6 +68,9 @@ void renderer::create_api_instance()
     impl->api = new graphics_abstraction::implementations::opengl_3_3_api::opengl_3_3_api;
     if (impl->api == nullptr)
         abort("Cannot create api instance");
+    impl->textures = reinterpret_cast<graphics_abstraction::textures_selection*>(
+        impl->api->build(impl->api->create_textures_selection_builder())
+    );
 }
 
 bool renderer::should_window_close()
@@ -121,8 +127,8 @@ void renderer::collect_geometry_data()
         void* ver_beg = buffers.vertices->open_data_stream();
         void* ind_beg = buffers.indicies->open_data_stream();
 
-        buffer_iterator ver_iter{ ver_beg };
-        buffer_iterator ind_iter{ ind_beg };
+        vertices_buffer_iterator ver_iter{ ver_beg };
+        indicies_buffer_iterator ind_iter{ ind_beg };
 
         for (auto& component : x.second)
         {
@@ -142,6 +148,7 @@ void renderer::render()
     screen_framebuffer->clear_color_buffers(0.0f, 0.2f, 0.1f, 1.0f);
     screen_framebuffer->clear_depth_buffer();
     screen_framebuffer->clear_stencil_buffer();
+    impl->api->bind(impl->textures);
 
     for (auto& pipeline : impl->pipelines)
     {
@@ -151,6 +158,10 @@ void renderer::render()
             impl->api->bind(pipeline.first.shader->vertex_layout);
             impl->api->bind(pipeline.second.vertices);
             impl->api->bind(pipeline.second.indicies);
+
+            impl->textures->set_selection(
+                pipeline.first.textures
+            );
 
             impl->api->apply_bindings();
 

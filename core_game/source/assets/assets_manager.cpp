@@ -66,7 +66,7 @@ void assets_manager::load_asset_from_json(std::string local_path)
                 switch (hashed_asset_type)
                 {
                 case utilities::hash_string("texture"):
-                    new_asset = loading::load_texture(data);
+                    new_asset = loading::load_texture(impl->assets_global_path, data);
                     break;
                 case utilities::hash_string("shader"):
                     new_asset = loading::load_shader(impl->assets_global_path, data);

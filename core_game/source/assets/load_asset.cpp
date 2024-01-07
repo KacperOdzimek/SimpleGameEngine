@@ -1,18 +1,48 @@
 #include "load_asset.h"
 #include "source/common/abort.h"
+#include "source/utilities/hash_string.h"
 
-#include <fstream>
+#include "include/stb/stb_image.h"
 
 #include "shader_asset.h"
-#include "source/utilities/hash_string.h"
+#include "texture_asset.h"
+
+#include <fstream>
 
 namespace assets
 {
 	namespace loading
 	{
-		std::shared_ptr<asset> load_texture(nlohmann::json& data)
+		std::shared_ptr<asset> load_texture(std::string& assets_folder_path, nlohmann::json& data)
 		{
-			return nullptr;
+			std::shared_ptr<asset> texture_asset;
+
+			if (!(data.contains("path") && data.at("path").is_string()))
+				abort("Invalid asset: " + assets_folder_path + "\nMissing/Invalid path parameter");
+			else
+			{
+				std::string source_path = data.at("path");
+
+				int texture_width, texture_height, color_channels;
+				stbi_set_flip_vertically_on_load(true);
+
+				unsigned char* image_source = stbi_load((assets_folder_path + source_path).c_str(), 
+					&texture_width, &texture_height, &color_channels, 0);
+
+				if (image_source == nullptr)
+					abort("Invalid asset: " + assets_folder_path + "\nNo image at given path");
+				else
+				{
+					assets::texture::load_data texture_data;
+					texture_data.color_channels = color_channels;
+					texture_data.width = texture_width;
+					texture_data.height = texture_height;
+					texture_data.image_source = image_source;
+					texture_asset = std::make_shared<assets::texture>(texture_data);
+					stbi_image_free(image_source);
+				}
+			}
+			return texture_asset;
 		}
 
 		std::shared_ptr<asset> load_shader(std::string& assets_folder_path, nlohmann::json& data)

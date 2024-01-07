@@ -9,15 +9,21 @@
 #include "source/rendering/buffer_iterator.h"
 
 #include "source/assets/shader_asset.h"
+#include "source/assets/texture_asset.h"
 
 namespace entities
 {
 	struct geometry_draw_settings
 	{
 		std::shared_ptr<assets::shader> shader = nullptr;
-		geometry_draw_settings(std::shared_ptr<assets::shader> _shader)
+		std::vector<std::shared_ptr<assets::texture>> textures;
+		geometry_draw_settings(
+			std::weak_ptr<assets::shader> _shader,
+			std::vector<std::weak_ptr<assets::texture>> _textures)
 		{
-			shader = _shader;
+			shader = std::shared_ptr<assets::shader>(_shader);
+			for (auto& text : _textures)
+				textures.push_back(std::shared_ptr<assets::texture>(text));
 		}
 	};
 
@@ -29,12 +35,16 @@ namespace entities
 		geometry_draw_settings draw_settings;
 
 	protected:
-		virtual void push_geometry(rendering::buffer_iterator& vertices_buffer, rendering::buffer_iterator& indicies_buffer) = 0;
+		virtual void push_geometry(rendering::vertices_buffer_iterator& vertices_buffer, rendering::indicies_buffer_iterator& indicies_buffer) = 0;
 
 		inline rendering::pipeline_config get_rendering_config()
 		{
 			rendering::pipeline_config x;
 			x.shader = draw_settings.shader.get();
+			for (auto& text : draw_settings.textures)
+			{
+				x.textures.push_back(text.get()->_texture);
+			}
 			return x;
 		}
 
@@ -62,7 +72,7 @@ namespace entities
 	protected:
 	public:
 		test_geometry_component(geometry_draw_settings gds) :geometry_component(gds) {};
-		virtual void push_geometry(rendering::buffer_iterator& vertices_buffer, rendering::buffer_iterator& indicies_buffer);
+		virtual void push_geometry(rendering::vertices_buffer_iterator& vertices_buffer, rendering::indicies_buffer_iterator& indicies_buffer);
 		virtual ~test_geometry_component() {};
 	};
 }

@@ -19,8 +19,6 @@ namespace graphics_abstraction
 	struct vertex_layout;
 }
 
-#include <iostream>
-
 namespace assets
 {
 	struct shader : public asset

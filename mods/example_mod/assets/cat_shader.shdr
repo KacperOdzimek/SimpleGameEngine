@@ -1,23 +1,29 @@
 <
-    vec2
+    vec2, vec2
 >
 
 <
     #version 330 core
     layout (location = 0) in vec2 aPos;
+    layout (location = 1) in vec2 aTexCoord;
+
+    out vec2 TexCoord;
 
     void main()
     {
         gl_Position = vec4(aPos, 0.0, 1.0);
+        TexCoord = aTexCoord;
     }
 >
 
 <
     #version 330 core
     out vec4 FragColor;
+    in vec2 TexCoord;
+    uniform sampler2D inTexture;
 
     void main()
     {
-        FragColor = vec4(0.75, 0.25, 0.0, 1.0);
+        FragColor = texture(inTexture, TexCoord);
     }
 >
