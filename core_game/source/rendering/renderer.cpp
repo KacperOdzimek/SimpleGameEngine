@@ -4,7 +4,7 @@
 #include "opengl_3_3_api/opengl_3.3_api.h"
 #include "glfw/glfw3.h"
 
-#include "common/abort.h"
+#include "source/common/abort.h"
 #include "source/rendering/renderer_data_types.h"
 #include "source/rendering/buffer_iterator.h"
 #include "source/entities/component.h"

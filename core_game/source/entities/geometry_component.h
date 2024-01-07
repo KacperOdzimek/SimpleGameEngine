@@ -1,10 +1,10 @@
 #pragma once
 #include "component.h"
-#include "common/common.h"
+#include "source/common/common.h"
 
 #include "source/entities/entity.h"
 
-#include "source/engine/renderer.h"
+#include "source/rendering/renderer.h"
 #include "source/rendering/renderer_data_types.h"
 #include "source/rendering/buffer_iterator.h"
 

@@ -1,5 +1,5 @@
 #include "load_asset.h"
-#include "common/abort.h"
+#include "source/common/abort.h"
 
 #include <fstream>
 

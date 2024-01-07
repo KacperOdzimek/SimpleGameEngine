@@ -1,14 +1,12 @@
-#include "common/common.h"
-#include "common/abort.h"
+#include "source/common/common.h"
+#include "source/common/abort.h"
 
-#include "source/engine/renderer.h"
-#include "source/engine/assets_manager.h"
-#include "source/engine/world.h"
+#include "source/rendering/renderer.h"
+#include "source/assets/assets_manager.h"
+#include "source/entities/world.h"
 
 #include "source/entities/geometry_component.h"
 #include "source/utilities/hash_string.h"
-
-#include <iostream>
 
 int main()
 {

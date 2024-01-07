@@ -1,7 +1,7 @@
 #include "assets_manager.h"
 
-#include "common/abort.h"
-#include "nlohmann/json.hpp"
+#include "source/common/abort.h"
+#include "include/nlohmann/json.hpp"
 
 #include "source/utilities/hash_string.h"
 #include "source/assets/load_asset.h"

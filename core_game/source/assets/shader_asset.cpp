@@ -1,6 +1,6 @@
 #include "shader_asset.h"
-#include "common/common.h"
-#include "source/engine/renderer.h"
+#include "source/common/common.h"
+#include "source/rendering/renderer.h"
 #include "graphics_abstraction/graphics_abstraction.h"
 #include "source/utilities/hash_string.h"
 
