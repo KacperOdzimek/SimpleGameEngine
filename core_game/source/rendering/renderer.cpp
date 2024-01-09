@@ -4,11 +4,15 @@
 #include "opengl_3_3_api/opengl_3.3_api.h"
 #include "glfw/glfw3.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include "source/common/abort.h"
 #include "source/rendering/renderer_data_types.h"
 #include "source/rendering/buffer_iterator.h"
+
 #include "source/entities/component.h"
 #include "source/entities/geometry_component.h"
+#include "source/components/camera.h"
 
 using namespace rendering;
 
@@ -28,10 +32,12 @@ struct renderer::implementation
 
     graphics_abstraction::shader* postprocess_shader = nullptr;;
     graphics_abstraction::buffer* screen_quad_vertices = nullptr;;
-    graphics_abstraction::vertex_layout* screen_quad_vertices_layout = nullptr;;
+    graphics_abstraction::vertex_layout* screen_quad_vertices_layout = nullptr;
 
     pipelines pipelines;
     geometry_sources geometry_sources;
+
+    entities::components::camera* active_camera = nullptr;
 
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {
@@ -236,6 +242,9 @@ void renderer::collect_geometry_data()
 
 void renderer::render()
 {
+    if (impl->active_camera == nullptr)
+        return;
+
     auto screen_framebuffer = impl->pre_postprocess_buffer;
     impl->api->bind(screen_framebuffer);
     screen_framebuffer->clear_color_buffers(0.0f, 0.2f, 0.1f, 1.0f);
@@ -243,10 +252,19 @@ void renderer::render()
     screen_framebuffer->clear_stencil_buffer();
     impl->api->bind(impl->textures);
 
+    auto projection = impl->active_camera->get_projection();
+    auto camera_view_center_v2 = impl->active_camera->get_view_center_location();
+    glm::vec4 camera_view_center_v4 = { camera_view_center_v2.x, camera_view_center_v2.y , 0, 0 };
+
     for (auto& pipeline : impl->pipelines)
     {
         if (pipeline.first.shader != nullptr)
         {
+            pipeline.first.shader->_shader->set_uniform_value(
+                "itr_projection", graphics_abstraction::data_type::mat4x4, glm::value_ptr(projection));
+            pipeline.first.shader->_shader->set_uniform_value(
+                "itr_camera_location", graphics_abstraction::data_type::vec4, glm::value_ptr(camera_view_center_v4));
+
             impl->api->bind(pipeline.first.shader->_shader);
             impl->api->bind(pipeline.first.shader->vertex_layout);
             impl->api->bind(pipeline.second.vertices);
@@ -289,4 +307,9 @@ void renderer::render()
 graphics_abstraction::api* renderer::get_api()
 {
     return impl->api;
+}
+
+void renderer::set_active_camera(entities::components::camera* camera)
+{
+    impl->active_camera = camera;
 }

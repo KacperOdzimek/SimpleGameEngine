@@ -9,6 +9,10 @@ namespace graphics_abstraction
 namespace entities
 {
 	class geometry_component;
+	namespace components
+	{
+		class camera;
+	}
 }
 
 namespace rendering
@@ -44,6 +48,8 @@ namespace rendering
 		void unregister_geometry_component(entities::geometry_component* comp, pipeline_config target_pipeline);
 		void collect_geometry_data();
 		void render();
+
+		void set_active_camera(entities::components::camera* camera);
 
 		/*
 			Data

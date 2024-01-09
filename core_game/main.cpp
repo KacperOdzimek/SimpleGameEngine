@@ -8,6 +8,7 @@
 #include "source/entities/geometry_component.h"
 #include "source/assets/texture_asset.h"
 #include "source/utilities/hash_string.h"
+#include "source/components/camera.h"
 
 int main()
 {
@@ -32,20 +33,28 @@ int main()
 	(
 		entities::geometry_draw_settings{ shader, { texture } }
 	);
+	auto camera_comp = new entities::components::camera{16};
+
 	entity->attach_component(
 		geo_comp
 	);
 
-	entity->position = { -0.75f, 0.75f };
+	entity->attach_component(
+		camera_comp
+	);
 
+	entity->position = { 0, 0 };
 	scene->add_entity(entity);
+
+	common::renderer->set_active_camera(camera_comp);
+
 	while (!common::renderer->should_window_close())
 	{
 		common::renderer->collect_geometry_data();
 		common::renderer->render();
 		common::renderer->update_window();
-		entity->position.y -= 0.001;
-		entity->position.x += 0.001;
+		entity->position.y -= 0;
+		entity->position.x += 0.1;
 	}
 	common::world.reset();
 	common::assets_manager.reset();
