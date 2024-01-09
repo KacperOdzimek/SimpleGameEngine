@@ -16,17 +16,17 @@ int main()
 	common::renderer->create_api_instance();
 
 	common::assets_manager->set_assets_path("C:/Projekty/TopDownGame/mods/example_mod/assets");
-	common::assets_manager->load_asset_from_json("/cat_shader.json");
-	common::assets_manager->load_asset_from_json("/cat_texture.json");
+	common::assets_manager->load_asset_from_json("/shaders/cat_shader.json");
+	common::assets_manager->load_asset_from_json("/textures/cat_texture.json");
 
 	auto* scene = common::world->create_active_scene();
 	auto entity = new entities::entity;
 
 	std::weak_ptr<assets::shader> shader = assets::cast_asset<assets::shader>(
-		common::assets_manager->get_asset(utilities::hash_string("/cat_shader.json")));
+		common::assets_manager->get_asset(utilities::hash_string("/shaders/cat_shader.json")));
 
 	std::weak_ptr<assets::texture> texture = assets::cast_asset<assets::texture>(
-		common::assets_manager->get_asset(utilities::hash_string("/cat_texture.json")));
+		common::assets_manager->get_asset(utilities::hash_string("/textures/cat_texture.json")));
 
 	auto geo_comp =
 	new entities::test_geometry_component
@@ -53,8 +53,6 @@ int main()
 		common::renderer->collect_geometry_data();
 		common::renderer->render();
 		common::renderer->update_window();
-		entity->position.y -= 0;
-		entity->position.x += 0.1;
 	}
 	common::world.reset();
 	common::assets_manager.reset();
