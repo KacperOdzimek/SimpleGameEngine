@@ -19,6 +19,8 @@ namespace rendering
 	{
 		struct implementation;
 		implementation* impl;
+		friend implementation;
+		void create_main_renderbuffer();
 	public:
 		renderer();
 		~renderer();

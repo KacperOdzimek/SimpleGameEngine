@@ -15,7 +15,7 @@ namespace entities
 	{
 		friend entities::entity;
 	protected:
-		entity* owner;
+		entity* owner = nullptr;
 	public:
 		virtual ~component() {};
 	};

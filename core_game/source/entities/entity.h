@@ -13,7 +13,7 @@ namespace entities
 	protected:
 		std::vector<component*> components;
 	public:
-		glm::vec2 position;
+		glm::vec2 position{ 0.0f, 0.0f };;
 		void attach_component(component* comp)
 		{
 			components.push_back(comp);

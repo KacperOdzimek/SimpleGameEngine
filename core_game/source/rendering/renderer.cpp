@@ -14,15 +14,36 @@ using namespace rendering;
 
 struct renderer::implementation
 {
-    int window_width = 800;
-    int window_height = 800;
+    int window_width = 16 * 80;
+    int window_height = 9 * 80;
     GLFWwindow* window;
 
-    graphics_abstraction::api* api;
-    graphics_abstraction::textures_selection* textures;
+    graphics_abstraction::api* api = nullptr;;
+
+    graphics_abstraction::textures_selection* textures = nullptr;;
+
+    graphics_abstraction::framebuffer* pre_postprocess_buffer = nullptr;;
+    graphics_abstraction::texture* pre_postprocess_buffer_color = nullptr;;
+    graphics_abstraction::texture* pre_postprocess_buffer_depth = nullptr;;
+
+    graphics_abstraction::shader* postprocess_shader = nullptr;;
+    graphics_abstraction::buffer* screen_quad_vertices = nullptr;;
+    graphics_abstraction::vertex_layout* screen_quad_vertices_layout = nullptr;;
 
     pipelines pipelines;
     geometry_sources geometry_sources;
+
+    static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+    {
+        auto& impl = common::renderer->impl;
+
+        impl->api->set_screen_size(width, height);
+        impl->window_width = width;
+        impl->window_height = height;
+
+        impl->pre_postprocess_buffer_color->resize(width, height);
+        impl->pre_postprocess_buffer_depth->resize(width, height);
+    }
 };
 
 renderer::renderer()
@@ -39,6 +60,15 @@ renderer::~renderer()
     }
 
     impl->api->free(impl->textures);
+
+    impl->api->free(impl->pre_postprocess_buffer_color);
+    impl->api->free(impl->pre_postprocess_buffer_depth);
+    impl->api->free(impl->pre_postprocess_buffer);
+
+    impl->api->free(impl->postprocess_shader);
+    impl->api->free(impl->screen_quad_vertices);
+    impl->api->free(impl->screen_quad_vertices_layout);
+
     delete impl->api;
 
     glfwTerminate();
@@ -56,11 +86,40 @@ void renderer::create_window()
     if (impl->window == nullptr)
         abort("Cannot create window");
     glfwMakeContextCurrent(impl->window);
-    //glfwSetFramebufferSizeCallback(impl->window, framebuffer_size_callback);
+    glfwSetFramebufferSizeCallback(impl->window, implementation::framebuffer_size_callback);
     //glfwSetCursorPosCallback(impl->window, mouse_callback);
     //glfwSetScrollCallback(impl->window, scroll_callback);
-    glfwSetInputMode(impl->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(impl->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetWindowAspectRatio(impl->window, 16, 9);
     glfwSwapInterval(1);
+}
+
+void renderer::create_main_renderbuffer()
+{
+    auto fb = impl->api->create_framebuffer_builder();
+
+    auto tb = impl->api->create_texture_builder();
+
+    tb->texture_type = graphics_abstraction::texture_type::texture_2d;
+    tb->internal_format = graphics_abstraction::texture_internal_format::rgb;
+    tb->source_format = graphics_abstraction::texture_internal_format::unspecified;
+    tb->width = impl->window_width;
+    tb->height = impl->window_height;
+    tb->generate_mipmaps = false;
+
+    auto color_buffer = reinterpret_cast<graphics_abstraction::texture*>(impl->api->build(tb, false));
+
+    impl->pre_postprocess_buffer_color = color_buffer;
+    fb->color_buffers = { {0, color_buffer} };
+
+    tb->texture_type = graphics_abstraction::texture_type::renderbuffer;
+    tb->internal_format = graphics_abstraction::texture_internal_format::depth24_stencil8;
+
+    fb->depth_stencil_buffer = static_cast<graphics_abstraction::texture*>(impl->api->build(tb));
+
+    impl->pre_postprocess_buffer_depth = fb->depth_stencil_buffer;
+
+    impl->pre_postprocess_buffer = reinterpret_cast<graphics_abstraction::framebuffer*>(impl->api->build(fb));
 }
 
 void renderer::create_api_instance()
@@ -71,6 +130,40 @@ void renderer::create_api_instance()
     impl->textures = reinterpret_cast<graphics_abstraction::textures_selection*>(
         impl->api->build(impl->api->create_textures_selection_builder())
     );
+    create_main_renderbuffer();
+
+    float vertices[] = {
+        -1.0f, -1.0f, 0.0f, 0.0f,
+        -1.0f, 1.0f,  0.0f, 1.0f,
+        1.0f, -1.0f,  1.0f, 0.0f,
+        1.0f, 1.0f,   1.0f, 1.0f
+    };
+
+    auto bb = impl->api->create_buffer_builder();
+    bb->buffer_type = graphics_abstraction::buffer_type::vertex;
+    bb->size = sizeof(vertices);
+    impl->screen_quad_vertices = reinterpret_cast<graphics_abstraction::buffer*>(impl->api->build(bb));
+
+    void* begin = impl->screen_quad_vertices->open_data_stream();
+    memcpy(begin, &vertices[0], sizeof(vertices));
+    impl->screen_quad_vertices->close_data_stream();
+
+    auto vlb = impl->api->create_vertex_layout_builder();
+    vlb->vertex_components = {
+        graphics_abstraction::data_type::vec2,
+        graphics_abstraction::data_type::vec2
+    };
+    impl->screen_quad_vertices_layout = reinterpret_cast<graphics_abstraction::vertex_layout*>(impl->api->build(vlb));
+
+    std::string bypass_postprocess_code_ver = "#version 330 core\nlayout (location = 0) in vec2 aPos; layout (location = 1) in vec2 aTexCoord; out vec2 TexCoord; void main() {gl_Position = vec4(aPos, 0.0, 1.0); TexCoord = aTexCoord;}";
+    std::string bypass_postprocess_code_frag = "#version 330 core\nout vec4 FragColor; in vec2 TexCoord; uniform sampler2D colorTexture; void main() { FragColor = texture(colorTexture, TexCoord); }";
+
+    auto sb = impl->api->create_shader_builder();
+    sb->code = {
+        bypass_postprocess_code_ver,
+        bypass_postprocess_code_frag
+    };
+    impl->postprocess_shader = reinterpret_cast<graphics_abstraction::shader*>(impl->api->build(sb));
 }
 
 bool renderer::should_window_close()
@@ -143,7 +236,7 @@ void renderer::collect_geometry_data()
 
 void renderer::render()
 {
-    auto screen_framebuffer = impl->api->get_default_framebuffer();
+    auto screen_framebuffer = impl->pre_postprocess_buffer;
     impl->api->bind(screen_framebuffer);
     screen_framebuffer->clear_color_buffers(0.0f, 0.2f, 0.1f, 1.0f);
     screen_framebuffer->clear_depth_buffer();
@@ -175,6 +268,22 @@ void renderer::render()
             });
         }
     }
+
+    impl->api->bind(impl->api->get_default_framebuffer());
+    impl->api->bind(impl->postprocess_shader);
+    impl->api->bind(impl->screen_quad_vertices);
+    impl->api->bind(impl->screen_quad_vertices_layout);
+
+    impl->textures->set_selection({ impl->pre_postprocess_buffer_color });
+    impl->api->apply_bindings();
+    impl->api->draw(graphics_abstraction::draw_args{
+        graphics_abstraction::draw_types::array,
+        graphics_abstraction::primitives::triangle_strip,
+        graphics_abstraction::draw_args::array_draw_args
+        {
+            0, 4
+        }
+    });
 }
 
 graphics_abstraction::api* renderer::get_api()
