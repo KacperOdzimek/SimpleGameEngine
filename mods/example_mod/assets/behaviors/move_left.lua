@@ -3,9 +3,8 @@ end
 
 function on_update(e, db, dt)
     x, y = _e_get_location(e)
-    _e_set_location(e, x + 8 * dt, y)
-    if x > 6 then
-        _e_add_behavior(e, "left_bhv", "/behaviors/move_left.json")
+    _e_set_location(e, x - 8 * dt, y)
+    if x < -6 then
         _e_kill_component(e, "behavior")
     end
 end

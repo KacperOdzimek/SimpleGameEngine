@@ -2,7 +2,8 @@
 #include "source/common/common.h"
 #include "source/behaviors/behaviors_manager.h"
 
-entities::components::behavior::behavior(std::weak_ptr<assets::behavior> _behavior_asset) : behavior_asset(_behavior_asset)
+entities::components::behavior::behavior(uint32_t _id, std::weak_ptr<assets::behavior> _behavior_asset) 
+	: component(_id), behavior_asset(_behavior_asset)
 {
 }
 

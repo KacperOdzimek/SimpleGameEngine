@@ -15,8 +15,10 @@ namespace entities
 	{
 		friend entities::entity;
 	protected:
+		uint32_t id;
 		entity* owner = nullptr;
 	public:
+		component(uint32_t _id) : id(_id) {};
 		virtual ~component() {};
 		virtual void on_attach() = 0;
 	};

@@ -16,6 +16,8 @@ namespace entities
 	public:
 		glm::vec2 position{ 0.0f, 0.0f };;
 		void attach_component(component* comp);
+		component* get_component(uint32_t id);
+		void kill_component(uint32_t id);
 		void kill();
 	protected:
 		~entity();

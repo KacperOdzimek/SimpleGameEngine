@@ -20,7 +20,6 @@
 #include "source/utilities/hash_string.h"
 //
 
-
 int main()
 {
 	common::renderer->create_window();
@@ -31,6 +30,7 @@ int main()
 	common::assets_manager->load_asset_from_json("/shaders/cat_shader.json");
 	common::assets_manager->load_asset_from_json("/textures/cat_texture.json");
 	common::assets_manager->load_asset_from_json("/behaviors/move_right.json");
+	common::assets_manager->load_asset_from_json("/behaviors/move_left.json");
 
 	auto* scene = common::world->create_active_scene();
 
@@ -41,6 +41,7 @@ int main()
 	cat_entity->attach_component(
 		new entities::test_geometry_component
 		(
+			utilities::hash_string("geo"),
 			entities::geometry_draw_settings
 			{ 
 				assets::cast_asset<assets::shader>(common::assets_manager->get_asset(utilities::hash_string("/shaders/cat_shader.json"))), 
@@ -51,6 +52,7 @@ int main()
 		)
 	);
 	auto bhv = new entities::components::behavior{
+			utilities::hash_string("behavior"),
 			assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string("/behaviors/move_right.json"))) };
 	cat_entity->attach_component(
 			bhv
@@ -61,7 +63,7 @@ int main()
 		Camera Actor
 	*/
 	auto camera_entity = new entities::entity;
-	auto camera_comp = new entities::components::camera{ 16 };
+	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 16 };
 	camera_entity->attach_component(camera_comp);
 	common::renderer->set_active_camera(camera_comp);
 	camera_entity->position = { 0, 0 };
