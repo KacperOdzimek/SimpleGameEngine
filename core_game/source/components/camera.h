@@ -13,6 +13,7 @@ namespace entities
 			float ortho_width = 20;
 			glm::mat4 get_projection();
 			glm::vec2 get_view_center_location();
+			virtual void on_attach();
 		private:
 		};
 	}

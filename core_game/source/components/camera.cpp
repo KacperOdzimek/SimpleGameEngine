@@ -8,6 +8,11 @@ namespace entities
 {
 	namespace components
 	{
+		void camera::on_attach()
+		{
+
+		}
+
 		glm::mat4 camera::get_projection()
 		{
 			constexpr float aspect = 9.0f / 16.0f;

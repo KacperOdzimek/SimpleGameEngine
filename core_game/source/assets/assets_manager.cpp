@@ -71,6 +71,9 @@ void assets_manager::load_asset_from_json(std::string local_path)
                 case utilities::hash_string("shader"):
                     new_asset = loading::load_shader(impl->assets_global_path, data);
                     break;
+                case utilities::hash_string("behavior"):
+                    new_asset = loading::load_behavior(impl->assets_global_path, data);
+                    break;
                 default:
                     abort("Invalid asset: " + path + "\nInvalid asset_type");
                 }
@@ -87,4 +90,9 @@ void assets_manager::load_asset_from_json(std::string local_path)
             }
         }
     } 
+}
+
+const std::string& assets_manager::get_assets_path()
+{
+    return impl->assets_global_path;
 }

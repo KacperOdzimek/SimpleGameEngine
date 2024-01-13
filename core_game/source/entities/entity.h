@@ -18,6 +18,7 @@ namespace entities
 		{
 			components.push_back(comp);
 			comp->owner = this;
+			comp->on_attach();
 		}
 		~entity()
 		{

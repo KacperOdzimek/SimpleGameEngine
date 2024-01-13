@@ -6,6 +6,7 @@
 
 #include "shader_asset.h"
 #include "texture_asset.h"
+#include "behavior_asset.h"
 
 #include <fstream>
 
@@ -118,6 +119,21 @@ namespace assets
 				hashed_layout.push_back(utilities::hash_string(element));
 
 			return std::make_shared<shader>(vertex_code, fragment_code, hashed_layout);
+		}
+
+		std::shared_ptr<asset> load_behavior(std::string& assets_folder_path, nlohmann::json& data)
+		{
+			std::shared_ptr<asset> behavior_asset;
+
+			if (!(data.contains("path") && data.at("path").is_string()))
+				abort("Invalid asset: " + assets_folder_path + "\nMissing/Invalid path parameter");
+			else
+			{
+				std::string source_path = data.at("path");
+				behavior_asset = std::make_shared<assets::behavior>(source_path);
+			}
+			
+			return behavior_asset;
 		}
 	}
 }

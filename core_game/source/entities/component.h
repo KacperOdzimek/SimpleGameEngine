@@ -18,5 +18,6 @@ namespace entities
 		entity* owner = nullptr;
 	public:
 		virtual ~component() {};
+		virtual void on_attach() = 0;
 	};
 }

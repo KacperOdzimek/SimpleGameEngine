@@ -58,12 +58,16 @@ namespace entities
 		geometry_component(geometry_draw_settings gds) :
 			draw_settings(gds)
 		{ 	
-			draw_settings = gds;
-			common::renderer->register_geometry_component(this, get_rendering_config());
+			draw_settings = gds;	
 		};
 		virtual ~geometry_component()
 		{
 			common::renderer->unregister_geometry_component(this, get_rendering_config());
+		}
+
+		virtual void on_attach()
+		{
+			common::renderer->register_geometry_component(this, get_rendering_config());
 		}
 	};
 
