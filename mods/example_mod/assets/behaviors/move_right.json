@@ -1,4 +1,4 @@
 {
     "asset_type" : "behavior",
-    "path" : "/behavior/move_right.lua"
+    "path" : "/behaviors/move_right.lua"
 }

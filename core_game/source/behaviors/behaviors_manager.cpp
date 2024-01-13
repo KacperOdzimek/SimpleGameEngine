@@ -62,6 +62,12 @@ void behaviors::behaviors_manager::unregister_behavior_component(entities::compo
     #undef target
 }
 
+void behaviors::behaviors_manager::call_update_functions()
+{
+    for (auto& comp : impl->registered_behaviors)
+        comp->call_function(functions::update);
+}
+
 std::string behaviors::behaviors_manager::create_behavior(const std::string& file_path)
 {
     std::string name = std::to_string(impl->behaviors_id_iterator);

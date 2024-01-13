@@ -4,6 +4,7 @@
 #include "source/rendering/renderer.h"
 #include "source/assets/assets_manager.h"
 #include "source/entities/world.h"
+#include "source/behaviors/behaviors_manager.h"
 
 #include <time.h>
 
@@ -70,11 +71,11 @@ int main()
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
+		common::behaviors_manager->call_update_functions();
+
 		common::renderer->collect_geometry_data();
 		common::renderer->render();
 		common::renderer->update_window();
-
-		bhv->call_function(behaviors::functions::update);
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;

@@ -1,8 +1,13 @@
-function init(entity)
+function on_init(entity, database)
 end
 
-function update(entity)
+function on_update(e, db, dt)
+    x, y = _e_get_location(e)
+    _e_set_location(e, x + 2 * dt, y)
+    if x > 6 then
+        _e_kill(e)
+    end
 end
 
-function destroy(entity)
+function on_destroy(entity, database)
 end

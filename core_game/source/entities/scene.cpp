@@ -2,13 +2,26 @@
 
 using namespace entities;
 
+scene::~scene()
+{
+	for (auto& entity : entities)
+		delete entity;
+}
+
 void scene::add_entity(entity* entity)
 {
 	entities.push_back(entity);
 }
 
-scene::~scene()
+#include <algorithm>
+
+bool scene::remove_entity(entity* entity)
 {
-	for (auto& entity : entities)
-		delete entity;
+	auto position = std::find(entities.begin(), entities.end(), entity);
+	if (position != entities.end())
+	{
+		entities.erase(position);
+		return 1;
+	}
+	return 0;
 }

@@ -10,7 +10,8 @@ namespace entities
 	protected:
 		std::vector<entity*> entities;
 	public:
-		void add_entity(entity* entity);
 		~scene();
+		void add_entity(entity* entity);
+		bool remove_entity(entity* entity);
 	};
 }

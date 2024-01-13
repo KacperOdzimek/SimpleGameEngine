@@ -10,20 +10,14 @@ namespace entities
 {
 	class entity
 	{
+	friend class scene;
 	protected:
 		std::vector<component*> components;
 	public:
 		glm::vec2 position{ 0.0f, 0.0f };;
-		void attach_component(component* comp)
-		{
-			components.push_back(comp);
-			comp->owner = this;
-			comp->on_attach();
-		}
-		~entity()
-		{
-			for (auto& comp : components)
-				delete comp;
-		}
+		void attach_component(component* comp);
+		void kill();
+	protected:
+		~entity();
 	};
 }

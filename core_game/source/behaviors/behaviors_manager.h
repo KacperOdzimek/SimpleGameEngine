@@ -25,6 +25,7 @@ namespace behaviors
 		behaviors_manager();
 		~behaviors_manager();
 
+		void call_update_functions();
 		void register_behavior_component(entities::components::behavior* comp);
 		void unregister_behavior_component(entities::components::behavior* comp);
 	private:
