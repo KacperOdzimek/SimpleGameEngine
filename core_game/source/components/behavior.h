@@ -3,6 +3,7 @@
 #include "source/entities/component.h"
 
 #include "source/behaviors/behavior_functions.h"
+#include "source/behaviors/behaviors_database.h"
 
 namespace assets
 {
@@ -15,6 +16,8 @@ namespace entities
 	{
 		class behavior : public entities::component
 		{	
+		protected:
+			std::unique_ptr<behaviors::database> database;
 		public:
 			std::weak_ptr<assets::behavior> behavior_asset;
 			behavior(uint32_t _id, std::weak_ptr<assets::behavior> _behavior_asset);

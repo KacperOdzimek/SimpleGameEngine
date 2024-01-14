@@ -3,7 +3,7 @@
 #include "source/behaviors/behaviors_manager.h"
 
 entities::components::behavior::behavior(uint32_t _id, std::weak_ptr<assets::behavior> _behavior_asset) 
-	: component(_id), behavior_asset(_behavior_asset)
+	: component(_id), behavior_asset(_behavior_asset), database(std::make_unique<behaviors::database>())
 {
 }
 
@@ -25,20 +25,20 @@ void entities::components::behavior::call_function(behaviors::functions func)
 		case behaviors::functions::init:
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)owner);
-			common::behaviors_manager->pass_int_arg(0);
+			common::behaviors_manager->pass_int_arg((uint64_t)database.get());
 			common::behaviors_manager->call();
 			break;
 		case behaviors::functions::update:
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)owner);
-			common::behaviors_manager->pass_int_arg(0);
+			common::behaviors_manager->pass_int_arg((uint64_t)database.get());
 			common::behaviors_manager->pass_float_arg(common::delta_time);
 			common::behaviors_manager->call();
 			break;
 		case behaviors::functions::destroy:
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)owner);
-			common::behaviors_manager->pass_int_arg(0);
+			common::behaviors_manager->pass_int_arg((uint64_t)database.get());
 			common::behaviors_manager->call();
 			break;
 		}

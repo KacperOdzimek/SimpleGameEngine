@@ -1,5 +1,5 @@
 #pragma once
-#include "source/common/data_types.h"
+#include <cstdint>
 
 namespace rendering
 {

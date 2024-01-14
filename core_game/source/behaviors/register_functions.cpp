@@ -7,6 +7,8 @@ extern "C"
 #include "include/lua_5_4_2/include/lualib.h"
 }
 
+#include "behaviors_database.h"
+
 #include "source/assets/assets_manager.h"
 
 #include "source/utilities/hash_string.h"
@@ -18,6 +20,11 @@ extern "C"
 inline entities::entity* load_entity(lua_State* L, int arg_id)
 {
 	return reinterpret_cast<::entities::entity*>(lua_tointeger(L, arg_id));
+}
+
+inline behaviors::database* load_database(lua_State* L, int arg_id)
+{
+	return reinterpret_cast<::behaviors::database*>(lua_tointeger(L, arg_id));
 }
 
 inline uint32_t load_id(lua_State* L, int arg_id)
@@ -74,12 +81,14 @@ inline entities::geometry_draw_settings load_geometry_draw_settings(lua_State* L
 	return gds;
 }
 
+#include "source/behaviors_shared/databases_functions.h"
 #include "source/behaviors_shared/entities_functions.h"
 #include "source/behaviors_shared/add_component_functions.h"
 #include "source/behaviors_shared/components_functions.h"
 
 void behaviors::register_functions(lua_State* L)
 {
+	lua_functions::databases::register_functions(L);
 	lua_functions::entities::register_functions(L);
 	lua_functions::add_component::register_functions(L);
 	lua_functions::components::register_functions(L);
