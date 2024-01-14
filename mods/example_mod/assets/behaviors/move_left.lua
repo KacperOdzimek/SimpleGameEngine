@@ -2,11 +2,8 @@ function on_init(entity, database)
 end
 
 function on_update(e, db, dt)
-    x, y = _e_get_location(e)
-    _e_set_location(e, x - 8 * dt, y)
-    if x < -6 then
-        _e_kill_component(e, "behavior")
-    end
+    new_width = _c_c_get_ortho_width(e, "cam2") - 2 * dt
+    _c_c_set_ortho_width(e, "cam2", new_width)
 end
 
 function on_destroy(entity, database)

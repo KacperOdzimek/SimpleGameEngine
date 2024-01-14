@@ -23,6 +23,14 @@ inline uint32_t load_id(lua_State* L, int arg_id)
 	return lua_tointeger(L, arg_id);
 }
 
+template<class comp_class>
+inline comp_class* load_component(lua_State* L, int entity_ptr_pos = 1, int component_id_pos = 2)
+{
+	auto e = load_entity(L, entity_ptr_pos);
+	uint32_t comp = load_id(L, component_id_pos);
+	return dynamic_cast<comp_class*>(e->get_component(comp));
+}
+
 #include "source/behaviors_shared/entities_functions.h"
 #include "source/behaviors_shared/add_component_functions.h"
 #include "source/behaviors_shared/components_functions.h"

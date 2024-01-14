@@ -12,6 +12,7 @@
 #include "source/entities/geometry_component.h"
 #include "source/components/camera.h"
 #include "source/components/behavior.h"
+#include "source/components/sprite.h"
 
 #include "source/assets/texture_asset.h"
 #include "source/assets/behavior_asset.h"
@@ -39,7 +40,7 @@ int main()
 	*/
 	auto cat_entity = new entities::entity;
 	cat_entity->attach_component(
-		new entities::test_geometry_component
+		new entities::components::sprite
 		(
 			utilities::hash_string("geo"),
 			entities::geometry_draw_settings
