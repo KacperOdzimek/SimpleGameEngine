@@ -27,6 +27,14 @@ namespace behaviors
 				return 0;
 			}
 
+			int _c_g_get_entity_offset(lua_State* L)
+			{
+				auto geo = load_component<::entities::components::sprite>(L);
+				lua_pushnumber(L, geo->entity_offset.x);
+				lua_pushnumber(L, geo->entity_offset.y);
+				return 2;
+			}
+
 			/*
 				Camera
 			*/
@@ -58,6 +66,13 @@ namespace behaviors
 				return 0;
 			}
 
+			int _c_c_get_active(lua_State* L)
+			{
+				auto camera = load_component<::entities::components::camera>(L);
+				lua_pushboolean(L, common::renderer->get_active_camera() == camera);
+				return 1;
+			}
+
 			/*
 				Behavior
 			*/
@@ -79,10 +94,12 @@ namespace behaviors
 			void register_functions(lua_State* L)
 			{
 				lua_register(L, "_c_g_set_entity_offset", _c_g_set_entity_offset);
+				lua_register(L, "_c_g_get_entity_offset", _c_g_get_entity_offset);
 
 				lua_register(L, "_c_c_set_ortho_width", _c_c_set_ortho_width);
 				lua_register(L, "_c_c_get_ortho_width", _c_c_get_ortho_width);
 				lua_register(L, "_c_c_set_active", _c_c_set_active);
+				lua_register(L, "_c_c_get_active", _c_c_get_active);
 
 				lua_register(L, "_c_b_set_behavior", _c_b_set_behavior);
 			}

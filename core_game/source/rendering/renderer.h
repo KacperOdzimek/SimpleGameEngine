@@ -50,6 +50,7 @@ namespace rendering
 		void render();
 
 		void set_active_camera(entities::components::camera* camera);
+		entities::components::camera* get_active_camera();
 
 		/*
 			Data

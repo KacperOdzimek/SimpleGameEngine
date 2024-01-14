@@ -313,3 +313,8 @@ void renderer::set_active_camera(entities::components::camera* camera)
 {
     impl->active_camera = camera;
 }
+
+entities::components::camera* renderer::get_active_camera()
+{
+    return impl->active_camera;
+}
