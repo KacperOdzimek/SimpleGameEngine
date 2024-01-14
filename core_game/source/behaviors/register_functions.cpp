@@ -7,9 +7,13 @@ extern "C"
 #include "include/lua_5_4_2/include/lualib.h"
 }
 
+#include "source/assets/assets_manager.h"
+
 #include "source/utilities/hash_string.h"
+
 #include "source/entities/entity.h"
 #include "source/entities/component.h"
+#include "source/entities/geometry_component.h"
 
 inline entities::entity* load_entity(lua_State* L, int arg_id)
 {
@@ -29,6 +33,45 @@ inline comp_class* load_component(lua_State* L, int entity_ptr_pos = 1, int comp
 	auto e = load_entity(L, entity_ptr_pos);
 	uint32_t comp = load_id(L, component_id_pos);
 	return dynamic_cast<comp_class*>(e->get_component(comp));
+}
+
+inline entities::geometry_draw_settings load_geometry_draw_settings(lua_State* L, int pos)
+{
+	entities::geometry_draw_settings gds;
+	lua_pushnil(L);
+	if (lua_istable(L, pos))
+	{
+		while (lua_next(L, pos) != 0)
+		{
+			if (lua_isstring(L, -2))
+			{
+				std::string key = lua_tostring(L, -2);
+				if (key == "shader")
+				{
+					gds.shader = assets::cast_asset<assets::shader>(common::assets_manager->get_asset(load_id(L, -1))).lock();
+				}
+				else if (key == "textures")
+				{
+					if (lua_istable(L, pos + 2))
+					{
+						lua_pushnil(L);
+						while (lua_next(L, pos + 2) != 0)
+						{
+							uint32_t txt_id = load_id(L, -1);
+							gds.textures.push_back(
+								assets::cast_asset<assets::texture>(common::assets_manager->get_asset(load_id(L, -1))).lock()
+							);
+							lua_pop(L, 1);
+						}
+					}
+				}
+			}
+
+			lua_pop(L, 1);
+		}
+	}
+
+	return gds;
 }
 
 #include "source/behaviors_shared/entities_functions.h"

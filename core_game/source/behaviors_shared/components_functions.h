@@ -16,16 +16,14 @@ namespace behaviors
 		namespace components
 		{
 			/*
-				Behavior
+				Geometry
 			*/
 
-			int _c_b_set_behavior(lua_State* L)
+			int _c_g_set_entity_offset(lua_State* L)
 			{
-				auto ptr = load_component<::entities::components::behavior>(L);
-				auto asset = load_id(L, 3);
-				if (ptr != nullptr)
-					ptr->behavior_asset = ::assets::cast_asset<::assets::behavior>(::common::assets_manager->get_asset(asset));
-
+				auto geo = load_component<::entities::components::sprite>(L);
+				geo->entity_offset.x = lua_tonumber(L, 3);
+				geo->entity_offset.y = lua_tonumber(L, 4);
 				return 0;
 			}
 
@@ -60,13 +58,33 @@ namespace behaviors
 				return 0;
 			}
 
+			/*
+				Behavior
+			*/
+
+			int _c_b_set_behavior(lua_State* L)
+			{
+				auto ptr = load_component<::entities::components::behavior>(L);
+				auto asset = load_id(L, 3);
+				if (ptr != nullptr)
+					ptr->behavior_asset = ::assets::cast_asset<::assets::behavior>(::common::assets_manager->get_asset(asset));
+
+				return 0;
+			}
+
+			/*
+				Register
+			*/
+
 			void register_functions(lua_State* L)
 			{
-				lua_register(L, "_c_b_set_behavior", _c_b_set_behavior);
+				lua_register(L, "_c_g_set_entity_offset", _c_g_set_entity_offset);
 
 				lua_register(L, "_c_c_set_ortho_width", _c_c_set_ortho_width);
 				lua_register(L, "_c_c_get_ortho_width", _c_c_get_ortho_width);
 				lua_register(L, "_c_c_set_active", _c_c_set_active);
+
+				lua_register(L, "_c_b_set_behavior", _c_b_set_behavior);
 			}
 		}
 	}

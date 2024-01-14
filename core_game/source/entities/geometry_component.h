@@ -22,6 +22,7 @@ namespace entities
 	{
 		std::shared_ptr<assets::shader> shader = nullptr;
 		std::vector<std::shared_ptr<assets::texture>> textures;
+		geometry_draw_settings() {};
 		geometry_draw_settings(
 			std::weak_ptr<assets::shader> _shader,
 			std::vector<std::weak_ptr<assets::texture>> _textures);
