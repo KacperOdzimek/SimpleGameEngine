@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "behavior_functions.h"
+#include "behaviors_database.h"
 
 namespace assets
 {
@@ -14,6 +15,8 @@ namespace entities
 		struct behavior;
 	}
 }
+
+class lua_State;
 
 namespace behaviors
 {
@@ -37,7 +40,7 @@ namespace behaviors
 		void pass_int_arg(uint64_t arg);
 		void pass_float_arg(float arg);
 
-		void prepare_call(functions func, assets::behavior* bhv);
+		void prepare_call(behaviors::functions func, assets::behavior* bhv, behaviors::database* database);
 		void call();
 	};
 }

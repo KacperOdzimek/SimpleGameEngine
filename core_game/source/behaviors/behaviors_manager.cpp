@@ -26,6 +26,7 @@ struct behaviors::behaviors_manager::implementation
     uint64_t behaviors_id_iterator = 0;
 
     std::vector<entities::components::behavior*> registered_behaviors;
+    database* active_database = nullptr;
 
     void pcall(int r)
     {
@@ -39,7 +40,7 @@ behaviors::behaviors_manager::behaviors_manager()
     impl = new implementation;
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
-    register_functions(L);
+    behaviors::register_functions(L);
     impl->L = L;
 }
 
@@ -108,9 +109,11 @@ void behaviors::behaviors_manager::pass_float_arg(float arg)
     lua_pushnumber(impl->L, arg);
 }
 
-void behaviors::behaviors_manager::prepare_call(behaviors::functions func, assets::behavior* bhv)
+void behaviors::behaviors_manager::prepare_call(behaviors::functions func, assets::behavior* bhv, behaviors::database* database)
 {
     impl->args_counter = 0;
+    impl->active_database = database;
+    behaviors::internal::active_database = database;
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
     switch (func)
     {
