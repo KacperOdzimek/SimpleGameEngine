@@ -16,7 +16,7 @@ namespace behaviors
 		{
 			int _e_add_behavior(lua_State* L)
 			{
-				::entities::entity* e = load_entity(L, 1);
+				auto e = load_entity(L, 1);
 				uint32_t id = load_id(L, 2);
 				uint32_t bhv = load_id(L, 3);
 
@@ -32,10 +32,10 @@ namespace behaviors
 
 			int _e_add_camera(lua_State* L)
 			{
-				::entities::entity* e = load_entity(L, 1);
+				auto e = load_entity(L, 1);
 				uint32_t id = load_id(L, 2);
 				float width = lua_tonumber(L, 3);
-
+				
 				e->attach_component(
 					new ::entities::components::camera{
 						id, width
@@ -47,7 +47,7 @@ namespace behaviors
 
 			int _e_add_sprite(lua_State* L)
 			{
-				::entities::entity* e = load_entity(L, 1);
+				auto e = load_entity(L, 1);
 				uint32_t id = load_id(L, 2);
 				auto gds = load_geometry_draw_settings(L, 3);
 

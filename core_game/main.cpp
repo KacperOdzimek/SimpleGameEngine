@@ -58,7 +58,6 @@ int main()
 	cat_entity->attach_component(
 			bhv
 	);
-	scene->add_entity(cat_entity);
 
 	/*
 		Camera Actor
@@ -68,7 +67,6 @@ int main()
 	camera_entity->attach_component(camera_comp);
 	common::renderer->set_active_camera(camera_comp);
 	camera_entity->position = { 0, 0 };
-	scene->add_entity(camera_entity);
 
 	while (!common::renderer->should_window_close())
 	{

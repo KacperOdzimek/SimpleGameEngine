@@ -3,6 +3,11 @@
 #include "source/common/common.h"
 #include "source/entities/world.h"
 
+entities::entity::entity()
+{
+	self = common::world->active_scene->add_entity(this);
+}
+
 void entities::entity::attach_component(component* comp)
 {
 	components.push_back(comp);
@@ -30,8 +35,7 @@ void entities::entity::kill_component(uint32_t id)
 
 void entities::entity::kill()
 {
-	common::world->remove_entity_pointer(this);
-	delete this;
+	self.reset();
 }
 
 entities::entity::~entity()

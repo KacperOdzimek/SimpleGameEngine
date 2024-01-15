@@ -17,9 +17,9 @@ extern "C"
 #include "source/entities/component.h"
 #include "source/entities/geometry_component.h"
 
-inline entities::entity* load_entity(lua_State* L, int arg_id)
+inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id)
 {
-	return reinterpret_cast<::entities::entity*>(lua_tointeger(L, arg_id));
+	return reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, arg_id))->lock();
 }
 
 inline behaviors::database* load_database(lua_State* L, int arg_id)

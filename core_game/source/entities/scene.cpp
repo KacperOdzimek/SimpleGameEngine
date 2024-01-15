@@ -5,19 +5,21 @@ using namespace entities;
 scene::~scene()
 {
 	for (auto& entity : entities)
-		delete entity;
+		entity.reset();
 }
 
-void scene::add_entity(entity* entity)
+std::weak_ptr<entity> scene::add_entity(entity* e)
 {
-	entities.push_back(entity);
+	std::shared_ptr<entity> x{e};
+	entities.push_back(x);
+	return x;
 }
 
 #include <algorithm>
 
-bool scene::remove_entity(entity* entity)
+bool scene::remove_entity(std::shared_ptr<entity> e)
 {
-	auto position = std::find(entities.begin(), entities.end(), entity);
+	auto position = std::find(entities.begin(), entities.end(), e);
 	if (position != entities.end())
 	{
 		entities.erase(position);

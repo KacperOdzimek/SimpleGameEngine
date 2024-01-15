@@ -6,40 +6,40 @@ namespace behaviors
 		{
 			int _e_create(lua_State* L)
 			{
-				auto ent = new ::entities::entity;
-				lua_pushinteger(L, (uint64_t)ent);
+				auto e = new ::entities::entity;
+				lua_pushinteger(L, (uint64_t)e);
 				return 1;
 			}
 
 			int _e_kill(lua_State* L)
 			{
-				auto pointer = load_entity(L, 1);
-				pointer->kill();
+				auto e = load_entity(L, 1);
+				e->kill();
 				return 0;
 			}
 
 			int _e_set_location(lua_State* L)
 			{
-				auto pointer = load_entity(L, 1);
+				auto e = load_entity(L, 1);
 				float x = (float)lua_tonumber(L, 2);
 				float y = (float)lua_tonumber(L, 3);
-				pointer->position = { x, y };
+				e->position = { x, y };
 				return 0;
 			}
 
 			int _e_get_location(lua_State* L)
 			{
-				auto pointer = load_entity(L, 1);
-				lua_pushnumber(L, pointer->position.x);
-				lua_pushnumber(L, pointer->position.y);
+				auto e = load_entity(L, 1);
+				lua_pushnumber(L, e->position.x);
+				lua_pushnumber(L, e->position.y);
 				return 2;
 			}
 
 			int _e_kill_component(lua_State* L)
 			{
-				auto pointer = load_entity(L, 1);
+				auto e = load_entity(L, 1);
 				uint32_t id = load_id(L, 2);
-				pointer->kill_component(id);
+				e->kill_component(id);
 				return 0;
 			}
 
