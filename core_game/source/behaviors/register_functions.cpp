@@ -31,9 +31,9 @@ inline behaviors::database* load_database(lua_State* L, int arg_id)
 
 inline uint32_t load_id(lua_State* L, int arg_id)
 {
-	if (lua_isstring(L, arg_id))
-		return ::utilities::hash_string(lua_tostring(L, arg_id));
-	return lua_tointeger(L, arg_id);
+	if (lua_isnumber(L, arg_id) || lua_isinteger(L, arg_id))
+		return lua_tointeger(L, arg_id);
+	return ::utilities::hash_string(lua_tostring(L, arg_id));
 }
 
 template<class comp_class>

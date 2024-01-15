@@ -39,4 +39,5 @@ void entities::components::behavior::call_function(behaviors::functions func)
 			common::behaviors_manager->call();
 			break;
 		}
+	database->purge();
 }
