@@ -7,4 +7,10 @@ namespace entities
 		active_scene = std::make_unique<scene>();
 		return active_scene.get();
 	}
+
+	void world::update()
+	{
+		active_scene->update();
+		persistent_scene->update();
+	}
 }

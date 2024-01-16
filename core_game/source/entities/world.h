@@ -13,5 +13,6 @@ namespace entities
 		std::unique_ptr<scene> active_scene;
 	public:
 		scene* create_active_scene();
+		void update();
 	};
 }

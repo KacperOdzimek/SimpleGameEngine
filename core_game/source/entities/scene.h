@@ -12,8 +12,10 @@ namespace entities
 	{
 		friend entity;
 	protected:
+		int frames_since_purged = 0;
 		std::vector<std::weak_ptr<entity>> entities;
 	public:
+		void update();
 		~scene(); //Make protected and expose to unique<scene>
 	};
 }
