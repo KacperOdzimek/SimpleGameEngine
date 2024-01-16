@@ -18,6 +18,13 @@ namespace behaviors
 				return 0;
 			}
 
+			int _is_e_valid(lua_State* L)
+			{
+				auto e = reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, 1));
+				lua_pushboolean(L, !e->expired());
+				return 1;
+			}
+
 			int _e_set_location(lua_State* L)
 			{
 				auto e = load_entity(L, 1);
@@ -47,6 +54,7 @@ namespace behaviors
 			{
 				lua_register(L, "_e_create", _e_create);
 				lua_register(L, "_e_kill", _e_kill);
+				lua_register(L, "_is_e_valid", _is_e_valid);
 				lua_register(L, "_e_set_location", _e_set_location);
 				lua_register(L, "_e_get_location", _e_get_location);
 				lua_register(L, "_e_kill_component", _e_kill_component);

@@ -5,7 +5,8 @@
 
 entities::entity::entity()
 {
-	self = common::world->active_scene->add_entity(this);
+	self = std::shared_ptr<entity>{ this };
+	common::world->active_scene->entities.push_back(self);
 }
 
 void entities::entity::attach_component(component* comp)
@@ -35,11 +36,11 @@ void entities::entity::kill_component(uint32_t id)
 
 void entities::entity::kill()
 {
+	for (auto& comp : components)
+		delete comp;
 	self.reset();
 }
 
 entities::entity::~entity()
 {
-	for (auto& comp : components)
-		delete comp;
 }

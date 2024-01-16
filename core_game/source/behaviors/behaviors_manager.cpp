@@ -26,7 +26,7 @@ struct behaviors::behaviors_manager::implementation
     uint64_t behaviors_id_iterator = 0;
 
     std::vector<entities::components::behavior*> registered_behaviors;
-    database* active_database = nullptr;
+    std::unique_ptr<database> active_database;
 
     void pcall(int r)
     {
@@ -66,7 +66,9 @@ void behaviors::behaviors_manager::unregister_behavior_component(entities::compo
 void behaviors::behaviors_manager::call_update_functions()
 {
     for (auto& comp : impl->registered_behaviors)
+    {
         comp->call_function(functions::update);
+    }     
 }
 
 std::string behaviors::behaviors_manager::create_behavior(const std::string& file_path)
@@ -109,11 +111,10 @@ void behaviors::behaviors_manager::pass_float_arg(float arg)
     lua_pushnumber(impl->L, arg);
 }
 
-void behaviors::behaviors_manager::prepare_call(behaviors::functions func, assets::behavior* bhv, behaviors::database* database)
+void behaviors::behaviors_manager::prepare_call(behaviors::functions func, assets::behavior* bhv)
 {
     impl->args_counter = 0;
-    impl->active_database = database;
-    behaviors::internal::active_database = database;
+    behaviors::internal::active_database = impl->active_database.get();
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
     switch (func)
     {
@@ -131,4 +132,19 @@ void behaviors::behaviors_manager::call()
     auto err = lua_pcall(impl->L, impl->args_counter, 0, 0);
     if (err != LUA_OK)
         abort(lua_tostring(impl->L, -1) + '\n');
+}
+
+void behaviors::behaviors_manager::pass_database_ownership(std::unique_ptr<behaviors::database>& database)
+{
+    impl->active_database = std::move(database);
+}
+
+std::unique_ptr<behaviors::database> behaviors::behaviors_manager::retrieve_database_ownership()
+{
+    return std::move(impl->active_database);
+}
+
+void behaviors::behaviors_manager::destroy_database()
+{
+    impl->active_database.reset();
 }

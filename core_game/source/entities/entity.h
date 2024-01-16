@@ -16,7 +16,7 @@ namespace entities
 	friend component;
 	protected:
 		std::vector<component*> components;
-		std::weak_ptr<entity> self;
+		std::shared_ptr<entity> self;
 	public:
 		entity();
 		void kill();

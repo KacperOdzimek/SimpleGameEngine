@@ -3,7 +3,7 @@
 
 using namespace entities;
 
-std::weak_ptr<entity>* component::get_owner_weak()
+std::weak_ptr<entity> component::get_owner_weak()
 {
-	return &owner->self;
+	return owner->self;
 }

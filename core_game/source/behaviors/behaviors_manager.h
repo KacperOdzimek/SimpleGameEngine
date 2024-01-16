@@ -36,11 +36,15 @@ namespace behaviors
 		implementation* impl;
 		std::string create_behavior(const std::string& file_path);
 
+		void prepare_call(behaviors::functions func, assets::behavior* bhv);
+		void call();
+
+		void pass_database_ownership(std::unique_ptr<behaviors::database>& database);
+		std::unique_ptr<behaviors::database> retrieve_database_ownership();
+		void destroy_database();
+
 		void pass_pointer_arg(void* arg);
 		void pass_int_arg(uint64_t arg);
 		void pass_float_arg(float arg);
-
-		void prepare_call(behaviors::functions func, assets::behavior* bhv, behaviors::database* database);
-		void call();
 	};
 }

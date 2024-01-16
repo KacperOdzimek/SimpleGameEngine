@@ -18,7 +18,7 @@ namespace entities
 	protected:
 		uint32_t id;
 		entity* owner;
-		std::weak_ptr<entity>* get_owner_weak();
+		std::weak_ptr<entity> get_owner_weak();
 	public:
 		component(uint32_t _id) : id(_id) {};
 		virtual ~component() {};
