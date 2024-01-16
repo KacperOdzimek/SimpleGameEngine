@@ -4,6 +4,7 @@ using namespace entities;
 
 scene::~scene()
 {
-	for (auto& entity : entities)
-		entity.reset();
+	for (auto& e : entities)
+		if (!e.expired())
+			e.lock()->kill();
 }

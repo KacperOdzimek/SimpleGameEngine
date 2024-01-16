@@ -37,6 +37,8 @@ void entities::components::behavior::call_function(behaviors::functions func)
 			common::behaviors_manager->call();
 			break;
 		case behaviors::functions::destroy:
+			if (database.get() != nullptr)
+				common::behaviors_manager->pass_database_ownership(database);
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->call();
@@ -46,7 +48,6 @@ void entities::components::behavior::call_function(behaviors::functions func)
 	if (!owner_weak_ptr.expired())
 	{
 		database = common::behaviors_manager->retrieve_database_ownership();
-		database->purge();
 	}
 	else
 		common::behaviors_manager->destroy_database();

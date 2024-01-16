@@ -58,6 +58,12 @@ int main()
 	cat_entity->attach_component(
 			bhv
 	);
+	/*auto bhv2 = new entities::components::behavior{
+		utilities::hash_string("behavior"),
+		assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string("/behaviors/move_right.json"))) };
+	cat_entity->attach_component(
+		bhv2
+	);*/
 
 	/*
 		Camera Actor
