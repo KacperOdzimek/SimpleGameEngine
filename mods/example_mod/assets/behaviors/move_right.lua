@@ -15,7 +15,7 @@ function on_update(e, dt)
     if _is_e_valid(e) then
         x = _d_get("x"); y = _d_get("y")
         _e_set_location(e, x + math.sin(a), y + math.cos(a))
-        _d_set_f("a", a + 6 * dt)
+        _d_set_f("a", a + 4 * dt)
     end
 end
 

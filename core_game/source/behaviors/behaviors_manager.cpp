@@ -18,13 +18,24 @@ extern "C"
 #include "register_functions.h"
 
 #include <unordered_map>
+#include <vector>
+
+constexpr int purge_triggering_dangling_pointers_amount = 20;
 
 struct behaviors::behaviors_manager::implementation
 {
+    /*
+        L
+        global state in which all game logic takes place
+        -l-
+        owned by behaviors_manager
+    */
     lua_State* L = nullptr;
-    int args_counter = 0;
+    /*
+        behaviors_id_iterator
+        used to name behaviors inside the lua environement
+    */
     uint64_t behaviors_id_iterator = 0;
-
     /*
         registered_behaviors
         set of all behavior components in the scene
@@ -38,8 +49,29 @@ struct behaviors::behaviors_manager::implementation
         the set is then purged from inactive pointers
     */
     std::unordered_map<entities::components::behavior*, bool> registered_behaviors;
+    /*
+        dangling_pointers
+        counter of dangling pointers in registered_behaviors
+        when it become greater than {purge_triggering_dangling_pointers_amount}
+        function {purge_registered_behaviors} is triggered
+    */
+    int dangling_pointers = 0;
+    /*
+        active_database
+        database to which all _d_set_x and _d_get call are forwarded
+        -l-
+        the ownership of the database is moved in here via {pass_database_ownership}
+        before the lua code execution to ensure that database wont be deleted with 
+        the component that normaly owns it
+        if component still exists after execution it can retrieve ownershpi using
+        {retrieve_database_ownership}
+    */
     std::unique_ptr<database> active_database;
 
+    /*
+       protected lua call
+       if function called as this function argument throw an error this error will cause {abort}
+    */
     void pcall(int r)
     {
         if (r != LUA_OK)
@@ -47,6 +79,26 @@ struct behaviors::behaviors_manager::implementation
     }
 };
 
+/*
+    purge_registered_behaviors
+    remove dangling pointers from registered_behaviors
+*/
+inline void purge_registered_behaviors(std::unordered_map<entities::components::behavior*, bool>& _r_b)
+{
+    auto iter = _r_b.begin();
+    while (iter != _r_b.end()) {
+        if (iter->second == false) {
+            iter = _r_b.erase(iter);
+        }
+        else {
+            ++iter;
+        }
+    }
+}
+
+/*
+    allocate implementation and lua_State
+*/
 behaviors::behaviors_manager::behaviors_manager()
 {
     impl = new implementation;
@@ -56,21 +108,24 @@ behaviors::behaviors_manager::behaviors_manager()
     impl->L = L;
 }
 
+/*
+    free implementation and lua_State
+*/
 behaviors::behaviors_manager::~behaviors_manager()
 {
     lua_close(impl->L);
+    delete impl;
 }
 
 void behaviors::behaviors_manager::register_behavior_component(entities::components::behavior* comp)
 {
     impl->registered_behaviors.insert({ comp, true });
-    comp->call_function(functions::init);
 }
 
 void behaviors::behaviors_manager::unregister_behavior_component(entities::components::behavior* comp)
 {
-    comp->call_function(functions::destroy);
     impl->registered_behaviors.at(comp) = false;
+    impl->dangling_pointers++;
 }
 
 void behaviors::behaviors_manager::call_update_functions()
@@ -78,6 +133,8 @@ void behaviors::behaviors_manager::call_update_functions()
     for (auto& behavior : impl->registered_behaviors)
         if (behavior.second)
             behavior.first->call_function(functions::update);
+    if (impl->dangling_pointers > purge_triggering_dangling_pointers_amount)
+        purge_registered_behaviors(impl->registered_behaviors);
 }
 
 std::string behaviors::behaviors_manager::create_behavior(const std::string& file_path)
@@ -104,25 +161,21 @@ std::string behaviors::behaviors_manager::create_behavior(const std::string& fil
 
 void behaviors::behaviors_manager::pass_pointer_arg(void* arg)
 {
-    ++impl->args_counter;
     lua_pushinteger(impl->L, (uint64_t)arg);
 }
 
 void behaviors::behaviors_manager::pass_int_arg(uint64_t arg)
 {
-    ++impl->args_counter;
     lua_pushinteger(impl->L, arg);
 }
 
 void behaviors::behaviors_manager::pass_float_arg(float arg)
 {
-    ++impl->args_counter;
     lua_pushnumber(impl->L, arg);
 }
 
 void behaviors::behaviors_manager::prepare_call(behaviors::functions func, assets::behavior* bhv)
 {
-    impl->args_counter = 0;
     behaviors::internal::active_database = impl->active_database.get();
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
     switch (func)
@@ -136,9 +189,9 @@ void behaviors::behaviors_manager::prepare_call(behaviors::functions func, asset
     }
 }
 
-void behaviors::behaviors_manager::call()
+void behaviors::behaviors_manager::call(int args_amount)
 {
-    auto err = lua_pcall(impl->L, impl->args_counter, 0, 0);
+    auto err = lua_pcall(impl->L, args_amount, 0, 0);
     if (err != LUA_OK)
         abort(lua_tostring(impl->L, -1) + '\n');
 }

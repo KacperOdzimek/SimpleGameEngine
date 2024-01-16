@@ -9,11 +9,13 @@ entities::components::behavior::behavior(uint32_t _id, std::weak_ptr<assets::beh
 
 entities::components::behavior::~behavior()
 {
+	call_function(behaviors::functions::destroy);
 	common::behaviors_manager->unregister_behavior_component(this);
 }
 
 void entities::components::behavior::on_attach()
 {
+	call_function(behaviors::functions::init);
 	common::behaviors_manager->register_behavior_component(this);
 }
 
@@ -27,21 +29,21 @@ void entities::components::behavior::call_function(behaviors::functions func)
 			common::behaviors_manager->pass_database_ownership(database);
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
-			common::behaviors_manager->call();
+			common::behaviors_manager->call(1);
 			break;
 		case behaviors::functions::update:
 			common::behaviors_manager->pass_database_ownership(database);
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->pass_float_arg(common::delta_time);
-			common::behaviors_manager->call();
+			common::behaviors_manager->call(2);
 			break;
 		case behaviors::functions::destroy:
 			if (database.get() != nullptr)
 				common::behaviors_manager->pass_database_ownership(database);
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
-			common::behaviors_manager->call();
+			common::behaviors_manager->call(1);
 			return;	//as destroy may be called during update execution we don't want to purge the database
 		}
 
