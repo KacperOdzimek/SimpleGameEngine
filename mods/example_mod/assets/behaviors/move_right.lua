@@ -15,12 +15,12 @@ function on_update(e, dt)
     if _is_e_valid(e) then
         x = _d_get("x"); y = _d_get("y")
         _e_set_location(e, x + math.sin(a), y + math.cos(a))
-        _d_set_f("a", a + 2 * dt)
+        _d_set_f("a", a + 6 * dt)
     end
 end
 
 function on_destroy(e)
     --print some info
     x, y = _e_get_location(e)
-    io.write("dead with x = "..x..", y ="..y.." and angle = ".._d_get("a").."[radians].")
+    io.write("dead with x = "..x..", y ="..y.." and angle = ".._d_get("a").."[radians].\n")
 end

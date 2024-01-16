@@ -17,7 +17,7 @@ extern "C"
 #include "source/common/abort.h"
 #include "register_functions.h"
 
-#include <vector>
+#include <unordered_map>
 
 struct behaviors::behaviors_manager::implementation
 {
@@ -25,7 +25,19 @@ struct behaviors::behaviors_manager::implementation
     int args_counter = 0;
     uint64_t behaviors_id_iterator = 0;
 
-    std::vector<entities::components::behavior*> registered_behaviors;
+    /*
+        registered_behaviors
+        set of all behavior components in the scene
+        -l-
+        [key]   pointer to the component        (possibly dangling!)
+        [value] is component valid and enabled
+        -l-
+        when component is destroyed, it turns itself off by setting the 
+        assigned value to false in unregister_behavior_component function
+        this way we don't obscure iteration throught registered_behaviors in call_update_functions
+        the set is then purged from inactive pointers
+    */
+    std::unordered_map<entities::components::behavior*, bool> registered_behaviors;
     std::unique_ptr<database> active_database;
 
     void pcall(int r)
@@ -51,24 +63,21 @@ behaviors::behaviors_manager::~behaviors_manager()
 
 void behaviors::behaviors_manager::register_behavior_component(entities::components::behavior* comp)
 {
-    impl->registered_behaviors.push_back(comp);
+    impl->registered_behaviors.insert({ comp, true });
     comp->call_function(functions::init);
 }
 
 void behaviors::behaviors_manager::unregister_behavior_component(entities::components::behavior* comp)
 {
     comp->call_function(functions::destroy);
-    #define target impl->registered_behaviors
-    target.erase(std::remove(target.begin(), target.end(), comp), target.end());
-    #undef target
+    impl->registered_behaviors.at(comp) = false;
 }
 
 void behaviors::behaviors_manager::call_update_functions()
 {
-    for (auto& comp : impl->registered_behaviors)
-    {
-        comp->call_function(functions::update);
-    }     
+    for (auto& behavior : impl->registered_behaviors)
+        if (behavior.second)
+            behavior.first->call_function(functions::update);
 }
 
 std::string behaviors::behaviors_manager::create_behavior(const std::string& file_path)
