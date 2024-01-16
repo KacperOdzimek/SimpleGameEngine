@@ -1,0 +1,16 @@
+{
+    "body_types" : {
+        "body" : 0
+    },
+
+    "collsion_presents" : {
+
+        "body" : {
+            "body_type" : "body",
+            "responses" : {
+                "body" : "collide"
+            }
+        }
+
+    }
+}

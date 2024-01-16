@@ -22,6 +22,11 @@ namespace behaviors
 	class behaviors_manager;
 }
 
+namespace physics
+{
+	class collision_solver;
+}
+
 namespace common
 {
 	extern std::string current_mod_path;
@@ -31,4 +36,5 @@ namespace common
 	extern std::unique_ptr<assets::assets_manager> assets_manager;
 	extern std::unique_ptr<entities::world> world;
 	extern std::unique_ptr<behaviors::behaviors_manager> behaviors_manager;
+	extern std::unique_ptr<physics::collision_solver> collision_solver;
 }

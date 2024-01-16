@@ -5,11 +5,12 @@ function on_init(e)
 end
 
 function on_update(e, dt)
-    --check if should die
     a = _d_get("a")
-    if a > 6.28 then
-        _e_kill(e)
-    end
+
+    --check if should die
+    --if a > 6.28 then
+    --    _e_kill(e)
+    --end
 
     --rotate
     if _is_e_valid(e) then

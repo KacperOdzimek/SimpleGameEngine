@@ -5,6 +5,7 @@
 #include "source/assets/assets_manager.h"
 #include "source/entities/world.h"
 #include "source/behaviors/behaviors_manager.h"
+#include "source/physics/collision_solver.h"
 
 #include <time.h>
 
@@ -13,12 +14,17 @@
 #include "source/components/camera.h"
 #include "source/components/behavior.h"
 #include "source/components/sprite.h"
+#include "source/components/collider.h"
 
 #include "source/assets/texture_asset.h"
 #include "source/assets/behavior_asset.h"
 #include "source/assets/shader_asset.h"
 
 #include "source/utilities/hash_string.h"
+
+#include "source/physics/collision_present.h"
+#include <iostream>
+#include <bitset>
 //
 
 int main()
@@ -33,7 +39,7 @@ int main()
 	common::assets_manager->load_asset_from_json("/behaviors/move_right.json");
 	common::assets_manager->load_asset_from_json("/behaviors/move_left.json");
 
-	auto* scene = common::world->create_active_scene();
+	common::world->create_active_scene();
 
 	/*
 		The Cat
@@ -52,11 +58,23 @@ int main()
 			}
 		)
 	);
-	auto bhv = new entities::components::behavior{
-			utilities::hash_string("behavior"),
-			assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string("/behaviors/move_right.json"))) };
+
+	auto f = common::collision_solver->gen_flag(0, { physics::collision_response::collide });
+
+	auto col = new entities::components::collider
+	{
+		utilities::hash_string("collider1"), f, {1, 1}
+	};
 	cat_entity->attach_component(
-			bhv
+		col
+	);
+	
+	cat_entity->attach_component(
+		new entities::components::behavior
+		{
+			utilities::hash_string("behavior"),
+			assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string("/behaviors/move_right.json"))) 
+		}
 	);
 
 	/*
@@ -77,6 +95,9 @@ int main()
 		common::renderer->collect_geometry_data();
 		common::renderer->render();
 		common::renderer->update_window();
+
+		auto e = common::collision_solver->check_if_in_ray_dir(f, { -16, -0.5 }, { 1, 0 }, col);
+		std::cout << int(uint8_t(e.response)) << "\n";
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;
