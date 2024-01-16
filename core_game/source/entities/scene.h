@@ -2,15 +2,20 @@
 #include "entity.h"
 
 #include <vector>
+#include <memory>
 
 namespace entities
 {
+	class entity;
+
 	class scene
 	{
+		friend entity;
 	protected:
-		std::vector<entity*> entities;
+		int frames_since_purged = 0;
+		std::vector<std::weak_ptr<entity>> entities;
 	public:
-		void add_entity(entity* entity);
-		~scene();
+		void update();
+		~scene(); //Make protected and expose to unique<scene>
 	};
 }

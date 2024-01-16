@@ -26,6 +26,7 @@ namespace common
 {
 	extern std::string current_mod_path;
 	extern double delta_time;
+	extern double pixels_per_world_unit;
 	extern std::unique_ptr<rendering::renderer> renderer;
 	extern std::unique_ptr<assets::assets_manager> assets_manager;
 	extern std::unique_ptr<entities::world> world;

@@ -31,4 +31,14 @@ namespace assets
 	{
 		common::renderer->get_api()->free(_texture);
 	}
+
+	unsigned int texture::get_width()
+	{
+		return _texture->width;
+	}
+
+	unsigned int texture::get_height()
+	{
+		return _texture->height;
+	}
 }

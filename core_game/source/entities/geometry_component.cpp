@@ -1,41 +1,47 @@
 #include "geometry_component.h"
 
-void entities::test_geometry_component::push_geometry(rendering::vertices_buffer_iterator& vertices_buffer, rendering::indicies_buffer_iterator& indicies_buffer)
+namespace entities
 {
-	if (visible)
+	geometry_draw_settings::geometry_draw_settings(
+		std::weak_ptr<assets::shader> _shader,
+		std::vector<std::weak_ptr<assets::texture>> _textures)
 	{
-		vertices_buffer.put(-0.5f + owner->position.x);
-		vertices_buffer.put(-0.5f + owner->position.y);
+		shader = std::shared_ptr<assets::shader>(_shader);
+		for (auto& text : _textures)
+			textures.push_back(std::shared_ptr<assets::texture>(text));
+	}
 
-		vertices_buffer.put(0.0f);
-		vertices_buffer.put(0.0f);
+	geometry_component::geometry_component(uint32_t _id, geometry_draw_settings gds) :
+		component(_id), draw_settings(gds)
+	{
+		draw_settings = gds;
+	};
 
-		vertices_buffer.put(-0.5f + owner->position.x);
-		vertices_buffer.put(0.5f + owner->position.y);
+	geometry_component::~geometry_component()
+	{
+		common::renderer->unregister_geometry_component(this, get_rendering_config());
+	}
 
-		vertices_buffer.put(0.0f);
-		vertices_buffer.put(1.0f);
+	rendering::pipeline_config geometry_component::get_rendering_config()
+	{
+		rendering::pipeline_config x;
+		x.shader = draw_settings.shader.get();
+		for (auto& text : draw_settings.textures)
+		{
+			x.textures.push_back(text.get()->_texture);
+		}
+		return x;
+	}
 
-		vertices_buffer.put(0.5f + owner->position.x);
-		vertices_buffer.put(-0.5f + owner->position.y);
+	void geometry_component::set_draw_settings(geometry_draw_settings new_settings)
+	{
+		common::renderer->unregister_geometry_component(this, get_rendering_config());
+		draw_settings = new_settings;
+		common::renderer->register_geometry_component(this, get_rendering_config());
+	}
 
-		vertices_buffer.put(1.0f);
-		vertices_buffer.put(0.0f);
-
-		vertices_buffer.put(0.5f + owner->position.x);
-		vertices_buffer.put(0.5f + owner->position.y);
-
-		vertices_buffer.put(1.0f);
-		vertices_buffer.put(1.0f);
-
-		indicies_buffer.put(0);
-		indicies_buffer.put(1);
-		indicies_buffer.put(2);
-
-		indicies_buffer.put(1);
-		indicies_buffer.put(2);
-		indicies_buffer.put(3);
-
-		indicies_buffer.offset(4);
+	void geometry_component::on_attach()
+	{
+		common::renderer->register_geometry_component(this, get_rendering_config());
 	}
 }

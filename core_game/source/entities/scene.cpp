@@ -2,13 +2,29 @@
 
 using namespace entities;
 
-void scene::add_entity(entity* entity)
-{
-	entities.push_back(entity);
-}
+constexpr int purge_triggering_dangling_pointers_amount = 5 * 60;
 
 scene::~scene()
 {
-	for (auto& entity : entities)
-		delete entity;
+	for (auto& e : entities)
+		if (!e.expired())
+			e.lock()->kill();
+}
+
+void scene::update()
+{
+    frames_since_purged++;
+	if (frames_since_purged > purge_triggering_dangling_pointers_amount)
+	{
+        frames_since_purged = 0;
+        auto iter = entities.begin();
+        while (iter != entities.end()) {
+            if (iter->expired()) {
+                iter = entities.erase(iter);
+            }
+            else {
+                ++iter;
+            }
+        }
+	}
 }

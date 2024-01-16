@@ -1,5 +1,6 @@
 #pragma once
-#include "source/common/data_types.h"
+#include <cstdint>
+#include <memory>
 
 namespace rendering
 {
@@ -15,8 +16,11 @@ namespace entities
 	{
 		friend entities::entity;
 	protected:
-		entity* owner = nullptr;
+		uint32_t id;
+		entity* owner;
+		std::weak_ptr<entity> get_owner_weak();
 	public:
+		component(uint32_t _id) : id(_id) {};
 		virtual ~component() {};
 		virtual void on_attach() = 0;
 	};

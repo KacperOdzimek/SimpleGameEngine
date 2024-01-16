@@ -27,8 +27,9 @@ namespace assets
 			int width, height;
 			int color_channels;
 		};
-
 		texture(load_data data);
 		~texture();
+		unsigned int get_width();
+		unsigned int get_height();
 	};
 }

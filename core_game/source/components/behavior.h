@@ -3,6 +3,7 @@
 #include "source/entities/component.h"
 
 #include "source/behaviors/behavior_functions.h"
+#include "source/behaviors/behaviors_database.h"
 
 namespace assets
 {
@@ -14,10 +15,12 @@ namespace entities
 	namespace components
 	{
 		class behavior : public entities::component
-		{
-			std::weak_ptr<assets::behavior> behavior_asset;
+		{	
+		protected:
+			std::unique_ptr<behaviors::database> database;
 		public:
-			behavior(std::weak_ptr<assets::behavior> _behavior_asset);
+			std::weak_ptr<assets::behavior> behavior_asset;
+			behavior(uint32_t _id, std::weak_ptr<assets::behavior> _behavior_asset);
 			~behavior();
 			void call_function(behaviors::functions func);
 			virtual void on_attach();
