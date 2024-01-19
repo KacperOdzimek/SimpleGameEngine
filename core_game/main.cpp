@@ -42,40 +42,49 @@ int main()
 	common::world->create_active_scene();
 
 	/*
-		The Cat
+		The Box
 	*/
-	auto cat_entity = new entities::entity;
-	cat_entity->attach_component(
-		new entities::components::sprite
-		(
-			utilities::hash_string("geo"),
-			entities::geometry_draw_settings
-			{ 
-				assets::cast_asset<assets::shader>(common::assets_manager->get_asset(utilities::hash_string("/shaders/cat_shader.json"))), 
-				{ 
-					assets::cast_asset<assets::texture>(common::assets_manager->get_asset(utilities::hash_string("/textures/cat_texture.json"))) 
-				} 
-			}
-		)
-	);
-
-	auto f = common::collision_solver->gen_flag(0, { physics::collision_response::collide });
-
-	auto col = new entities::components::collider
+	auto create_spining_box = [&](glm::vec2 pos, std::string beh_path)
 	{
-		utilities::hash_string("collider1"), f, {1, 1}
-	};
-	cat_entity->attach_component(
-		col
-	);
-	
-	cat_entity->attach_component(
-		new entities::components::behavior
+		auto box = new entities::entity;
+		box->position = pos;
+
+		box->attach_component(
+			new entities::components::sprite
+			(
+				utilities::hash_string("geo"),
+				entities::geometry_draw_settings
 		{
-			utilities::hash_string("behavior"),
-			assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string("/behaviors/move_right.json"))) 
+			assets::cast_asset<assets::shader>(common::assets_manager->get_asset(utilities::hash_string("/shaders/cat_shader.json"))),
+			{
+				assets::cast_asset<assets::texture>(common::assets_manager->get_asset(utilities::hash_string("/textures/cat_texture.json")))
+			}
 		}
-	);
+		)
+		);
+
+		auto f = common::collision_solver->gen_flag(0, { physics::collision_response::collide });
+		auto col = new entities::components::collider
+		{
+			utilities::hash_string("collider1"), f, {0.5f, 0.5f}
+		};
+		box->attach_component(
+			col
+		);
+
+		box->attach_component(
+			new entities::components::behavior
+			{
+				utilities::hash_string("behavior"),
+				assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string(beh_path)))
+			}
+		);
+
+		return std::pair<entities::entity*, entities::components::collider*>{ box, col };
+	};
+
+	auto b1 = create_spining_box({-1.0f, 0.0f}, "/behaviors/move_left.json");
+	auto b2 = create_spining_box({1.0f, 0.0f}, "/behaviors/move_right.json");
 
 	/*
 		Camera Actor
@@ -96,7 +105,7 @@ int main()
 		common::renderer->render();
 		common::renderer->update_window();
 
-		auto e = common::collision_solver->check_if_in_ray_dir(f, { -16, -0.5 }, { 1, 0 }, col);
+		auto e = common::collision_solver->check_if_colliders_collide(b1.second, b2.second);
 		std::cout << int(uint8_t(e.response)) << "\n";
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;

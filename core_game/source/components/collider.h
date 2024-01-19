@@ -13,7 +13,8 @@ namespace entities
 			physics::collision_present present = 0;
 			collider(uint32_t _id, physics::collision_present _present, glm::vec2 _extend) 
 				: component(_id), extend(_extend), present(_present) {};
-			virtual void on_attach() {};
+			~collider();
+			virtual void on_attach();
 			glm::vec2 entity_offset = { 0,0 };
 			glm::vec2 get_world_pos();
 			glm::vec2 extend;
