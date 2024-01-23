@@ -77,6 +77,11 @@ namespace behaviors
 		*/
 		void call(int args_amount);
 		/*
+			abort
+			ends execution of the current lua function
+		*/
+		void abort();
+		/*
 			pass_database_ownership
 			moves database ownership from variable into the behaviors_manager
 		*/

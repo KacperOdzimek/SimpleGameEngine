@@ -27,7 +27,7 @@ namespace entities
 
 		glm::vec2 camera::get_view_center_location()
 		{
-			return { owner->position.x, owner->position.y };
+			return get_owner_location();
 		}
 	}
 }

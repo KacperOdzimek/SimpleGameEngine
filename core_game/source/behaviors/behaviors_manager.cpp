@@ -75,7 +75,7 @@ struct behaviors::behaviors_manager::implementation
     void pcall(int r)
     {
         if (r != LUA_OK)
-            abort(lua_tostring(L, -1));
+            ::abort(lua_tostring(L, -1));
     }
 };
 
@@ -193,7 +193,12 @@ void behaviors::behaviors_manager::call(int args_amount)
 {
     auto err = lua_pcall(impl->L, args_amount, 0, 0);
     if (err != LUA_OK)
-        abort(lua_tostring(impl->L, -1) + '\n');
+        ::abort(lua_tostring(impl->L, -1) + '\n');
+}
+
+void behaviors::behaviors_manager::abort()
+{
+    luaL_dostring(impl->L, "do return end");
 }
 
 void behaviors::behaviors_manager::pass_database_ownership(std::unique_ptr<behaviors::database>& database)

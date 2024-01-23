@@ -3,6 +3,8 @@
 
 #include <list>
 #include <unordered_map>
+#include <set>
+#include <vector>
 
 using collider = entities::components::collider;
 using space_chunk = std::list<collider*>;
@@ -20,14 +22,13 @@ struct chunks_positions_hash {
 	}
 };
 
-//Chunk size in world units
-constexpr float chunk_size = 4;
-
 namespace physics
 {
 	struct collision_solver::implementation
 	{
 		space_chunks chunks;
+		std::vector<collider*> all_colliders;
+
 		void add_collider_to_chunk(collider* c, int chunk_x, int chunk_y)
 		{
 			auto itr = chunks.find({ chunk_x, chunk_y });
@@ -54,6 +55,8 @@ namespace physics
 
 	void collision_solver::register_collider(collider* c)
 	{
+		impl->all_colliders.push_back(c); //Temp
+
 		int local_grid_center_x = floor(c->get_world_pos().x / chunk_size);
 		int local_grid_center_y = floor(c->get_world_pos().y / chunk_size);
 
@@ -160,6 +163,33 @@ namespace physics
 		if (event.distance <= bounded_ray.length())
 			return event;
 		return {};
+	}
+
+	collision_event collision_solver::check_if_collider_collide_on_move(
+		entities::components::collider* moved_collider, glm::vec2 target_location, entities::components::collider* other)
+	{
+		other->extend += moved_collider->extend;
+		auto velocity = target_location - moved_collider->get_world_pos();
+		auto event = check_if_ray_collide(moved_collider->present, moved_collider->get_world_pos(), velocity, other);
+		other->extend -= moved_collider->extend;
+		if (event.distance < 1)	
+			return event;
+		return {};
+	}
+
+	collision_event collision_solver::sweep_move(
+		entities::components::collider* collider, glm::vec2& end_point)
+	{
+		collision_event closest_event;
+		for (auto& c : impl->all_colliders)
+			if (c != collider)
+			{
+				collision_event e = check_if_collider_collide_on_move(collider, end_point, c);
+				if (e.distance < closest_event.distance)
+					closest_event = e;
+			}
+		
+		return closest_event;
 	}
 
 #define set_bit(source, distance_from_end, value) (source |= value << distance_from_end)

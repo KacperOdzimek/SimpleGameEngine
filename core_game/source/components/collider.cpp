@@ -6,12 +6,18 @@
 
 glm::vec2 entities::components::collider::get_world_pos()
 {
-	return owner->position + entity_offset;
+	return get_owner_location() + entity_offset;
 }
 
 void entities::components::collider::on_attach()
 {
 	common::collision_solver->register_collider(this);
+}
+
+void entities::components::collider::on_moved_to_other_chunk()
+{
+	//common::collision_solver->unregister_collider(this);
+	//common::collision_solver->register_collider(this);
 }
 
 entities::components::collider::~collider()

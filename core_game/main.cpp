@@ -47,7 +47,7 @@ int main()
 	auto create_spining_box = [&](glm::vec2 pos, std::string beh_path)
 	{
 		auto box = new entities::entity;
-		box->position = pos;
+		box->teleport(pos);
 
 		box->attach_component(
 			new entities::components::sprite
@@ -75,7 +75,7 @@ int main()
 		box->attach_component(
 			new entities::components::behavior
 			{
-				utilities::hash_string("behavior"),
+				utilities::hash_string("bhv"),
 				assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string(beh_path)))
 			}
 		);
@@ -93,7 +93,7 @@ int main()
 	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 16 };
 	camera_entity->attach_component(camera_comp);
 	common::renderer->set_active_camera(camera_comp);
-	camera_entity->position = { 0, 0 };
+	camera_entity->teleport({ 0.0f,0.0f });
 
 	while (!common::renderer->should_window_close())
 	{
@@ -105,11 +105,9 @@ int main()
 		common::renderer->render();
 		common::renderer->update_window();
 
-		auto e = common::collision_solver->check_if_colliders_collide(b1.second, b2.second);
-		std::cout << int(uint8_t(e.response)) << "\n";
-
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;
+		common::delta_time = 0.02;
 	}
 	common::world.reset();
 	common::assets_manager.reset();

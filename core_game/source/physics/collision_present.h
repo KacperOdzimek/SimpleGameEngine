@@ -24,12 +24,12 @@ namespace physics
 	{
 		collision_response response;
 		entities::components::collider* other;
-		float distance;
+		float distance;;
 		glm::vec2 location;
 		glm::vec2 normal;		
 
 		collision_event() : response(collision_response::ignore), other(nullptr), 
-			distance(0), location({ 0,0 }), normal({ 0,0 }) {};
+			distance(FLT_MAX), location({ 0,0 }), normal({ 0,0 }) {};
 		collision_event(
 			collision_response _resp, entities::components::collider* _other,
 			float _distance, glm::vec2 _location, glm::vec2 _normal) :
