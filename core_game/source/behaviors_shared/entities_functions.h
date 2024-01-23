@@ -1,3 +1,5 @@
+#include "source/components/behavior.h"
+
 namespace behaviors
 {
 	namespace lua_functions
@@ -25,20 +27,30 @@ namespace behaviors
 				return 1;
 			}
 
-			int _e_set_location(lua_State* L)
+			int _e_teleport(lua_State* L)
 			{
 				auto e = load_entity(L, 1);
 				float x = (float)lua_tonumber(L, 2);
 				float y = (float)lua_tonumber(L, 3);
-				e->position = { x, y };
+				e->teleport({ x, y });
 				return 0;
+			}
+
+			int _e_sweep(lua_State* L)
+			{
+				auto e = load_entity(L, 1);
+				float x = (float)lua_tonumber(L, 2);
+				float y = (float)lua_tonumber(L, 3);
+				auto event = e->sweep({ x, y });
+				lua_pushboolean(L, event.response == physics::collision_response::collide);
+				return 1;	//Todo return collsion event
 			}
 
 			int _e_get_location(lua_State* L)
 			{
 				auto e = load_entity(L, 1);
-				lua_pushnumber(L, e->position.x);
-				lua_pushnumber(L, e->position.y);
+				lua_pushnumber(L, e->get_location().x);
+				lua_pushnumber(L, e->get_location().y);
 				return 2;
 			}
 
@@ -55,7 +67,8 @@ namespace behaviors
 				lua_register(L, "_e_create", _e_create);
 				lua_register(L, "_e_kill", _e_kill);
 				lua_register(L, "_is_e_valid", _is_e_valid);
-				lua_register(L, "_e_set_location", _e_set_location);
+				lua_register(L, "_e_teleport", _e_teleport);
+				lua_register(L, "_e_sweep", _e_sweep);
 				lua_register(L, "_e_get_location", _e_get_location);
 				lua_register(L, "_e_kill_component", _e_kill_component);
 			}

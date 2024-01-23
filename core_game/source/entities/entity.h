@@ -1,5 +1,6 @@
 #pragma once
 #include "component.h"
+#include "source/physics/collision_present.h"
 
 #include "include/glm/glm.hpp"
 
@@ -17,10 +18,15 @@ namespace entities
 	protected:
 		std::vector<component*> components;
 		std::shared_ptr<entity> self;
+		glm::vec2 location{ 0.0f, 0.0f };
 	public:
 		entity();
 		void kill();
-		glm::vec2 position{ 0.0f, 0.0f };;
+
+		const glm::vec2& get_location();
+		void teleport(glm::vec2 new_location);
+		physics::collision_event sweep(glm::vec2 new_location);
+
 		void attach_component(component* comp);
 		component* get_component(uint32_t id);
 		void kill_component(uint32_t id);

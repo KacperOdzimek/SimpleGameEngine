@@ -14,26 +14,26 @@ void entities::components::sprite::push_geometry
 
 	if (visible)
 	{
-		vertices_buffer.put(-extend_x + owner->position.x + entity_offset.x);
-		vertices_buffer.put(-extend_y + owner->position.y + entity_offset.y);
+		vertices_buffer.put(-extend_x + get_owner_location().x + entity_offset.x);
+		vertices_buffer.put(-extend_y + get_owner_location().y + entity_offset.y);
 
 		vertices_buffer.put(0.0f);
 		vertices_buffer.put(0.0f);
 
-		vertices_buffer.put(-extend_x + owner->position.x + entity_offset.x);
-		vertices_buffer.put(extend_y + owner->position.y + entity_offset.y);
+		vertices_buffer.put(-extend_x + get_owner_location().x + entity_offset.x);
+		vertices_buffer.put(extend_y + get_owner_location().y + entity_offset.y);
 
 		vertices_buffer.put(0.0f);
 		vertices_buffer.put(1.0f);
 
-		vertices_buffer.put(extend_x + owner->position.x + entity_offset.x);
-		vertices_buffer.put(-extend_y + owner->position.y + entity_offset.y);
+		vertices_buffer.put(extend_x + get_owner_location().x + entity_offset.x);
+		vertices_buffer.put(-extend_y + get_owner_location().y + entity_offset.y);
 
 		vertices_buffer.put(1.0f);
 		vertices_buffer.put(0.0f);
 
-		vertices_buffer.put(extend_x + owner->position.x + entity_offset.x);
-		vertices_buffer.put(extend_y + owner->position.y + entity_offset.y);
+		vertices_buffer.put(extend_x + get_owner_location().x + entity_offset.x);
+		vertices_buffer.put(extend_y + get_owner_location().y + entity_offset.y);
 
 		vertices_buffer.put(1.0f);
 		vertices_buffer.put(1.0f);
