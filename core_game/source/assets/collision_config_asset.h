@@ -30,12 +30,6 @@ namespace assets
 		{
 		}
 
-		physics::collision_preset get_preset(uint32_t hashed_name)
-		{
-			auto itr = collision_presets.find(hashed_name);
-			if (itr == collision_presets.end())
-				return 0;
-			return itr->second;
-		};
+		physics::collision_preset get_preset(uint32_t hashed_name);
 	};
 }

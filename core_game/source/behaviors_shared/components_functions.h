@@ -104,6 +104,22 @@ namespace behaviors
 				return 0;
 			}
 
+			int _c_cl_set_entity_offset(lua_State* L)
+			{
+				auto cl = load_component<::entities::components::collider>(L);
+				cl->entity_offset.x = lua_tonumber(L, 3);
+				cl->entity_offset.y = lua_tonumber(L, 4);
+				return 0;
+			}
+
+			int _c_cl_get_entity_offset(lua_State* L)
+			{
+				auto cl = load_component<::entities::components::collider>(L);
+				lua_pushnumber(L, cl->entity_offset.x);
+				lua_pushnumber(L, cl->entity_offset.y);
+				return 2;
+			}
+
 			/*
 				Register
 			*/
@@ -121,6 +137,8 @@ namespace behaviors
 				lua_register(L, "_c_b_set_behavior", _c_b_set_behavior);
 
 				lua_register(L, "_c_cl_set_collision_preset", _c_cl_set_collision_preset);
+				lua_register(L, "_c_cl_set_entity_offset", _c_cl_set_entity_offset);
+				lua_register(L, "_c_cl_get_entity_offset", _c_cl_get_entity_offset);
 			}
 		}
 	}
