@@ -13,8 +13,8 @@ namespace assets
 	public:
 		assets_manager();
 		~assets_manager();
-		void set_assets_path(std::string assets_global_path);
-		void load_asset_from_json(std::string local_path);
+		void set_mod_path(std::string assets_global_path);
+		void load_asset(std::string local_path);
 		std::weak_ptr<asset> get_asset(uint32_t hashed_name);
 		const std::string& get_assets_path();
 	};

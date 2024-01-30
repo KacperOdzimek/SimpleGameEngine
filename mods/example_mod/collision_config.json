@@ -1,9 +1,11 @@
 {
+    "asset_type" : "collision_config",
+
     "body_types" : {
         "body" : 0
     },
 
-    "collsion_presents" : {
+    "collision_presets" : {
 
         "body" : {
             "body_type" : "body",
@@ -11,6 +13,5 @@
                 "body" : "collide"
             }
         }
-
     }
 }

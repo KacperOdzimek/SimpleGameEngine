@@ -1,6 +1,6 @@
 #pragma once
 #include "component.h"
-#include "source/physics/collision_present.h"
+#include "source/physics/collision.h"
 
 #include "include/glm/glm.hpp"
 

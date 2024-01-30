@@ -22,7 +22,7 @@
 
 #include "source/utilities/hash_string.h"
 
-#include "source/physics/collision_present.h"
+#include "source/physics/collision.h"
 #include <iostream>
 #include <bitset>
 //
@@ -32,12 +32,13 @@ int main()
 	common::renderer->create_window();
 	common::renderer->create_api_instance();
 
-	common::assets_manager->set_assets_path("C:/Projekty/TopDownGame/mods/example_mod/assets");
+	common::assets_manager->set_mod_path("C:/Projekty/TopDownGame/mods/example_mod/");
 
-	common::assets_manager->load_asset_from_json("/shaders/cat_shader.json");
-	common::assets_manager->load_asset_from_json("/textures/cat_texture.json");
-	common::assets_manager->load_asset_from_json("/behaviors/move_right.json");
-	common::assets_manager->load_asset_from_json("/behaviors/move_left.json");
+	common::assets_manager->load_asset("mod/collision_config");
+	common::assets_manager->load_asset("mod/shaders/cat_shader");
+	common::assets_manager->load_asset("mod/textures/cat_texture");
+	common::assets_manager->load_asset("mod/behaviors/move_right");
+	common::assets_manager->load_asset("mod/behaviors/move_left");
 
 	common::world->create_active_scene();
 
@@ -55,15 +56,15 @@ int main()
 				utilities::hash_string("geo"),
 				entities::geometry_draw_settings
 		{
-			assets::cast_asset<assets::shader>(common::assets_manager->get_asset(utilities::hash_string("/shaders/cat_shader.json"))),
+			assets::cast_asset<assets::shader>(common::assets_manager->get_asset(utilities::hash_string("mod/shaders/cat_shader"))),
 			{
-				assets::cast_asset<assets::texture>(common::assets_manager->get_asset(utilities::hash_string("/textures/cat_texture.json")))
+				assets::cast_asset<assets::texture>(common::assets_manager->get_asset(utilities::hash_string("mod/textures/cat_texture")))
 			}
 		}
 		)
 		);
 
-		auto f = common::collision_solver->gen_flag(0, { physics::collision_response::collide });
+		auto f = physics::gen_flag(0, { physics::collision_response::collide });
 		auto col = new entities::components::collider
 		{
 			utilities::hash_string("collider1"), f, {0.5f, 0.5f}
@@ -83,8 +84,8 @@ int main()
 		return std::pair<entities::entity*, entities::components::collider*>{ box, col };
 	};
 
-	auto b1 = create_spining_box({-1.0f, 0.0f}, "/behaviors/move_left.json");
-	auto b2 = create_spining_box({1.0f, 0.0f}, "/behaviors/move_right.json");
+	auto b1 = create_spining_box({-1.0f, 0.0f}, "mod/behaviors/move_left");
+	auto b2 = create_spining_box({1.0f, 0.0f}, "mod/behaviors/move_right");
 
 	/*
 		Camera Actor
@@ -93,7 +94,7 @@ int main()
 	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 16 };
 	camera_entity->attach_component(camera_comp);
 	common::renderer->set_active_camera(camera_comp);
-	camera_entity->teleport({ 0.0f,0.0f });
+	camera_entity->teleport({ 0.0f, 0.0f });
 
 	while (!common::renderer->should_window_close())
 	{

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <array>
+#include "glm/glm.hpp"
 
 namespace entities
 {
@@ -12,8 +13,8 @@ namespace entities
 
 namespace physics
 {
-	using collision_present = uint32_t;
-	constexpr uint8_t collision_present_body_type_size = 4;
+	using collision_preset = uint32_t;
+	constexpr uint8_t collision_preset_body_type_size = 4;
 
 	enum class collision_response : uint8_t
 	{
@@ -35,4 +36,7 @@ namespace physics
 			float _distance, glm::vec2 _location, glm::vec2 _normal) :
 			response(_resp), other(_other), distance(_distance), location(_location), normal(_normal) {};
 	};
+
+	collision_preset gen_flag(uint8_t body_type, std::array<collision_response, 14> responses);
+	collision_response get_response_type(const collision_preset& f1, const collision_preset& f2);
 }

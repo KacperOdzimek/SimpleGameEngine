@@ -1,6 +1,6 @@
 #pragma once
 #include "source/components/collider.h"
-#include "collision_present.h"
+#include "collision.h"
 #include "include/glm/glm.hpp"
 
 namespace physics
@@ -19,7 +19,7 @@ namespace physics
 		void unregister_collider(entities::components::collider* c);
 
 		collision_event check_if_ray_collide(
-			collision_present trace_present, glm::vec2 trace_begin, glm::vec2 trace_dir, entities::components::collider* collider);
+			collision_preset trace_preset, glm::vec2 trace_begin, glm::vec2 trace_dir, entities::components::collider* collider);
 		//Not working
 		collision_event check_if_colliders_collide(
 			entities::components::collider* collider_1, entities::components::collider* collider_2);
@@ -28,8 +28,5 @@ namespace physics
 
 		collision_event sweep_move(
 			entities::components::collider* collider, glm::vec2& end_point);
-
-		collision_present gen_flag(uint8_t body_type, std::array<collision_response, 14> responses);
-		collision_response get_response_type(const collision_present& f1, const collision_present& f2);
 	};
 }
