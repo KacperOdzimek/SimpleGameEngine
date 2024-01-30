@@ -19,10 +19,10 @@ namespace entities
 	protected:
 		uint32_t id;
 		entity* owner;
-		std::weak_ptr<entity> get_owner_weak();
 		glm::vec2& get_owner_location();
 	public:
 		component(uint32_t _id) : id(_id) {};
+		std::weak_ptr<entity> get_owner_weak();
 		virtual ~component() {};
 		virtual void on_attach() = 0;
 	};

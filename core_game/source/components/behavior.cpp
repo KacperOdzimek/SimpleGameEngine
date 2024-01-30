@@ -44,7 +44,19 @@ void entities::components::behavior::call_function(behaviors::functions func)
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->call(1);
-			return;	//as destroy may be called during update execution we don't want to purge the database
+			return;
+		case behaviors::functions::on_overlap:
+			common::behaviors_manager->pass_database_ownership(database);
+			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+
+			common::behaviors_manager->call(2);
+			return;
+		case behaviors::functions::on_collide:
+			common::behaviors_manager->pass_database_ownership(database);
+			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+
+			common::behaviors_manager->call(2);
+			return;
 		}
 
 	if (!owner_weak_ptr.expired())

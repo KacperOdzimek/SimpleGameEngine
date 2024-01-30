@@ -10,8 +10,6 @@ namespace physics
 		struct implementation;
 		implementation* impl;
 	public:
-		static constexpr float chunk_size = 4;
-
 		collision_solver();
 		~collision_solver();
 
@@ -26,7 +24,7 @@ namespace physics
 		collision_event check_if_collider_collide_on_move(
 			entities::components::collider* moved_collider, glm::vec2 target_location, entities::components::collider* other);
 
-		collision_event sweep_move(
+		sweep_move_event sweep_move(
 			entities::components::collider* collider, glm::vec2& end_point);
 	};
 }

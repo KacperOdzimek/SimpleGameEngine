@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <array>
+#include <vector>
 #include "glm/glm.hpp"
 
 namespace entities
@@ -35,6 +36,12 @@ namespace physics
 			collision_response _resp, entities::components::collider* _other,
 			float _distance, glm::vec2 _location, glm::vec2 _normal) :
 			response(_resp), other(_other), distance(_distance), location(_location), normal(_normal) {};
+	};
+
+	struct sweep_move_event
+	{
+		collision_event collide_event;
+		std::vector<collision_event> overlap_events;
 	};
 
 	collision_preset gen_flag(uint8_t body_type, std::array<collision_response, 14> responses);

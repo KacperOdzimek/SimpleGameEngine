@@ -26,3 +26,6 @@ function on_destroy(e)
     x, y = _e_get_location(e)
     io.write("dead with x = "..x..", y ="..y.." and angle = ".._d_get("a").."[radians].\n")
 end
+
+function on_overlap(e, otr)
+end

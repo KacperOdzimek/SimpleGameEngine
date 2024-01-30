@@ -34,10 +34,10 @@ namespace physics
 	#undef channel_id_at_2
 	#undef channel_id_at_2
 
-		if (resp1 + resp2 == 0)
-			return collision_response::ignore;
-		else if (resp1 + resp2 == 4)
+		if (resp1 + resp2 == 4)
 			return collision_response::collide;
+		else if (resp1 == 0 || resp2 == 0)
+			return collision_response::ignore;
 		return collision_response::overlap;
 	}
 }

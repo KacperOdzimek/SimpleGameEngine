@@ -107,18 +107,31 @@ namespace physics
 		return {};
 	}
 
-	collision_event collision_solver::sweep_move(
+	sweep_move_event collision_solver::sweep_move(
 		entities::components::collider* collider, glm::vec2& end_point)
 	{
-		collision_event closest_event;
+		std::vector<collision_event> overlap_events;
+		collision_event collide_event;
 		for (auto& c : impl->all_colliders)
 			if (c != collider)
 			{
 				collision_event e = check_if_collider_collide_on_move(collider, end_point, c);
-				if (e.distance < closest_event.distance)
-					closest_event = e;
+				if (e.response == collision_response::collide && e.distance < collide_event.distance)
+					collide_event = e;
+				else if (e.response == collision_response::overlap)
+					collide_event = e;
 			}
 
-		return closest_event;
+		sweep_move_event sme;
+		sme.collide_event = collide_event;
+
+		if (collide_event.other == nullptr)
+			sme.overlap_events = std::move(overlap_events);
+		else
+			for (auto& event : overlap_events)
+				if (event.distance < sme.collide_event.distance)
+					sme.overlap_events.push_back(event);
+
+		return sme;
 	}
 }

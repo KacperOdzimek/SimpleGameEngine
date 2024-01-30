@@ -4,6 +4,7 @@ namespace behaviors
 {
 	enum class functions
 	{
-		init, update, destroy
+		init, update, destroy,
+		on_overlap, on_collide
 	};
 }
