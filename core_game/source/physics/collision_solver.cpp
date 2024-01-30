@@ -7,42 +7,12 @@
 #include <vector>
 
 using collider = entities::components::collider;
-using space_chunk = std::list<collider*>;
-struct chunks_positions_hash;
-
-using space_chunks = std::unordered_map<std::pair<int, int>, space_chunk, chunks_positions_hash>;
-
-struct chunks_positions_hash {
-	std::size_t operator () (const std::pair<int, int>& p) const {
-		auto h1 = std::hash<int>{}(p.first);
-		auto h2 = std::hash<int>{}(p.second);
-		if (h1 != h2)
-			return h1 ^ h2;
-		return h1;
-	}
-};
 
 namespace physics
 {
 	struct collision_solver::implementation
 	{
-		space_chunks chunks;
 		std::vector<collider*> all_colliders;
-
-		void add_collider_to_chunk(collider* c, int chunk_x, int chunk_y)
-		{
-			auto itr = chunks.find({ chunk_x, chunk_y });
-			if (itr == chunks.end())
-				chunks.insert({ {chunk_x, chunk_y }, {c} });
-			else
-				chunks.at({ chunk_x, chunk_y }).push_back(c);
-		}
-		void remove_collider_from_chunk(collider* c, int chunk_x, int chunk_y)
-		{
-			auto itr = chunks.find({ chunk_x, chunk_y });
-			if (itr != chunks.end())
-				chunks.erase(itr);
-		}
 	};
 
 	collision_solver::collision_solver() :
@@ -55,54 +25,14 @@ namespace physics
 
 	void collision_solver::register_collider(collider* c)
 	{
-		impl->all_colliders.push_back(c); //Temp
-
-		int local_grid_center_x = floor(c->get_world_pos().x / chunk_size);
-		int local_grid_center_y = floor(c->get_world_pos().y / chunk_size);
-
-		auto extend = (c->extend / 2.0f);
-
-		//I
-		auto ver_pos = (c->get_world_pos() + extend) / chunk_size;
-		if (ver_pos.x > local_grid_center_x && ver_pos.y > local_grid_center_y)
-			impl->add_collider_to_chunk(c, local_grid_center_x, local_grid_center_y);
-		//II
-		ver_pos = (c->get_world_pos() + glm::vec2{-extend.x, extend.y}) / chunk_size;
-		if (ver_pos.x < local_grid_center_x && ver_pos.y > local_grid_center_y)
-			impl->add_collider_to_chunk(c, local_grid_center_x - 1, local_grid_center_y);
-		//III
-		ver_pos = (c->get_world_pos() + glm::vec2{-extend.x, -extend.y}) / chunk_size;
-		if (ver_pos.x < local_grid_center_x && ver_pos.y < local_grid_center_y)
-			impl->add_collider_to_chunk(c, local_grid_center_x - 1, local_grid_center_y - 1);
-		//IV
-		ver_pos = (c->get_world_pos() + glm::vec2{extend.x, -extend.y}) / chunk_size;
-		if (ver_pos.x > local_grid_center_x && ver_pos.y < local_grid_center_y)
-			impl->add_collider_to_chunk(c, local_grid_center_x, local_grid_center_y - 1);
+		impl->all_colliders.push_back(c);
 	}
 
 	void collision_solver::unregister_collider(entities::components::collider* c)
 	{
-		int local_grid_center_x = floor(c->get_world_pos().x / chunk_size);
-		int local_grid_center_y = floor(c->get_world_pos().y / chunk_size);
-
-		auto extend = (c->extend / 2.0f);
-
-		//I
-		auto ver_pos = (c->get_world_pos() + extend) / chunk_size;
-		if (ver_pos.x > local_grid_center_x && ver_pos.y > local_grid_center_y)
-			impl->remove_collider_from_chunk(c, local_grid_center_x, local_grid_center_y);
-		//II
-		ver_pos = (c->get_world_pos() + glm::vec2{-extend.x, extend.y}) / chunk_size;
-		if (ver_pos.x < local_grid_center_x && ver_pos.y > local_grid_center_y)
-			impl->remove_collider_from_chunk(c, local_grid_center_x - 1, local_grid_center_y);
-		//III
-		ver_pos = (c->get_world_pos() + glm::vec2{-extend.x, -extend.y}) / chunk_size;
-		if (ver_pos.x < local_grid_center_x && ver_pos.y < local_grid_center_y)
-			impl->remove_collider_from_chunk(c, local_grid_center_x - 1, local_grid_center_y - 1);
-		//IV
-		ver_pos = (c->get_world_pos() + glm::vec2{extend.x, -extend.y}) / chunk_size;
-		if (ver_pos.x > local_grid_center_x && ver_pos.y < local_grid_center_y)
-			impl->remove_collider_from_chunk(c, local_grid_center_x, local_grid_center_y - 1);
+	#define target impl->all_colliders
+	target.erase(std::remove(target.begin(), target.end(), c), target.end());
+	#undef target
 	}
 
 	collision_event collision_solver::check_if_ray_collide(
