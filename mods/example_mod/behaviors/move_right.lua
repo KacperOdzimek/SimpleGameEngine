@@ -8,9 +8,10 @@ function on_update(e, dt)
     a = _d_get("a")
 
     --check if should die
-    --if a > 6.28 then
+    if a > 18 then
     --    _e_kill(e)
-    --end
+        _c_cl_set_collision_preset(e, "collider1", "ignore")
+    end
 
     --rotate
     if _is_e_valid(e) then

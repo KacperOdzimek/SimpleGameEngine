@@ -8,6 +8,7 @@
 
 #include "source/assets/asset.h"
 #include "source/assets/behavior_asset.h"
+#include "source/assets/collision_config_asset.h"
 
 namespace behaviors
 {
@@ -88,6 +89,22 @@ namespace behaviors
 			}
 
 			/*
+				Colider
+			*/
+
+			int _c_cl_set_collision_preset(lua_State* L)
+			{
+				auto ptr = load_component<::entities::components::collider>(L);
+				auto preset = lua_tostring(L, 3);
+
+				auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
+
+				if (ptr != nullptr)
+					ptr->preset = config.lock()->get_preset(utilities::hash_string(preset));
+				return 0;
+			}
+
+			/*
 				Register
 			*/
 
@@ -102,6 +119,8 @@ namespace behaviors
 				lua_register(L, "_c_c_get_active", _c_c_get_active);
 
 				lua_register(L, "_c_b_set_behavior", _c_b_set_behavior);
+
+				lua_register(L, "_c_cl_set_collision_preset", _c_cl_set_collision_preset);
 			}
 		}
 	}

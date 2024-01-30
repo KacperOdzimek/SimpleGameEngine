@@ -12,6 +12,13 @@
             "responses" : {
                 "body" : "collide"
             }
+        },
+
+        "ignore" : {
+            "body_type" : "body",
+            "responses" : {
+                "body" : "ignore"
+            }
         }
     }
 }
