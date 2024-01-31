@@ -119,7 +119,7 @@ namespace physics
 				if (e.response == collision_response::collide && e.distance < collide_event.distance)
 					collide_event = e;
 				else if (e.response == collision_response::overlap)
-					collide_event = e;
+					overlap_events.push_back(std::move(e));
 			}
 
 		sweep_move_event sme;

@@ -23,11 +23,6 @@ void entities::entity::attach_component(component* comp)
 	comp->on_attach();
 }
 
-void entities::entity::call_on_overlap()
-{
-
-}
-
 void entities::entity::call_on_collide(std::weak_ptr<entities::entity> other)
 {
 	for (auto& comp : components)
@@ -35,6 +30,18 @@ void entities::entity::call_on_collide(std::weak_ptr<entities::entity> other)
 		auto behavior = dynamic_cast<components::behavior*>(comp);
 		if (behavior != nullptr)
 			behavior->call_function(behaviors::functions::on_collide, other);
+	}
+}
+
+void entities::entity::call_on_overlap(std::set<std::shared_ptr<entities::entity>*>& overlaping_entities)
+{
+	for (auto& comp : components)
+	{
+		auto behavior = dynamic_cast<components::behavior*>(comp);
+		if (behavior != nullptr)
+			for (auto& e : overlaping_entities)
+				if (e->get() != self.get())
+					behavior->call_function(behaviors::functions::on_overlap, *e);
 	}
 }
 
@@ -67,15 +74,18 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 
 	if (closest_event_id == -1)
 	{
-		std::set<entities::entity*> call_on_overlap;
+		std::set<std::shared_ptr<entities::entity>*> overlaping_entities;
+
 		for (auto& sweep : events)
 			for (auto& ovr : sweep.overlap_events)
-				call_on_overlap.insert(ovr.other->get_owner_weak().lock().get());
+				overlaping_entities.insert(&(ovr.other->get_owner_weak().lock().get()->self));
 
-		for (auto& e : call_on_overlap)
-		{
-			//Overlap
-		}
+		call_on_overlap(overlaping_entities);
+		overlaping_entities.insert(&self);
+
+		for (auto& e : overlaping_entities)
+			if (e->get() != this)
+				(*e)->call_on_overlap(overlaping_entities);
 
 		teleport(new_location);
 		return {};
@@ -84,18 +94,19 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 	{
 		physics::collision_event& collide_event = events.at(closest_event_id).collide_event;
 
-		std::set<entities::entity*> call_on_overlap;
+		std::set<std::shared_ptr<entities::entity>*> overlaping_entities;
+
 		for (auto& sweep : events)
 			for (auto& ovr : sweep.overlap_events)
-			{
-				if (ovr.distance <= collide_event.distance)
-					call_on_overlap.insert(ovr.other->get_owner_weak().lock().get());
-			}	
+				if (ovr.distance < collide_event.distance)		//Check if overlap is closer than collide event
+					overlaping_entities.insert(&(ovr.other->get_owner_weak().lock().get()->self));
 
-		for (auto& e : call_on_overlap)
-		{
-			//Overlap
-		}
+		call_on_overlap(overlaping_entities);
+		overlaping_entities.insert(&self);
+
+		for (auto& e : overlaping_entities)
+			if (e->get() != this)
+				(*e)->call_on_overlap(overlaping_entities);
 
 		teleport(collide_event.location);
 

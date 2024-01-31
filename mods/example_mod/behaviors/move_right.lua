@@ -10,7 +10,7 @@ function on_update(e, dt)
 
     --check if should become collision - invisible
     if a > 18 then
-        _c_cl_set_collision_preset(e, "collider1", "ignore")
+        _c_cl_set_collision_preset(e, "collider1", "overlap")
     end
 
     --rotate
@@ -28,7 +28,7 @@ function on_destroy(e)
 end
 
 function on_collide(e, otr)
-    _e_kill(otr)
+    io.write("collide\n")
 end
 
 function on_overlap(e, otr)
