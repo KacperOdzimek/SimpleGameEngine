@@ -19,6 +19,8 @@ namespace entities
 		std::vector<component*> components;
 		std::shared_ptr<entity> self;
 		glm::vec2 location{ 0.0f, 0.0f };
+		void call_on_overlap();
+		void call_on_collide(std::weak_ptr<entities::entity> other);
 	public:
 		entity();
 		void kill();

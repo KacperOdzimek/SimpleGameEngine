@@ -4,7 +4,7 @@ namespace behaviors
 	{
 		namespace databases
 		{
-#define db internal::active_database
+#define db common::behaviors_manager->get_active_database().lock()
 			int _d_set_f(lua_State* L)
 			{
 				auto id = load_id(L, 1);

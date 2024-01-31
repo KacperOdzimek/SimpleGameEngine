@@ -10,7 +10,7 @@
         "body" : {
             "body_type" : "body",
             "responses" : {
-                "body" : "collide"
+                "body" : "overlap"
             }
         },
 

@@ -19,6 +19,7 @@ extern "C"
 
 #include <unordered_map>
 #include <vector>
+#include <list>
 
 constexpr int purge_triggering_dangling_pointers_amount = 20;
 
@@ -57,16 +58,14 @@ struct behaviors::behaviors_manager::implementation
     */
     int dangling_pointers = 0;
     /*
-        active_database
-        database to which all _d_set_x and _d_get call are forwarded
+        databases_stack
+        locks databases until end of the script execution
         -l-
-        the ownership of the database is moved in here via {pass_database_ownership}
-        before the lua code execution to ensure that database wont be deleted with 
-        the component that normaly owns it
-        if component still exists after execution it can retrieve ownershpi using
-        {retrieve_database_ownership}
+        when behaviors function is called behavior adds shared_ptr of its database to this stack
+        when function ends its execution top pointer is removed from the stack
+        this guarantee that needed databases wont be deleted during the execution
     */
-    std::unique_ptr<database> active_database;
+    std::list<std::shared_ptr<database>> databases_stack;
 
     /*
        protected lua call
@@ -174,9 +173,8 @@ void behaviors::behaviors_manager::pass_float_arg(float arg)
     lua_pushnumber(impl->L, arg);
 }
 
-void behaviors::behaviors_manager::prepare_call(behaviors::functions func, assets::behavior* bhv)
+bool behaviors::behaviors_manager::prepare_call(behaviors::functions func, assets::behavior* bhv)
 {
-    behaviors::internal::active_database = impl->active_database.get();
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
     switch (func)
     {
@@ -186,14 +184,27 @@ void behaviors::behaviors_manager::prepare_call(behaviors::functions func, asset
         lua_getfield(impl->L, -1, "on_update"); break;
     case behaviors::functions::destroy:
         lua_getfield(impl->L, -1, "on_destroy"); break;
+    case behaviors::functions::on_collide:
+        lua_getfield(impl->L, -1, "on_collide"); break;
+    case behaviors::functions::on_overlap:
+        lua_getfield(impl->L, -1, "on_overlap"); break;
     }
+    if (lua_isnil(impl->L, -1))
+    {
+        lua_pop(impl->L, -1);
+        return false;
+    }
+    return true;
 }
 
 void behaviors::behaviors_manager::call(int args_amount)
 {
     auto err = lua_pcall(impl->L, args_amount, 0, 0);
     if (err != LUA_OK)
-        ::abort(lua_tostring(impl->L, -1) + '\n');
+    {
+        std::string error = lua_tostring(impl->L, -1);
+        ::abort(error + '\n');
+    }
 }
 
 void behaviors::behaviors_manager::abort()
@@ -201,17 +212,17 @@ void behaviors::behaviors_manager::abort()
     luaL_dostring(impl->L, "do return end");
 }
 
-void behaviors::behaviors_manager::pass_database_ownership(std::unique_ptr<behaviors::database>& database)
+void behaviors::behaviors_manager::push_database(std::shared_ptr<database> database)
 {
-    impl->active_database = std::move(database);
+    impl->databases_stack.push_back(database);
 }
 
-std::unique_ptr<behaviors::database> behaviors::behaviors_manager::retrieve_database_ownership()
+void behaviors::behaviors_manager::pop_database()
 {
-    return std::move(impl->active_database);
+    impl->databases_stack.pop_back();
 }
 
-void behaviors::behaviors_manager::destroy_database()
+std::weak_ptr<behaviors::database> behaviors::behaviors_manager::get_active_database()
 {
-    impl->active_database.reset();
+    return impl->databases_stack.back();
 }

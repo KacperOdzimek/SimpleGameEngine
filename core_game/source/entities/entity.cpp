@@ -6,6 +6,7 @@
 
 #include "source/physics/collision_solver.h"
 #include "source/components/collider.h"
+#include "source/components/behavior.h"
 
 #include <set>
 
@@ -20,6 +21,21 @@ void entities::entity::attach_component(component* comp)
 	components.push_back(comp);
 	comp->owner = this;
 	comp->on_attach();
+}
+
+void entities::entity::call_on_overlap()
+{
+
+}
+
+void entities::entity::call_on_collide(std::weak_ptr<entities::entity> other)
+{
+	for (auto& comp : components)
+	{
+		auto behavior = dynamic_cast<components::behavior*>(comp);
+		if (behavior != nullptr)
+			behavior->call_function(behaviors::functions::on_collide, other);
+	}
 }
 
 const glm::vec2& entities::entity::get_location()
@@ -82,7 +98,9 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 		}
 
 		teleport(collide_event.location);
-		//Trigger on collide
+
+		call_on_collide(collide_event.other->get_owner_weak());
+		collide_event.other->get_owner_weak().lock()->call_on_collide(this->self);
 
 		return collide_event;
 	}

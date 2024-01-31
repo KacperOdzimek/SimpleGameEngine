@@ -7,6 +7,7 @@ extern "C"
 #include "include/lua_5_4_2/include/lualib.h"
 }
 
+#include "behaviors_manager.h"
 #include "behaviors_database.h"
 
 #include "source/assets/assets_manager.h"
@@ -17,7 +18,7 @@ extern "C"
 #include "source/entities/component.h"
 #include "source/entities/geometry_component.h"
 
-behaviors::database* behaviors::internal::active_database = nullptr;
+#include "source/common/common.h"
 
 inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id)
 {
