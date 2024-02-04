@@ -1,19 +1,19 @@
 #include "assets_manager.h"
 
+#include "source/filesystem/filesystem.h"
+
 #include "source/common/abort.h"
 #include "include/nlohmann/json.hpp"
 
 #include "source/utilities/hash_string.h"
 #include "source/assets/load_asset.h"
 
-#include <fstream>
-
 using namespace assets;
 using json = nlohmann::json;
 
 struct assets_manager::implementation
 {
-    std::string assets_global_path;
+    std::string mod_global_path;
     std::map<uint32_t, std::shared_ptr<asset>> assets;
 };
 
@@ -27,9 +27,9 @@ assets_manager::~assets_manager()
     delete impl;
 }
 
-void assets_manager::set_assets_path(std::string assets_global_path)
+void assets_manager::set_mod_path(std::string assets_global_path)
 {
-    impl->assets_global_path = assets_global_path;
+    impl->mod_global_path = assets_global_path;
 }
 
 std::weak_ptr<asset> assets_manager::get_asset(uint32_t hashed_name)
@@ -37,12 +37,9 @@ std::weak_ptr<asset> assets_manager::get_asset(uint32_t hashed_name)
     return impl->assets.at(hashed_name);
 }
 
-void assets_manager::load_asset_from_json(std::string local_path)
+void assets_manager::load_asset(std::string path)
 {
-    std::ifstream file;
-
-    std::string path = impl->assets_global_path + local_path;
-    file.open(path.c_str());
+    auto file = filesystem::load_json_file_relative_path(path, impl->mod_global_path);
     if (file.fail())
         abort("Missing asset: " + path);
     else
@@ -66,13 +63,16 @@ void assets_manager::load_asset_from_json(std::string local_path)
                 switch (hashed_asset_type)
                 {
                 case utilities::hash_string("texture"):
-                    new_asset = loading::load_texture(impl->assets_global_path, data);
+                    new_asset = loading::load_texture(impl->mod_global_path, data);
                     break;
                 case utilities::hash_string("shader"):
-                    new_asset = loading::load_shader(impl->assets_global_path, data);
+                    new_asset = loading::load_shader(impl->mod_global_path, data);
                     break;
                 case utilities::hash_string("behavior"):
-                    new_asset = loading::load_behavior(impl->assets_global_path, data);
+                    new_asset = loading::load_behavior(impl->mod_global_path, data);
+                    break;
+                case utilities::hash_string("collision_config") :
+                    new_asset = loading::load_collision_config(impl->mod_global_path, data);
                     break;
                 default:
                     abort("Invalid asset: " + path + "\nInvalid asset_type");
@@ -83,7 +83,7 @@ void assets_manager::load_asset_from_json(std::string local_path)
 
                 impl->assets.insert(
                     { 
-                        utilities::hash_string(local_path),
+                        utilities::hash_string(path),
                         new_asset 
                     }
                 );
@@ -94,5 +94,5 @@ void assets_manager::load_asset_from_json(std::string local_path)
 
 const std::string& assets_manager::get_assets_path()
 {
-    return impl->assets_global_path;
+    return impl->mod_global_path;
 }

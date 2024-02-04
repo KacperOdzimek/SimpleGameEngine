@@ -17,12 +17,13 @@ namespace entities
 		class behavior : public entities::component
 		{	
 		protected:
-			std::unique_ptr<behaviors::database> database;
+			std::shared_ptr<behaviors::database> database;
 		public:
 			std::weak_ptr<assets::behavior> behavior_asset;
 			behavior(uint32_t _id, std::weak_ptr<assets::behavior> _behavior_asset);
 			~behavior();
-			void call_function(behaviors::functions func);
+			void call_function(behaviors::functions func, std::weak_ptr<entities::entity> other = {});
+			void call_custom_function(const std::string& name);
 			virtual void on_attach();
 		};
 	}

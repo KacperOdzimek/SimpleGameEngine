@@ -14,12 +14,6 @@ void entities::components::collider::on_attach()
 	common::collision_solver->register_collider(this);
 }
 
-void entities::components::collider::on_moved_to_other_chunk()
-{
-	//common::collision_solver->unregister_collider(this);
-	//common::collision_solver->register_collider(this);
-}
-
 entities::components::collider::~collider()
 {
 	common::collision_solver->unregister_collider(this);

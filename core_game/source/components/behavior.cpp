@@ -19,38 +19,54 @@ void entities::components::behavior::on_attach()
 	common::behaviors_manager->register_behavior_component(this);
 }
 
-void entities::components::behavior::call_function(behaviors::functions func)
+void entities::components::behavior::call_function(behaviors::functions func, std::weak_ptr<entities::entity> other)
 {
+	bool implemented = common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+	if (!implemented)
+		return;
+
 	auto owner_weak_ptr = get_owner_weak();
+	common::behaviors_manager->push_database(database);
+
 	if (!owner_weak_ptr.expired() && !behavior_asset.expired())
 		switch (func)
 		{
 		case behaviors::functions::init:
-			common::behaviors_manager->pass_database_ownership(database);
-			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->call(1);
 			break;
 		case behaviors::functions::update:
-			common::behaviors_manager->pass_database_ownership(database);
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->pass_float_arg(common::delta_time);
 			common::behaviors_manager->call(2);
 			break;
 		case behaviors::functions::destroy:
-			if (database.get() != nullptr)
-				common::behaviors_manager->pass_database_ownership(database);
 			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->call(1);
-			return;	//as destroy may be called during update execution we don't want to purge the database
+			break;
+		case behaviors::functions::on_overlap:
+			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
+			common::behaviors_manager->pass_int_arg((uint64_t)&other);
+			common::behaviors_manager->call(2);
+			break;
+		case behaviors::functions::on_collide:
+			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
+			common::behaviors_manager->pass_int_arg((uint64_t)&other);
+			common::behaviors_manager->call(2);
+			break;
 		}
+	common::behaviors_manager->pop_database();
+}
 
-	if (!owner_weak_ptr.expired())
-	{
-		database = common::behaviors_manager->retrieve_database_ownership();
-	}
-	else
-		common::behaviors_manager->destroy_database();
+void entities::components::behavior::call_custom_function(const std::string& name)
+{
+	auto owner_weak_ptr = get_owner_weak();
+	common::behaviors_manager->push_database(database);
+	common::behaviors_manager->prepare_custom_call(name, this->behavior_asset.lock().get());
+	common::behaviors_manager->call(2);
+	common::behaviors_manager->pop_database();
 }

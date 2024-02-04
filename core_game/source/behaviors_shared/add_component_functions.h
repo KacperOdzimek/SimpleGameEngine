@@ -7,6 +7,7 @@
 #include "source/components/behavior.h"
 #include "source/components/camera.h"
 #include "source/components/sprite.h"
+#include "source/components/collider.h"
 
 namespace behaviors
 {

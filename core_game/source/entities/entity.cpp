@@ -6,6 +6,9 @@
 
 #include "source/physics/collision_solver.h"
 #include "source/components/collider.h"
+#include "source/components/behavior.h"
+
+#include <set>
 
 entities::entity::entity()
 {
@@ -20,6 +23,40 @@ void entities::entity::attach_component(component* comp)
 	comp->on_attach();
 }
 
+void entities::entity::call_on_collide(std::weak_ptr<entities::entity> other)
+{
+	for (auto& comp : components)
+	{
+		auto behavior = dynamic_cast<components::behavior*>(comp);
+		if (behavior != nullptr)
+			behavior->call_function(behaviors::functions::on_collide, other);
+	}
+}
+
+void entities::entity::call_on_overlap(std::set<std::shared_ptr<entities::entity>*>& overlaping_entities)
+{
+	for (auto& comp : components)
+	{
+		auto behavior = dynamic_cast<components::behavior*>(comp);
+		if (behavior != nullptr)
+			for (auto& e : overlaping_entities)
+				if (e->get() != self.get())
+					behavior->call_function(behaviors::functions::on_overlap, *e);
+	}
+}
+
+void entities::entity::call_event(const char* name)
+{
+	std::string event_name = "event_";
+	event_name += name;
+	for (auto& comp : components)
+	{
+		auto behavior = dynamic_cast<components::behavior*>(comp);
+		if (behavior != nullptr)
+			behavior->call_custom_function(event_name);
+	}
+}
+
 const glm::vec2& entities::entity::get_location()
 {
 	return location;
@@ -27,48 +64,69 @@ const glm::vec2& entities::entity::get_location()
 
 void entities::entity::teleport(glm::vec2 new_location)
 {
-	int old_chunk_x = floor(location.x / physics::collision_solver::chunk_size);
-	int old_chunk_y = floor(location.y / physics::collision_solver::chunk_size);
-
-	int new_chunk_x = floor(location.x / physics::collision_solver::chunk_size);
-	int new_chunk_y = floor(location.y / physics::collision_solver::chunk_size);
-
 	location = new_location;
-	if (old_chunk_x != new_chunk_x || old_chunk_y != new_chunk_y)
-		for (auto& c : components)
-		{
-			auto ptr = dynamic_cast<components::collider*>(c);
-			if (ptr != nullptr)
-				ptr->on_moved_to_other_chunk();
-		}
 }
 
 physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 {
-	//TODO RUN ON COLLIDE OR OVERLAP
-	physics::collision_event closest_event;
+	std::vector<physics::sweep_move_event> events;
+	int closest_event_id = -1;
 	components::collider* collider = nullptr;
 	for (auto& c : components)
 	{
 		auto ptr = dynamic_cast<components::collider*>(c);
 		if (ptr != nullptr)
 		{
-			auto e = common::collision_solver->sweep_move(ptr, new_location);
-			if (e.distance < closest_event.distance)
-			{
-				collider = ptr;
-				closest_event = e;
-			}			
+			events.push_back(common::collision_solver->sweep_move(ptr, new_location));
+			if ((closest_event_id == -1 || events.back().collide_event.distance < events.at(closest_event_id).collide_event.distance) 
+				&& events.back().collide_event.other != nullptr)
+				closest_event_id = events.size() - 1;		
 		}
 	}
 
-	if (closest_event.response == physics::collision_response::collide)
+	if (closest_event_id == -1)
 	{
-		teleport(closest_event.location);
-		return closest_event;
+		std::set<std::shared_ptr<entities::entity>*> overlaping_entities;
+
+		for (auto& sweep : events)
+			for (auto& ovr : sweep.overlap_events)
+				overlaping_entities.insert(&(ovr.other->get_owner_weak().lock().get()->self));
+
+		call_on_overlap(overlaping_entities);
+		overlaping_entities.insert(&self);
+
+		for (auto& e : overlaping_entities)
+			if (e->get() != this)
+				(*e)->call_on_overlap(overlaping_entities);
+
+		teleport(new_location);
+		return {};
 	}
-	teleport(new_location);
-	return {};
+	else
+	{
+		physics::collision_event& collide_event = events.at(closest_event_id).collide_event;
+
+		std::set<std::shared_ptr<entities::entity>*> overlaping_entities;
+
+		for (auto& sweep : events)
+			for (auto& ovr : sweep.overlap_events)
+				if (ovr.distance < collide_event.distance)		//Check if overlap is closer than collide event
+					overlaping_entities.insert(&(ovr.other->get_owner_weak().lock().get()->self));
+
+		call_on_overlap(overlaping_entities);
+		overlaping_entities.insert(&self);
+
+		for (auto& e : overlaping_entities)
+			if (e->get() != this)
+				(*e)->call_on_overlap(overlaping_entities);
+
+		teleport(collide_event.location);
+
+		call_on_collide(collide_event.other->get_owner_weak());
+		collide_event.other->get_owner_weak().lock()->call_on_collide(this->self);
+
+		return collide_event;
+	}
 }
 
 entities::component* entities::entity::get_component(uint32_t id)
