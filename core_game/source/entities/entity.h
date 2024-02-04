@@ -33,6 +33,9 @@ namespace entities
 		void attach_component(component* comp);
 		component* get_component(uint32_t id);
 		void kill_component(uint32_t id);
+
+		void call_event(const char* name);
+
 		//Make protected and shared a friend
 		~entity();
 	};
