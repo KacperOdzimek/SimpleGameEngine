@@ -8,13 +8,8 @@ end
 function on_update(e, dt)
     a = _d_get("a")
 
-    --check if should become collision - invisible
-    if a > 18 then
-        _c_cl_set_collision_preset(e, "collider1", "overlap")
-    end
-
     --rotate
-    if _is_e_valid(e) then
+    if _e_is_valid(e) then
         x = _d_get("x"); y = _d_get("y")
         _e_teleport(e, x + math.sin(a), y + math.cos(a))
         _d_set_f("a", a + 4 * dt)
@@ -28,9 +23,8 @@ function on_destroy(e)
 end
 
 function on_collide(e, otr)
-    io.write("collide\n")
+    _e_call(otr, "hit", {15})
 end
 
 function on_overlap(e, otr)
-    io.write("overlap\n")
 end

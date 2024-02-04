@@ -65,10 +65,9 @@ namespace behaviors
 						required to invoke behavior
 		*/
 		std::string create_behavior(const std::string& file_path);
-
 		/*
 			prepare_call
-			informs lua environement about coming behaviors function call
+			informs lua environement about coming behavior function call
 			returns true if function can be called
 			returns false if function is not implemented and futher actions should be abort
 			-l-
@@ -76,6 +75,16 @@ namespace behaviors
 			[bhv]	behavior from which function should be called
 		*/
 		bool prepare_call(behaviors::functions func, assets::behavior* bhv);
+		/*
+			prepare_custom_call
+			informs lua environement about coming behavior function call
+			returns true if function can be called
+			returns false if function is not implemented and futher actions should be abort
+			-l-
+			[func_name]	name of function to be invoken
+			[bhv]		behavior from which function should be called
+		*/
+		bool prepare_custom_call(const std::string& name, assets::behavior* bhv);
 		/*
 			call
 			calls behaviors function

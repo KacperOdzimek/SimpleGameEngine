@@ -61,3 +61,12 @@ void entities::components::behavior::call_function(behaviors::functions func, st
 		}
 	common::behaviors_manager->pop_database();
 }
+
+void entities::components::behavior::call_custom_function(const std::string& name)
+{
+	auto owner_weak_ptr = get_owner_weak();
+	common::behaviors_manager->push_database(database);
+	common::behaviors_manager->prepare_custom_call(name, this->behavior_asset.lock().get());
+	common::behaviors_manager->call(2);
+	common::behaviors_manager->pop_database();
+}

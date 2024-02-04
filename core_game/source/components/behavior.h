@@ -23,6 +23,7 @@ namespace entities
 			behavior(uint32_t _id, std::weak_ptr<assets::behavior> _behavior_asset);
 			~behavior();
 			void call_function(behaviors::functions func, std::weak_ptr<entities::entity> other = {});
+			void call_custom_function(const std::string& name);
 			virtual void on_attach();
 		};
 	}
