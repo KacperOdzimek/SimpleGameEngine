@@ -37,7 +37,11 @@ int main()
 	filesystem::set_core_asset_path("C:/Projekty/TopDownGame/core_game/assets");
 
 	common::assets_manager->load_asset("core/unit_square_mesh");
+	common::assets_manager->lock_asset(utilities::hash_string("core/unit_square_mesh"));
+
 	common::assets_manager->load_asset("mod/collision_config");
+	common::assets_manager->lock_asset(utilities::hash_string("mod/collision_config"));
+
 	common::assets_manager->load_asset("mod/shaders/cat_shader");
 	common::assets_manager->load_asset("mod/textures/cat_texture");
 	common::assets_manager->load_asset("mod/behaviors/move_right");
@@ -99,8 +103,6 @@ int main()
 	common::renderer->set_active_camera(camera_comp);
 	camera_entity->teleport({ 0.0f, 0.0f });
 
-	int frame = 0;
-
 	while (!common::renderer->should_window_close())
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
@@ -115,9 +117,6 @@ int main()
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;
-
-		std::cout << frame << '\n';
-		frame++;
 	}
 	common::world.reset();
 	common::assets_manager.reset();

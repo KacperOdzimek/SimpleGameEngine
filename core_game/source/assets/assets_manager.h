@@ -13,8 +13,13 @@ namespace assets
 	public:
 		assets_manager();
 		~assets_manager();
+
 		void load_asset(std::string local_path);
 		std::weak_ptr<asset> get_asset(uint32_t hashed_name);
+
+		void lock_asset(uint32_t hashed_name);
+		void unlock_asset(uint32_t hashed_name);
+
 		void unload_unreferenced_assets();
 	};
 }

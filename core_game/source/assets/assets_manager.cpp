@@ -17,7 +17,10 @@ struct assets_manager::implementation
     //pointers to just created assets
     //this is cleared every frame, so if loaded asset don't 
     //have reference outside of manager at the end of the frame it will be unloaded
-    std::vector<std::shared_ptr<asset>> protected_assets;
+    std::vector<std::shared_ptr<asset>> new_assets;
+    //assets that are kept alive by asset_manager
+    //to add / remove to this vector use lock_asset / unlock_asset
+    std::map<uint32_t, std::shared_ptr<asset>> locked_assets;
 };
 
 assets_manager::assets_manager()
@@ -92,12 +95,24 @@ void assets_manager::load_asset(std::string path)
         }
     );
 
-    impl->protected_assets.push_back(
+    impl->new_assets.push_back(
         new_asset
     );
 }
 
 void assets_manager::unload_unreferenced_assets()
 {
-    impl->protected_assets.clear();
+    impl->new_assets.clear();
+}
+
+void assets_manager::lock_asset(uint32_t hashed_name)
+{
+    impl->locked_assets.insert({ hashed_name, get_asset(hashed_name).lock() });
+}
+
+void assets_manager::unlock_asset(uint32_t hashed_name)
+{
+    auto itr = impl->locked_assets.find(hashed_name);
+    if (itr != impl->locked_assets.end())
+        impl->locked_assets.erase(itr);
 }
