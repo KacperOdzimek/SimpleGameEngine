@@ -49,5 +49,6 @@ assets::mesh::~mesh()
 {
 	auto api = common::renderer->get_api();
 	api->free(vertices);
-	api->free(indicies);
+	if (indicies != nullptr)
+		api->free(indicies);
 }

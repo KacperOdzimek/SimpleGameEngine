@@ -21,13 +21,8 @@ namespace assets
 	private:
 		graphics_abstraction::texture* _texture;
 	public:
-		struct load_data
-		{
-			void* image_source;
-			int width, height;
-			int color_channels;
-		};
-		texture(load_data data);
+		//data is required to be filesystem::image_file*
+		texture(void* data);
 		~texture();
 		unsigned int get_width();
 		unsigned int get_height();
