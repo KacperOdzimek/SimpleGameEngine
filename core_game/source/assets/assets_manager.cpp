@@ -12,7 +12,12 @@ using namespace assets;
 
 struct assets_manager::implementation
 {
-    std::map<uint32_t, std::shared_ptr<asset>> assets;
+    //pointers to existing / expired assets
+    std::map<uint32_t, std::weak_ptr<asset>> assets;
+    //pointers to just created assets
+    //this is cleared every frame, so if loaded asset don't 
+    //have reference outside of manager at the end of the frame it will be unloaded
+    std::vector<std::shared_ptr<asset>> protected_assets;
 };
 
 assets_manager::assets_manager()
@@ -86,4 +91,13 @@ void assets_manager::load_asset(std::string path)
             new_asset 
         }
     );
+
+    impl->protected_assets.push_back(
+        new_asset
+    );
+}
+
+void assets_manager::unload_unreferenced_assets()
+{
+    impl->protected_assets.clear();
 }

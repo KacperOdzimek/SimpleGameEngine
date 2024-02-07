@@ -83,7 +83,7 @@ namespace behaviors
 				auto ptr = load_component<::entities::components::behavior>(L);
 				auto asset = load_id(L, 3);
 				if (ptr != nullptr)
-					ptr->behavior_asset = ::assets::cast_asset<::assets::behavior>(::common::assets_manager->get_asset(asset));
+					ptr->behavior_asset = ::assets::cast_asset<::assets::behavior>(::common::assets_manager->get_asset(asset)).lock();
 
 				return 0;
 			}

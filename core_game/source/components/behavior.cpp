@@ -3,7 +3,7 @@
 #include "source/behaviors/behaviors_manager.h"
 
 entities::components::behavior::behavior(uint32_t _id, std::weak_ptr<assets::behavior> _behavior_asset) 
-	: component(_id), behavior_asset(_behavior_asset), database(std::make_unique<behaviors::database>())
+	: component(_id), behavior_asset(_behavior_asset.lock()), database(std::make_unique<behaviors::database>())
 {
 }
 
@@ -21,14 +21,14 @@ void entities::components::behavior::on_attach()
 
 void entities::components::behavior::call_function(behaviors::functions func, std::weak_ptr<entities::entity> other)
 {
-	bool implemented = common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+	bool implemented = common::behaviors_manager->prepare_call(func, behavior_asset.get());
 	if (!implemented)
 		return;
 
 	auto owner_weak_ptr = get_owner_weak();
 	common::behaviors_manager->push_database(database);
 
-	if (!owner_weak_ptr.expired() && !behavior_asset.expired())
+	if (!owner_weak_ptr.expired() && behavior_asset)
 		switch (func)
 		{
 		case behaviors::functions::init:
@@ -36,24 +36,24 @@ void entities::components::behavior::call_function(behaviors::functions func, st
 			common::behaviors_manager->call(1);
 			break;
 		case behaviors::functions::update:
-			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+			common::behaviors_manager->prepare_call(func, behavior_asset.get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->pass_float_arg(common::delta_time);
 			common::behaviors_manager->call(2);
 			break;
 		case behaviors::functions::destroy:
-			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+			common::behaviors_manager->prepare_call(func, behavior_asset.get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->call(1);
 			break;
 		case behaviors::functions::on_overlap:
-			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+			common::behaviors_manager->prepare_call(func, behavior_asset.get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->pass_int_arg((uint64_t)&other);
 			common::behaviors_manager->call(2);
 			break;
 		case behaviors::functions::on_collide:
-			common::behaviors_manager->prepare_call(func, behavior_asset.lock().get());
+			common::behaviors_manager->prepare_call(func, behavior_asset.get());
 			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
 			common::behaviors_manager->pass_int_arg((uint64_t)&other);
 			common::behaviors_manager->call(2);
@@ -66,7 +66,7 @@ void entities::components::behavior::call_custom_function(const std::string& nam
 {
 	auto owner_weak_ptr = get_owner_weak();
 	common::behaviors_manager->push_database(database);
-	common::behaviors_manager->prepare_custom_call(name, this->behavior_asset.lock().get());
+	common::behaviors_manager->prepare_custom_call(name, this->behavior_asset.get());
 	common::behaviors_manager->call(2);
 	common::behaviors_manager->pop_database();
 }

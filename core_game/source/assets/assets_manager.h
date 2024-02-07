@@ -15,5 +15,6 @@ namespace assets
 		~assets_manager();
 		void load_asset(std::string local_path);
 		std::weak_ptr<asset> get_asset(uint32_t hashed_name);
+		void unload_unreferenced_assets();
 	};
 }

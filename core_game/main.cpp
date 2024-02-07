@@ -37,7 +37,6 @@ int main()
 	filesystem::set_core_asset_path("C:/Projekty/TopDownGame/core_game/assets");
 
 	common::assets_manager->load_asset("core/unit_square_mesh");
-
 	common::assets_manager->load_asset("mod/collision_config");
 	common::assets_manager->load_asset("mod/shaders/cat_shader");
 	common::assets_manager->load_asset("mod/textures/cat_texture");
@@ -81,7 +80,7 @@ int main()
 			new entities::components::behavior
 			{
 				utilities::hash_string("bhv"),
-				assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string(beh_path)))
+				assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string(beh_path))).lock()
 			}
 		);
 
@@ -100,6 +99,8 @@ int main()
 	common::renderer->set_active_camera(camera_comp);
 	camera_entity->teleport({ 0.0f, 0.0f });
 
+	int frame = 0;
+
 	while (!common::renderer->should_window_close())
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
@@ -110,9 +111,13 @@ int main()
 		common::renderer->render();
 		common::renderer->update_window();
 
+		common::assets_manager->unload_unreferenced_assets();
+
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;
-		common::delta_time = 0.02;
+
+		std::cout << frame << '\n';
+		frame++;
 	}
 	common::world.reset();
 	common::assets_manager.reset();
