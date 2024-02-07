@@ -1,12 +1,13 @@
 #include "load_asset.h"
-#include "source/common/abort.h"
-#include "source/utilities/hash_string.h"
 
-#include "include/stb/stb_image.h"
+#include "source/common/abort.h"
+#include "source/filesystem/filesystem.h"
+#include "source/utilities/hash_string.h"
 
 #include "shader_asset.h"
 #include "texture_asset.h"
 #include "behavior_asset.h"
+#include "mesh_asset.h"
 #include "collision_config_asset.h"
 
 #include <fstream>
@@ -15,104 +16,84 @@ namespace assets
 {
 	namespace loading
 	{
-		std::shared_ptr<asset> load_texture(std::string& assets_folder_path, nlohmann::json& data)
+		std::shared_ptr<asset> load_texture(const load_data& ld)
 		{
+			auto& header = *ld.header_data;
+
 			std::shared_ptr<asset> texture_asset;
 
-			if (!(data.contains("path") && data.at("path").is_string()))
-				abort("Invalid asset: " + assets_folder_path + "\nMissing/Invalid path parameter");
-			else
-			{
-				std::string source_path = data.at("path");
+			if (!(header.contains("path") && header.at("path").is_string()))
+				abort("Invalid texture asset");
 
-				int texture_width, texture_height, color_channels;
-				stbi_set_flip_vertically_on_load(true);
+			std::string source_path = ld.package + std::string(header.at("path"));
+			auto image = filesystem::load_image(source_path);
 
-				unsigned char* image_source = stbi_load((assets_folder_path + source_path).c_str(), 
-					&texture_width, &texture_height, &color_channels, 0);
+			texture_asset = std::make_shared<assets::texture>(image.get());
 
-				if (image_source == nullptr)
-					abort("Invalid asset: " + assets_folder_path + "\nNo image at given path");
-				else
-				{
-					assets::texture::load_data texture_data;
-					texture_data.color_channels = color_channels;
-					texture_data.width = texture_width;
-					texture_data.height = texture_height;
-					texture_data.image_source = image_source;
-					texture_asset = std::make_shared<assets::texture>(texture_data);
-					stbi_image_free(image_source);
-				}
-			}
 			return texture_asset;
 		}
 
-		std::shared_ptr<asset> load_shader(std::string& assets_folder_path, nlohmann::json& data)
+		std::shared_ptr<asset> load_shader(const load_data& ld)
 		{
+			auto& header = *ld.header_data;
+
 			std::vector<std::string> layout = { "" };
 			std::string vertex_code;
 			std::string fragment_code;
 
-			if (!(data.contains("path") && data.at("path").is_string()))
-				abort("Invalid asset: " + assets_folder_path + "\nMissing/Invalid path parameter");
-			else
+			if (!(header.contains("path") && header.at("path").is_string()))
+				abort("Invalid shader asset");
+
+			std::string source_path = ld.package + std::string(header.at("path"));
+			auto source_file = filesystem::load_file(source_path);
+
+			source_file.seekg(0, std::ios::end);
+			size_t size = source_file.tellg();
+			std::string source(size, ' ');
+			source_file.seekg(0);
+			source_file.read(&source[0], size);
+			source_file.close();
+
+			//seek start
+			int i = 0;
+			auto seek_start = [&]()
 			{
-				std::string source_path = data.at("path");
-				std::fstream source_file;
-				source_file.open(assets_folder_path + source_path);
-				if (source_file.fail())
-					abort("Invalid asset: " + assets_folder_path + source_path + "\nNo shader source file at given path");
+				for (; i < source.size(); i++)
+					if (source[i] == '<')
+						break;
+				i++;
+			};
+			seek_start();
+
+			//load layout
+			for (; i < source.size(); i++)
+			{
+				if (source[i] == '>')
+					break;
+				else if (source[i] == ',')
+					layout.push_back("");
+				else if (source[i] != ' ' && source[i] != '\r' && source[i] != '\t' && source[i] != '\n')
+					layout.back().push_back(source[i]);
+			}				
+
+			//load vertex
+			seek_start();
+			for (; i < source.size(); i++)
+			{
+				if (source[i] == '>')
+					break;
 				else
-				{
-					source_file.seekg(0, std::ios::end);
-					size_t size = source_file.tellg();
-					std::string source(size, ' ');
-					source_file.seekg(0);
-					source_file.read(&source[0], size);
-					source_file.close();
+					vertex_code.push_back(source[i]);
+			}
 
-					//seek start
-					int i = 0;
-					auto seek_start = [&]()
-					{
-						for (; i < source.size(); i++)
-							if (source[i] == '<')
-								break;
-						i++;
-					};
-					seek_start();
-
-					//load layout
-					for (; i < source.size(); i++)
-					{
-						if (source[i] == '>')
-							break;
-						else if (source[i] == ',')
-							layout.push_back("");
-						else if (source[i] != ' ' && source[i] != '\r' && source[i] != '\t' && source[i] != '\n')
-							layout.back().push_back(source[i]);
-					}				
-
-					//load vertex
-					seek_start();
-					for (; i < source.size(); i++)
-					{
-						if (source[i] == '>')
-							break;
-						else
-							vertex_code.push_back(source[i]);
-					}
-
-					//load fragment
-					seek_start();
-					for (; i < source.size(); i++)
-					{
-						if (source[i] == '>')
-							break;
-						else
-							fragment_code.push_back(source[i]);
-					}
-				}
+			//load fragment
+			seek_start();
+			for (; i < source.size(); i++)
+			{
+				if (source[i] == '>')
+					break;
+				else
+					fragment_code.push_back(source[i]);
 			}
 		
 			std::vector<uint32_t> hashed_layout;
@@ -122,35 +103,108 @@ namespace assets
 			return std::make_shared<shader>(vertex_code, fragment_code, hashed_layout);
 		}
 
-		std::shared_ptr<asset> load_behavior(std::string& assets_folder_path, nlohmann::json& data)
+		std::shared_ptr<asset> load_behavior(const load_data& ld)
 		{
+			auto& header = *ld.header_data;
+
 			std::shared_ptr<asset> behavior_asset;
 
-			if (!(data.contains("path") && data.at("path").is_string()))
-				abort("Invalid asset: " + assets_folder_path + "\nMissing/Invalid path parameter");
-			else
-			{
-				std::string source_path = data.at("path");
-				behavior_asset = std::make_shared<assets::behavior>(source_path);
-			}
+			if (!(header.contains("path") && header.at("path").is_string()))
+				abort("Invalid behavior asset");
+
+			std::string source_path = ld.package + std::string(header.at("path"));
+			behavior_asset = std::make_shared<assets::behavior>(source_path);
 			
 			return behavior_asset;
 		}
 
-		std::shared_ptr<asset> load_collision_config(std::string& assets_folder_path, nlohmann::json& data)
+		std::shared_ptr<asset> load_mesh(const load_data& ld)
 		{
+			auto& header = *ld.header_data;
+
+			std::shared_ptr<asset> mesh_asset;
+
+			if (!(header.contains("path") && header.at("path").is_string()))
+				abort("Invalid mesh asset");
+
+			std::string source_path = ld.package + std::string(header.at("path"));
+			std::fstream source_file = filesystem::load_file(source_path);
+
+			source_file.seekg(0, std::ios::end);
+			size_t size = source_file.tellg();
+			std::string source(size, ' ');
+			source_file.seekg(0);
+			source_file.read(&source[0], size);
+			source_file.close();
+
+			int i = 0;
+
+			auto seek_start = [&]()
+			{
+				for (; i < source.size(); i++)
+					if (source[i] == '<')
+						break;
+				i++;
+			};
+
+			seek_start();
+
+			std::string current_value;
+			std::vector<float> vertices;
+
+			for (; i < source.size(); i++)
+			{
+				if (source[i] == ',' || source[i] == '>')
+				{
+					vertices.push_back(::atof(current_value.c_str()));
+					current_value.clear();
+				}
+				else if (source[i] != ' ' && source[i] != '\r' && source[i] != '\t' && source[i] != '\n')
+					current_value.push_back(source[i]);
+
+				if (source[i] == '>')
+					break;
+			}
+
+			seek_start();
+
+			std::vector<int> indicies;
+			for (; i < source.size(); i++)
+			{
+				if (source[i] == ',' || source[i] == '>')
+				{
+					vertices.push_back(::atoi(current_value.c_str()));
+					current_value.clear();
+				}
+				else if (source[i] != ' ' && source[i] != '\r' && source[i] != '\t' && source[i] != '\n')
+					current_value.push_back(source[i]);
+
+				if (source[i] == '>')
+					break;
+			}
+
+			if (indicies.size() == 0)
+				return std::make_shared<assets::mesh>(vertices);
+			return std::make_shared<assets::mesh>(vertices, indicies);
+		}
+
+		std::shared_ptr<asset> load_collision_config(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+
 			std::shared_ptr<asset> collision_config_asset;
 
 			//load body_types
 			std::map<uint32_t, uint8_t> body_types_loaded;
 			{
-				auto& body_types = data.at("body_types");
+				auto& body_types = header.at("body_types");
 				if (!body_types.is_object())
-					abort("Invalid asset: " + assets_folder_path + "\nbody_types should be an object");
+					abort("Invalid collision config: \nbody_types should be an object");
+
 				for (auto body_type = body_types.begin(); body_type != body_types.end(); ++body_type)
 				{
 					if (!body_type.value().is_number())
-						abort("Invalid asset: " + assets_folder_path + "\nbody_types element value should be an number");
+						abort("Invalid collision config: \nbody_types element value should be an number");
 					uint8_t value;
 					body_type.value().get_to(value);
 					body_types_loaded.insert({ utilities::hash_string(body_type.key()), value });
@@ -160,14 +214,16 @@ namespace assets
 			//load all collsion_presets
 			std::map<uint32_t, physics::collision_preset> collision_presets_loaded;
 			{
-				auto& collision_presets = data.at("collision_presets");
+				auto& header = *ld.header_data;
+
+				auto& collision_presets = header.at("collision_presets");
 				if (!collision_presets.is_object())
-					abort("Invalid asset: " + assets_folder_path + "\collision_presets should be an object");
+					abort("Invalid collision config: \ncollision_presets should be an object");
 				//load collsion_presets
 				for (auto collision_preset = collision_presets.begin(); collision_preset != collision_presets.end(); ++collision_preset)
 				{
 					if (!collision_preset.value().is_object())
-						abort("Invalid asset: " + assets_folder_path + "\ncollsion presets should be objects made of \n[string] body_type\n[object] responses");
+						abort("Invalid collision config: \ncollsion presets should be objects made of \n[string] body_type\n[object] responses");
 
 					//load collsion_preset::body_type
 					uint8_t body_type_id;
@@ -176,7 +232,7 @@ namespace assets
 						collision_preset.value().at("body_type").get_to(body_type_name);
 						auto bt_id_itr = body_types_loaded.find(utilities::hash_string(body_type_name));
 						if (bt_id_itr == body_types_loaded.end())
-							abort("Invalid asset: " + assets_folder_path + "\ninvalid body_type in collsion preset");
+							abort("Invalid collision config: \ninvalid body_type in collsion preset");
 						body_type_id = bt_id_itr->second;
 					}
 					//load collsion_preset::responses
@@ -184,18 +240,16 @@ namespace assets
 					{
 						auto& responses = collision_preset.value().at("responses");
 						if (!responses.is_object())
-							abort("Invalid asset: " + assets_folder_path + "\nresposnses in collision_presets should be an object");
+							abort("Invalid collision config: \nresposnses in collision_presets should be an object");
 						for (auto response = responses.begin(); response != responses.end(); ++response)
 						{
 							std::string target_body_type = response.key();
 							if (!response.value().is_string())
-								abort(
-									"Invalid asset: " + assets_folder_path + "\nresposnse in collision_presets should either \n\"ignore\" \n\"overlap\" \n\"collide\""
-								);
+								abort("Invalid collision config: \nresposnse in collision_presets should either \n\"ignore\" \n\"overlap\" \n\"collide\"");
 							std::string response_response_type = response.value();
 							auto bt_id_itr = body_types_loaded.find(utilities::hash_string(response.key()));
 							if (bt_id_itr == body_types_loaded.end())
-								abort("Invalid asset: " + assets_folder_path + "\ninvalid body type name in collsion presets response");
+								abort("Invalid collision config: \ninvalid body type name in collsion presets response");
 							uint8_t target_body_type_id = bt_id_itr->second;
 							
 							if (response_response_type == "collide")
@@ -205,7 +259,7 @@ namespace assets
 							else if (response_response_type == "ignore")
 								responses_loaded.at(target_body_type_id) = physics::collision_response::ignore;
 							else
-								abort("Invalid asset: " + assets_folder_path + "\ninvalid response type");
+								abort("Invalid collision config: \ninvalid response type");
 						}
 						collision_presets_loaded.insert({
 							utilities::hash_string(collision_preset.key()), physics::gen_flag(body_type_id, responses_loaded)

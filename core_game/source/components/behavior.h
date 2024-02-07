@@ -19,7 +19,7 @@ namespace entities
 		protected:
 			std::shared_ptr<behaviors::database> database;
 		public:
-			std::weak_ptr<assets::behavior> behavior_asset;
+			std::shared_ptr<assets::behavior> behavior_asset;
 			behavior(uint32_t _id, std::weak_ptr<assets::behavior> _behavior_asset);
 			~behavior();
 			void call_function(behaviors::functions func, std::weak_ptr<entities::entity> other = {});

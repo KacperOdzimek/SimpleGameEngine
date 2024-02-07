@@ -1,9 +1,10 @@
 #include "source/common/common.h"
 #include "source/common/abort.h"
 
-#include "source/rendering/renderer.h"
 #include "source/assets/assets_manager.h"
+#include "source/filesystem/filesystem.h"
 #include "source/entities/world.h"
+#include "source/rendering/renderer.h"
 #include "source/behaviors/behaviors_manager.h"
 #include "source/physics/collision_solver.h"
 
@@ -32,9 +33,15 @@ int main()
 	common::renderer->create_window();
 	common::renderer->create_api_instance();
 
-	common::assets_manager->set_mod_path("C:/Projekty/TopDownGame/mods/example_mod/");
+	filesystem::set_mod_asset_path("C:/Projekty/TopDownGame/mods/example_mod/");
+	filesystem::set_core_asset_path("C:/Projekty/TopDownGame/core_game/assets");
+
+	common::assets_manager->load_asset("core/unit_square_mesh");
+	common::assets_manager->lock_asset(utilities::hash_string("core/unit_square_mesh"));
 
 	common::assets_manager->load_asset("mod/collision_config");
+	common::assets_manager->lock_asset(utilities::hash_string("mod/collision_config"));
+
 	common::assets_manager->load_asset("mod/shaders/cat_shader");
 	common::assets_manager->load_asset("mod/textures/cat_texture");
 	common::assets_manager->load_asset("mod/behaviors/move_right");
@@ -77,7 +84,7 @@ int main()
 			new entities::components::behavior
 			{
 				utilities::hash_string("bhv"),
-				assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string(beh_path)))
+				assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string(beh_path))).lock()
 			}
 		);
 
@@ -106,9 +113,10 @@ int main()
 		common::renderer->render();
 		common::renderer->update_window();
 
+		common::assets_manager->unload_unreferenced_assets();
+
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;
-		common::delta_time = 0.02;
 	}
 	common::world.reset();
 	common::assets_manager.reset();

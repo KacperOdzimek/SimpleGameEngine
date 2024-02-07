@@ -7,9 +7,16 @@ namespace assets
 {
 	namespace loading
 	{
-		std::shared_ptr<asset> load_texture(std::string& assets_folder_path, nlohmann::json& data);
-		std::shared_ptr<asset> load_shader(std::string& assets_folder_path, nlohmann::json& data);
-		std::shared_ptr<asset> load_behavior(std::string& assets_folder_path, nlohmann::json& data);
-		std::shared_ptr<asset> load_collision_config(std::string& assets_folder_path, nlohmann::json& data);
+		struct load_data
+		{
+			const nlohmann::json* header_data;
+			std::string package;
+		};
+
+		std::shared_ptr<asset> load_texture(const load_data& data);
+		std::shared_ptr<asset> load_shader(const load_data& data);
+		std::shared_ptr<asset> load_behavior(const load_data& data);
+		std::shared_ptr<asset> load_mesh(const load_data& data);
+		std::shared_ptr<asset> load_collision_config(const load_data& data);
 	}
 }

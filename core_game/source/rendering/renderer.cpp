@@ -24,7 +24,7 @@ struct renderer::implementation
 
     graphics_abstraction::api* api = nullptr;;
 
-    graphics_abstraction::textures_selection* textures = nullptr;;
+    graphics_abstraction::textures_set* textures = nullptr;;
 
     graphics_abstraction::framebuffer* pre_postprocess_buffer = nullptr;;
     graphics_abstraction::texture* pre_postprocess_buffer_color = nullptr;;
@@ -133,8 +133,8 @@ void renderer::create_api_instance()
     impl->api = new graphics_abstraction::implementations::opengl_3_3_api::opengl_3_3_api;
     if (impl->api == nullptr)
         abort("Cannot create api instance");
-    impl->textures = reinterpret_cast<graphics_abstraction::textures_selection*>(
-        impl->api->build(impl->api->create_textures_selection_builder())
+    impl->textures = reinterpret_cast<graphics_abstraction::textures_set*>(
+        impl->api->build(impl->api->create_textures_set_builder())
     );
     create_main_renderbuffer();
 

@@ -8,6 +8,7 @@ extern "C"
 }
 
 #include "source/common/common.h"
+#include "source/filesystem/filesystem.h"
 
 #include "source/assets/assets_manager.h"
 #include "source/assets/behavior_asset.h"
@@ -142,9 +143,9 @@ std::string behaviors::behaviors_manager::create_behavior(const std::string& fil
     impl->behaviors_id_iterator++;
 
     auto& L = impl->L;
-    std::string file = common::assets_manager->get_assets_path() + file_path.c_str();
+    std::string path = filesystem::get_global_path(file_path);
 
-    impl->pcall(luaL_loadfile(L, file.c_str()));
+    impl->pcall(luaL_loadfile(L, path.c_str()));
     lua_newtable(L);
     lua_newtable(L);
     lua_getglobal(L, "_G");
