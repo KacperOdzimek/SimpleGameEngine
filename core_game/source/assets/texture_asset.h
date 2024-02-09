@@ -3,9 +3,9 @@
 #include "asset.h"
 #include <vector>
 
-namespace entities
+namespace rendering
 {
-	class geometry_component;
+	class renderer;
 }
 
 namespace graphics_abstraction
@@ -17,7 +17,7 @@ namespace assets
 {
 	struct texture : public asset
 	{
-		friend entities::geometry_component;
+		friend rendering::renderer;
 	private:
 		graphics_abstraction::texture* _texture;
 	public:

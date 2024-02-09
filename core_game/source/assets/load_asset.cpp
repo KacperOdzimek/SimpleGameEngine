@@ -156,7 +156,8 @@ namespace assets
 			{
 				if (source[i] == ',' || source[i] == '>')
 				{
-					vertices.push_back(::atof(current_value.c_str()));
+					if (!current_value.empty())
+						vertices.push_back(::atof(current_value.c_str()));
 					current_value.clear();
 				}
 				else if (source[i] != ' ' && source[i] != '\r' && source[i] != '\t' && source[i] != '\n')
@@ -173,7 +174,8 @@ namespace assets
 			{
 				if (source[i] == ',' || source[i] == '>')
 				{
-					vertices.push_back(::atoi(current_value.c_str()));
+					if (!current_value.empty())
+						indicies.push_back(::atoi(current_value.c_str()));
 					current_value.clear();
 				}
 				else if (source[i] != ' ' && source[i] != '\r' && source[i] != '\t' && source[i] != '\n')

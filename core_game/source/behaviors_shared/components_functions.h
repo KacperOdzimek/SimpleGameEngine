@@ -20,7 +20,7 @@ namespace behaviors
 				Geometry
 			*/
 
-			int _c_g_set_entity_offset(lua_State* L)
+			/*int _c_g_set_entity_offset(lua_State* L)
 			{
 				auto geo = load_component<::entities::components::sprite>(L);
 				geo->entity_offset.x = lua_tonumber(L, 3);
@@ -34,7 +34,7 @@ namespace behaviors
 				lua_pushnumber(L, geo->entity_offset.x);
 				lua_pushnumber(L, geo->entity_offset.y);
 				return 2;
-			}
+			}*/
 
 			/*
 				Camera
@@ -126,8 +126,8 @@ namespace behaviors
 
 			void register_functions(lua_State* L)
 			{
-				lua_register(L, "_c_g_set_entity_offset", _c_g_set_entity_offset);
-				lua_register(L, "_c_g_get_entity_offset", _c_g_get_entity_offset);
+				//lua_register(L, "_c_g_set_entity_offset", _c_g_set_entity_offset);
+				//lua_register(L, "_c_g_get_entity_offset", _c_g_get_entity_offset);
 
 				lua_register(L, "_c_c_set_ortho_width", _c_c_set_ortho_width);
 				lua_register(L, "_c_c_get_ortho_width", _c_c_get_ortho_width);

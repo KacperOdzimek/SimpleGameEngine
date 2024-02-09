@@ -6,7 +6,6 @@
 
 #include "source/components/behavior.h"
 #include "source/components/camera.h"
-#include "source/components/sprite.h"
 #include "source/components/collider.h"
 
 namespace behaviors
@@ -46,7 +45,7 @@ namespace behaviors
 				return 0;
 			}
 
-			int _e_add_sprite(lua_State* L)
+			/*int _e_add_sprite(lua_State* L)
 			{
 				auto e = load_entity(L, 1);
 				uint32_t id = load_id(L, 2);
@@ -59,13 +58,13 @@ namespace behaviors
 				);
 
 				return 0;
-			}
+			}*/
 
 			void register_functions(lua_State* L)
 			{
 				lua_register(L, "_e_add_behavior", _e_add_behavior);
 				lua_register(L, "_e_add_camera", _e_add_camera);
-				lua_register(L, "_e_add_sprite", _e_add_sprite);
+				//lua_register(L, "_e_add_sprite", _e_add_sprite);
 			}
 		}
 	}

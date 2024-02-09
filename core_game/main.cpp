@@ -11,10 +11,9 @@
 #include <time.h>
 
 //Can be removed in final version
-#include "source/entities/geometry_component.h"
+#include "source/components/mesh.h"
 #include "source/components/camera.h"
 #include "source/components/behavior.h"
-#include "source/components/sprite.h"
 #include "source/components/collider.h"
 
 #include "source/assets/texture_asset.h"
@@ -31,7 +30,7 @@
 int main()
 {
 	common::renderer->create_window();
-	common::renderer->create_api_instance();
+	common::renderer->initialize();
 
 	filesystem::set_mod_asset_path("C:/Projekty/TopDownGame/mods/example_mod/");
 	filesystem::set_core_asset_path("C:/Projekty/TopDownGame/core_game/assets");
@@ -57,19 +56,16 @@ int main()
 		auto box = new entities::entity;
 		box->teleport(pos);
 
-		box->attach_component(
-			new entities::components::sprite
-			(
-				utilities::hash_string("geo"),
-				entities::geometry_draw_settings
-		{
+		auto mesh = new entities::components::mesh{ 
+			utilities::hash_string("mesh"), 
+			assets::cast_asset<assets::mesh>(common::assets_manager->get_asset(utilities::hash_string("core/unit_square_mesh"))),
 			assets::cast_asset<assets::shader>(common::assets_manager->get_asset(utilities::hash_string("mod/shaders/cat_shader"))),
 			{
-				assets::cast_asset<assets::texture>(common::assets_manager->get_asset(utilities::hash_string("mod/textures/cat_texture")))
+				assets::cast_asset<assets::texture>(common::assets_manager->get_asset(utilities::hash_string("mod/textures/cat_texture"))),
 			}
-		}
-		)
-		);
+		};
+
+		box->attach_component(mesh);
 
 		auto f = physics::gen_flag(0, { physics::collision_response::collide });
 		auto col = new entities::components::collider
@@ -109,7 +105,7 @@ int main()
 
 		common::behaviors_manager->call_update_functions();
 
-		common::renderer->collect_geometry_data();
+		common::renderer->update_transformations();
 		common::renderer->render();
 		common::renderer->update_window();
 

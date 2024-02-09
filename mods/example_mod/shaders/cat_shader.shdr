@@ -6,6 +6,12 @@
     #version 330 core
     layout (location = 0) in vec2 aPos;
     layout (location = 1) in vec2 aTexCoord;
+    struct instanceData
+    {
+        vec2 pos;
+        vec2 scale;
+    };
+    layout (location = 2) in instanceData aInstance;
 
     out vec2 TexCoord;
     uniform mat4 itr_projection;
@@ -13,7 +19,8 @@
 
     void main()
     {
-        gl_Position = (vec4(aPos, 0.0, 1.0) - itr_camera_location) * itr_projection;
+        vec2 transformed_pos = (aPos + aInstance.pos) * aInstance.scale;
+        gl_Position = (vec4(transformed_pos, 0.0, 1.0) - itr_camera_location) * itr_projection;
         TexCoord = aTexCoord;
     }
 >
