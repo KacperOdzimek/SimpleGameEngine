@@ -228,9 +228,10 @@ void renderer::register_mesh_component(entities::components::mesh* mesh)
     if (itr == impl->pipelines.end())
     {
         auto bb = impl->api->create_buffer_builder();
-        //1024 objects
-        //todo resizing
-        bb->size = 1024 * 16;
+        //at default each pipeline can draw 64 meshes at once
+        //if this initial buffer turns out to be to small new bigger buffer will be allocated
+        //(see renderer::update_transformations)
+        bb->size = impl->transformations_buffer_layout->get_vertex_size() * 64;
         bb->buffer_type = graphics_abstraction::buffer_type::instanced;
 
         implementation::geometry geo;
@@ -274,17 +275,28 @@ void renderer::update_transformations()
     {
         if (!pipeline.second.should_reload_transformations)
             continue;
+        pipeline.second.should_reload_transformations = false;
+
+        uint32_t buffer_size = pipeline.second.transformations_buffer->get_size();
 
         void* buffer_begin = pipeline.second.transformations_buffer->open_data_stream();
         transformations_buffer_iterator tbi{ buffer_begin };
 
         for (auto& mesh : pipeline.second.meshes)
+        {
             mesh->pass_transformation(tbi);
+            if (buffer_size - tbi.get_data_size() < impl->transformations_buffer_layout->get_vertex_size())
+            {
+                pipeline.second.transformations_buffer->reallocate(
+                    int(pipeline.second.meshes.size() * 1.5) * impl->transformations_buffer_layout->get_vertex_size()
+                );
+                pipeline.second.should_reload_transformations = true;
+                break;
+            }
+        }
 
         pipeline.second.visible_instances = tbi.get_data_size() / impl->transformations_buffer_layout->get_vertex_size();
         pipeline.second.transformations_buffer->close_data_stream();
-
-        pipeline.second.should_reload_transformations = false;
     }
 }
 
