@@ -10,15 +10,25 @@ namespace rendering
 		void* current_position;
 	public:
 		transformations_buffer_iterator(void* _begining) : begining(_begining), current_position(_begining) {};
-		void put(float&& v)
-		{
-			*(reinterpret_cast<float*>(current_position)) = std::move(v);
-			current_position = reinterpret_cast<float*>(current_position) + 1;
-		}
-		void put(float& v)
+		inline void put(float&& v)
 		{
 			*(reinterpret_cast<float*>(current_position)) = v;
 			current_position = reinterpret_cast<float*>(current_position) + 1;
+		}
+		inline void put(float& v)
+		{
+			*(reinterpret_cast<float*>(current_position)) = v;
+			current_position = reinterpret_cast<float*>(current_position) + 1;
+		}
+		inline void put(int&& v)
+		{
+			*(reinterpret_cast<int*>(current_position)) = v;
+			current_position = reinterpret_cast<int*>(current_position) + 1;
+		}
+		inline void put(int& v)
+		{
+			*(reinterpret_cast<int*>(current_position)) = v;
+			current_position = reinterpret_cast<int*>(current_position) + 1;
 		}
 		uint32_t get_data_size()
 		{

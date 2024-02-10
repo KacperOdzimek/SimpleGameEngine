@@ -77,31 +77,17 @@ namespace physics
 		return e;
 	}
 
-	collision_event collision_solver::check_if_colliders_collide(
-		collider* collider_1, collider* collider_2)
-	{
-		glm::vec2 ray = collider_2->get_world_pos() - collider_1->get_world_pos();
-
-		auto event = check_if_ray_collide(
-			collider_1->preset, collider_1->get_world_pos(), glm::normalize(ray), collider_2
-		);
-
-		glm::vec2 bounded_ray = glm::vec2{
-			std::min(collider_1->extend.x, ray.x), std::min(collider_1->extend.y, ray.y)
-		};
-
-		if (event.distance <= bounded_ray.length())
-			return event;
-		return {};
-	}
-
 	collision_event collision_solver::check_if_collider_collide_on_move(
 		entities::components::collider* moved_collider, glm::vec2 target_location, entities::components::collider* other)
 	{
+		if (moved_collider->get_layer() != other->get_layer())
+			return {};
+
 		other->extend += moved_collider->extend;
 		auto velocity = target_location - moved_collider->get_world_pos();
 		auto event = check_if_ray_collide(moved_collider->preset, moved_collider->get_world_pos(), velocity, other);
 		other->extend -= moved_collider->extend;
+
 		if (event.distance < 1)
 			return event;
 		return {};

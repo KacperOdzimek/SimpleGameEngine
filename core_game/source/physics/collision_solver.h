@@ -18,9 +18,6 @@ namespace physics
 
 		collision_event check_if_ray_collide(
 			collision_preset trace_preset, glm::vec2 trace_begin, glm::vec2 trace_dir, entities::components::collider* collider);
-		//Not working
-		collision_event check_if_colliders_collide(
-			entities::components::collider* collider_1, entities::components::collider* collider_2);
 		collision_event check_if_collider_collide_on_move(
 			entities::components::collider* moved_collider, glm::vec2 target_location, entities::components::collider* other);
 

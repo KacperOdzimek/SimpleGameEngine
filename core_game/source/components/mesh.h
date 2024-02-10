@@ -22,12 +22,12 @@ namespace entities
 		{
 			friend rendering::renderer;
 		protected:
-			glm::vec2 offset = { 0, 0 };
-			glm::vec2 scale = { 1, 1 };
 			rendering::render_config _config;
 			void pass_transformation(rendering::transformations_buffer_iterator& tbi);
 		public:
 			bool visible = true;
+			glm::vec2 offset = { 0, 0 };
+			glm::vec2 scale = { 1, 1 };
 			mesh(
 				uint32_t _id,
 				std::weak_ptr<assets::mesh> _mesh,

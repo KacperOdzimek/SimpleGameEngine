@@ -23,6 +23,8 @@ namespace entities
 		void call_on_overlap(std::set<std::shared_ptr<entities::entity>*>& overlaping_entities);
 		void call_on_collide(std::weak_ptr<entities::entity> other);
 	public:
+		uint8_t layer = 0;
+
 		entity();
 		void kill();
 
@@ -33,7 +35,6 @@ namespace entities
 		void attach_component(component* comp);
 		component* get_component(uint32_t id);
 		void kill_component(uint32_t id);
-
 		void call_event(const char* name);
 
 		//Make protected and shared a friend

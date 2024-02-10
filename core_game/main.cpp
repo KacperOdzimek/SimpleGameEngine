@@ -67,7 +67,7 @@ int main()
 
 		box->attach_component(mesh);
 
-		auto f = physics::gen_flag(0, { physics::collision_response::collide });
+		auto f = physics::gen_flag(0, { physics::collision_response::ignore });
 		auto col = new entities::components::collider
 		{
 			utilities::hash_string("collider1"), f, {0.5f, 0.5f}
@@ -88,6 +88,8 @@ int main()
 	};
 
 	auto b1 = create_spining_box({-1.0f, 0.0f}, "mod/behaviors/move_left");
+	dynamic_cast<entities::components::mesh*>(b1.first->get_component(utilities::hash_string("mesh")))->scale = { 0.8, 0.8 };
+	b1.first->layer = 1;
 	auto b2 = create_spining_box({1.0f, 0.0f}, "mod/behaviors/move_right");
 
 	/*
@@ -97,6 +99,8 @@ int main()
 	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 16 };
 	camera_entity->attach_component(camera_comp);
 	common::renderer->set_active_camera(camera_comp);
+	camera_comp->rendered_layers = 2;
+	camera_entity->layer = 0;
 	camera_entity->teleport({ 0.0f, 0.0f });
 
 	while (!common::renderer->should_window_close())

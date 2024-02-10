@@ -186,9 +186,11 @@ void renderer::initialize()
         graphics_abstraction::data_type::vec2
     };
     impl->screen_quad_vertices_layout = reinterpret_cast<graphics_abstraction::vertex_layout*>(impl->api->build(vlb, false));
+
     vlb->vertex_components = {
-        graphics_abstraction::data_type::vec2,
-        graphics_abstraction::data_type::vec2
+        graphics_abstraction::data_type::vec2,  //Instance World Position
+        graphics_abstraction::data_type::vec2,  //Instance Scale
+        graphics_abstraction::data_type::Int    //Instance Layer
     };
     impl->transformations_buffer_layout = reinterpret_cast<graphics_abstraction::vertex_layout*>(impl->api->build(vlb));
 
@@ -278,14 +280,20 @@ void renderer::render()
 
     auto screen_framebuffer = impl->pre_postprocess_buffer;
     impl->api->bind(screen_framebuffer);
+
+    impl->api->set_enabled(graphics_abstraction::functionalities::depth_testing, true);
+
     screen_framebuffer->clear_color_buffers(0.0f, 0.2f, 0.1f, 1.0f);
     screen_framebuffer->clear_depth_buffer();
     screen_framebuffer->clear_stencil_buffer();
+
     impl->api->bind(impl->textures);
 
     auto projection = impl->active_camera->get_projection();
     auto camera_view_center_v2 = impl->active_camera->get_view_center_location();
     glm::vec4 camera_view_center_v4 = { camera_view_center_v2.x, camera_view_center_v2.y , 0, 0 };
+    auto deepest_layer = impl->active_camera->get_deepest_rendered_layer();
+    int max_layer = impl->active_camera->rendered_layers;
 
     for (auto& pipeline : impl->pipelines)
     {
@@ -295,6 +303,10 @@ void renderer::render()
                 "itr_projection", graphics_abstraction::data_type::mat4x4, glm::value_ptr(projection));
             pipeline.first.material->_shader->set_uniform_value(
                 "itr_camera_location", graphics_abstraction::data_type::vec4, glm::value_ptr(camera_view_center_v4));
+            pipeline.first.material->_shader->set_uniform_value(
+                "itr_deepest_layer", graphics_abstraction::data_type::Int, &deepest_layer);
+            pipeline.first.material->_shader->set_uniform_value(
+                "itr_max_layer", graphics_abstraction::data_type::Int, &max_layer);
 
             impl->api->bind(pipeline.first.material->_shader);
             impl->api->bind(pipeline.first.material->vertex_layout);
@@ -348,7 +360,11 @@ void renderer::render()
     impl->api->bind(impl->screen_quad_vertices_layout);
 
     impl->textures->set_selection({ impl->pre_postprocess_buffer_color });
+
+    impl->api->set_enabled(graphics_abstraction::functionalities::depth_testing, false);
+
     impl->api->apply_bindings();
+
     impl->api->draw(graphics_abstraction::draw_args{
         graphics_abstraction::draw_types::array,
         graphics_abstraction::primitives::triangle_strip,

@@ -33,6 +33,7 @@ void entities::components::mesh::pass_transformation(rendering::transformations_
 {
 	if (visible)
 	{
+
 		glm::vec2 location = owner->get_location() + offset;
 
 		tbi.put(std::move(location.x));
@@ -40,5 +41,7 @@ void entities::components::mesh::pass_transformation(rendering::transformations_
 
 		tbi.put(scale.x);
 		tbi.put(scale.y);
+
+		tbi.put(owner->layer);
 	}
 }
