@@ -7,6 +7,7 @@
 #include "source/physics/collision_solver.h"
 #include "source/components/collider.h"
 #include "source/components/behavior.h"
+#include "source/components/mesh.h"
 
 #include <set>
 
@@ -65,6 +66,15 @@ const glm::vec2& entities::entity::get_location()
 void entities::entity::teleport(glm::vec2 new_location)
 {
 	location = new_location;
+	for (auto& c : components)
+	{
+		auto m_ptr = dynamic_cast<components::mesh*>(c);
+		if (m_ptr != nullptr)
+		{
+			m_ptr->mark_pipeline_dirty();
+			continue;
+		}
+	};
 }
 
 physics::collision_event entities::entity::sweep(glm::vec2 new_location)
@@ -74,13 +84,20 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 	components::collider* collider = nullptr;
 	for (auto& c : components)
 	{
-		auto ptr = dynamic_cast<components::collider*>(c);
-		if (ptr != nullptr)
+		auto c_ptr = dynamic_cast<components::collider*>(c);
+		if (c_ptr != nullptr)
 		{
-			events.push_back(common::collision_solver->sweep_move(ptr, new_location));
+			events.push_back(common::collision_solver->sweep_move(c_ptr, new_location));
 			if ((closest_event_id == -1 || events.back().collide_event.distance < events.at(closest_event_id).collide_event.distance) 
 				&& events.back().collide_event.other != nullptr)
-				closest_event_id = events.size() - 1;		
+				closest_event_id = events.size() - 1;	
+			continue;
+		}
+		auto m_ptr = dynamic_cast<components::mesh*>(c);
+		if (m_ptr != nullptr)
+		{
+			m_ptr->mark_pipeline_dirty();
+			continue;
 		}
 	}
 
@@ -99,7 +116,7 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 			if (e->get() != this)
 				(*e)->call_on_overlap(overlaping_entities);
 
-		teleport(new_location);
+		location = new_location;
 		return {};
 	}
 	else
@@ -120,7 +137,7 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 			if (e->get() != this)
 				(*e)->call_on_overlap(overlaping_entities);
 
-		teleport(collide_event.location);
+		location = collide_event.location;
 
 		call_on_collide(collide_event.other->get_owner_weak());
 		collide_event.other->get_owner_weak().lock()->call_on_collide(this->self);

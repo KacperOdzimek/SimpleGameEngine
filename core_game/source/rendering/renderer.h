@@ -1,4 +1,5 @@
 #pragma once
+#include "render_config.h"
 
 namespace graphics_abstraction
 {
@@ -43,6 +44,7 @@ namespace rendering
 			Rendering
 		*/
 
+		void mark_pipeline_dirty(const render_config& pipeline);
 		void register_mesh_component(entities::components::mesh* mesh);
 		void unregister_mesh_component(entities::components::mesh* mesh);
 		void update_transformations();

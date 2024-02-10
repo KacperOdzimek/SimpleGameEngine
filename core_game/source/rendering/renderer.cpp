@@ -64,6 +64,7 @@ struct renderer::implementation
 
     struct geometry
     {
+        bool should_reload_transformations = false;
         uint32_t visible_instances = 0;
         std::vector<entities::components::mesh*> meshes;
         graphics_abstraction::buffer* transformations_buffer;
@@ -216,6 +217,11 @@ void renderer::update_window()
     glfwSwapBuffers(impl->window);
 }
 
+void renderer::mark_pipeline_dirty(const render_config& pipeline)
+{
+    impl->pipelines.at(pipeline).should_reload_transformations = true;
+}
+
 void renderer::register_mesh_component(entities::components::mesh* mesh)
 {
     auto itr = impl->pipelines.find(mesh->_config);
@@ -225,17 +231,19 @@ void renderer::register_mesh_component(entities::components::mesh* mesh)
         //1024 objects
         //todo resizing
         bb->size = 1024 * 16;
-        bb->buffer_type = graphics_abstraction::buffer_type::instanced; 
+        bb->buffer_type = graphics_abstraction::buffer_type::instanced;
 
         implementation::geometry geo;
         geo.meshes = { mesh };
         geo.transformations_buffer = reinterpret_cast<graphics_abstraction::buffer*>(impl->api->build(bb));
+        geo.should_reload_transformations = true;
 
         impl->pipelines.insert({ mesh->_config, std::move(geo) });
     }
     else
     {
         itr->second.meshes.push_back(mesh);
+        itr->second.should_reload_transformations = true;
     }
 }
 
@@ -256,12 +264,17 @@ void renderer::unregister_mesh_component(entities::components::mesh* mesh)
 
     if (p_itr->second.meshes.size() == 0)
         impl->pipelines.erase(p_itr);
+    else
+        p_itr->second.should_reload_transformations = true;
 }
 
 void renderer::update_transformations()
 {
     for (auto& pipeline : impl->pipelines)
     {
+        if (!pipeline.second.should_reload_transformations)
+            continue;
+
         void* buffer_begin = pipeline.second.transformations_buffer->open_data_stream();
         transformations_buffer_iterator tbi{ buffer_begin };
 
@@ -270,6 +283,8 @@ void renderer::update_transformations()
 
         pipeline.second.visible_instances = tbi.get_data_size() / impl->transformations_buffer_layout->get_vertex_size();
         pipeline.second.transformations_buffer->close_data_stream();
+
+        pipeline.second.should_reload_transformations = false;
     }
 }
 

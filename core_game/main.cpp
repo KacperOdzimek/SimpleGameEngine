@@ -88,8 +88,6 @@ int main()
 	};
 
 	auto b1 = create_spining_box({-1.0f, 0.0f}, "mod/behaviors/move_left");
-	dynamic_cast<entities::components::mesh*>(b1.first->get_component(utilities::hash_string("mesh")))->scale = { 0.8, 0.8 };
-	b1.first->layer = 1;
 	auto b2 = create_spining_box({1.0f, 0.0f}, "mod/behaviors/move_right");
 
 	/*

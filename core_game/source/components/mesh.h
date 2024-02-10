@@ -20,10 +20,13 @@ namespace entities
 	{
 		class mesh : public entities::component
 		{
+			friend entities::entity;
 			friend rendering::renderer;
 		protected:
 			rendering::render_config _config;
 			void pass_transformation(rendering::transformations_buffer_iterator& tbi);
+			//makes renderer reload transformations
+			void mark_pipeline_dirty();
 		public:
 			bool visible = true;
 			glm::vec2 offset = { 0, 0 };
