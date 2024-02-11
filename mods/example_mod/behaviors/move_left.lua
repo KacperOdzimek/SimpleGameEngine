@@ -9,11 +9,9 @@ function on_update(e, dt)
     a = _d_get("a")
 
     --rotate
-    if _e_is_valid(e) then
-        x = _d_get("x"); y = _d_get("y")
-        _e_sweep(e, x + math.sin(a), y + math.cos(a))
-        _d_set_f("a", a - 4 * dt)
-    end
+    x = _d_get("x"); y = _d_get("y")
+    _e_sweep(e, x + math.sin(a), y + math.cos(a))
+    _d_set_f("a", a - 4 * dt)
 end
 
 function on_destroy(e)

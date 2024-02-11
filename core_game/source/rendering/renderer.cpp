@@ -1,41 +1,52 @@
 #include "renderer.h"
 
+#include "source/common/abort.h"
+#include "source/rendering/render_config.h"
+#include "source/rendering/transformations_buffer_iterator.h"
+
+#include "source/common/common.h"
+
+#include "source/entities/component.h"
+#include "source/components/camera.h"
+#include "source/components/mesh.h"
+
+#include "source/assets/shader_asset.h"
+#include "source/assets/texture_asset.h"
+#include "source/assets/mesh_asset.h"
+
 #include "graphics_abstraction/graphics_abstraction.h"
 #include "opengl_3_3_api/opengl_3.3_api.h"
 #include "glfw/glfw3.h"
 
 #include <glm/gtc/type_ptr.hpp>
-
-#include "source/common/abort.h"
-#include "source/rendering/renderer_data_types.h"
-#include "source/rendering/buffer_iterator.h"
-
-#include "source/entities/component.h"
-#include "source/entities/geometry_component.h"
-#include "source/components/camera.h"
+#include <vector>
+#include <unordered_map>
 
 using namespace rendering;
 
 struct renderer::implementation
 {
+    struct geometry;
+
     int window_width = 16 * 80;
     int window_height = 9 * 80;
     GLFWwindow* window;
 
-    graphics_abstraction::api* api = nullptr;;
+    graphics_abstraction::api* api = nullptr;
 
-    graphics_abstraction::textures_set* textures = nullptr;;
+    graphics_abstraction::vertex_layout* transformations_buffer_layout = nullptr;
 
-    graphics_abstraction::framebuffer* pre_postprocess_buffer = nullptr;;
-    graphics_abstraction::texture* pre_postprocess_buffer_color = nullptr;;
-    graphics_abstraction::texture* pre_postprocess_buffer_depth = nullptr;;
+    graphics_abstraction::textures_set* textures = nullptr;
 
-    graphics_abstraction::shader* postprocess_shader = nullptr;;
-    graphics_abstraction::buffer* screen_quad_vertices = nullptr;;
+    graphics_abstraction::framebuffer* pre_postprocess_buffer = nullptr;
+    graphics_abstraction::texture* pre_postprocess_buffer_color = nullptr;
+    graphics_abstraction::texture* pre_postprocess_buffer_depth = nullptr;
+
+    graphics_abstraction::shader* postprocess_shader = nullptr;
+    graphics_abstraction::buffer* screen_quad_vertices = nullptr;
     graphics_abstraction::vertex_layout* screen_quad_vertices_layout = nullptr;
 
-    pipelines pipelines;
-    geometry_sources geometry_sources;
+    std::unordered_map<render_config, geometry> pipelines;
 
     entities::components::camera* active_camera = nullptr;
 
@@ -50,6 +61,29 @@ struct renderer::implementation
         impl->pre_postprocess_buffer_color->resize(width, height);
         impl->pre_postprocess_buffer_depth->resize(width, height);
     }
+
+    struct geometry
+    {
+        bool should_reload_transformations = false;
+        uint32_t visible_instances = 0;
+        std::vector<entities::components::mesh*> meshes;
+        graphics_abstraction::buffer* transformations_buffer;
+        
+        geometry() {};
+        geometry(geometry& othr) = delete;
+        geometry(geometry&& othr)
+        {
+            this->meshes = std::move(othr.meshes);
+            this->transformations_buffer = std::move(othr.transformations_buffer);
+            othr.transformations_buffer = nullptr;
+        }
+
+        ~geometry()
+        {
+            if (transformations_buffer != nullptr)
+                common::renderer->impl->api->free(transformations_buffer);
+        }
+    };
 };
 
 renderer::renderer()
@@ -59,11 +93,7 @@ renderer::renderer()
 
 renderer::~renderer()
 {
-    for (auto& pipeline : impl->pipelines)
-    {
-        impl->api->free(pipeline.second.vertices);
-        impl->api->free(pipeline.second.indicies);
-    }
+    impl->pipelines.clear();
 
     impl->api->free(impl->textures);
 
@@ -93,9 +123,6 @@ void renderer::create_window()
         abort("Cannot create window");
     glfwMakeContextCurrent(impl->window);
     glfwSetFramebufferSizeCallback(impl->window, implementation::framebuffer_size_callback);
-    //glfwSetCursorPosCallback(impl->window, mouse_callback);
-    //glfwSetScrollCallback(impl->window, scroll_callback);
-    //glfwSetInputMode(impl->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetWindowAspectRatio(impl->window, 16, 9);
     glfwSwapInterval(1);
 }
@@ -128,7 +155,7 @@ void renderer::create_main_renderbuffer()
     impl->pre_postprocess_buffer = reinterpret_cast<graphics_abstraction::framebuffer*>(impl->api->build(fb));
 }
 
-void renderer::create_api_instance()
+void renderer::initialize()
 {
     impl->api = new graphics_abstraction::implementations::opengl_3_3_api::opengl_3_3_api;
     if (impl->api == nullptr)
@@ -159,7 +186,14 @@ void renderer::create_api_instance()
         graphics_abstraction::data_type::vec2,
         graphics_abstraction::data_type::vec2
     };
-    impl->screen_quad_vertices_layout = reinterpret_cast<graphics_abstraction::vertex_layout*>(impl->api->build(vlb));
+    impl->screen_quad_vertices_layout = reinterpret_cast<graphics_abstraction::vertex_layout*>(impl->api->build(vlb, false));
+
+    vlb->vertex_components = {
+        graphics_abstraction::data_type::vec2,  //Instance World Position
+        graphics_abstraction::data_type::vec2,  //Instance Scale
+        graphics_abstraction::data_type::Int    //Instance Layer
+    };
+    impl->transformations_buffer_layout = reinterpret_cast<graphics_abstraction::vertex_layout*>(impl->api->build(vlb));
 
     std::string bypass_postprocess_code_ver = "#version 330 core\nlayout (location = 0) in vec2 aPos; layout (location = 1) in vec2 aTexCoord; out vec2 TexCoord; void main() {gl_Position = vec4(aPos, 0.0, 1.0); TexCoord = aTexCoord;}";
     std::string bypass_postprocess_code_frag = "#version 330 core\nout vec4 FragColor; in vec2 TexCoord; uniform sampler2D colorTexture; void main() { FragColor = texture(colorTexture, TexCoord); }";
@@ -183,60 +217,86 @@ void renderer::update_window()
     glfwSwapBuffers(impl->window);
 }
 
-void renderer::register_geometry_component(entities::geometry_component* comp, pipeline_config target_pipeline)
+void renderer::mark_pipeline_dirty(const render_config& pipeline)
 {
-    if (impl->geometry_sources.find(target_pipeline) != impl->geometry_sources.end())
-        impl->geometry_sources.at(target_pipeline).push_back(comp);
+    impl->pipelines.at(pipeline).should_reload_transformations = true;
+}
+
+void renderer::register_mesh_component(entities::components::mesh* mesh)
+{
+    auto itr = impl->pipelines.find(mesh->_config);
+    if (itr == impl->pipelines.end())
+    {
+        auto bb = impl->api->create_buffer_builder();
+        //at default each pipeline can draw 64 meshes at once
+        //if this initial buffer turns out to be to small new bigger buffer will be allocated
+        //(see renderer::update_transformations)
+        bb->size = impl->transformations_buffer_layout->get_vertex_size() * 64;
+        bb->buffer_type = graphics_abstraction::buffer_type::instanced;
+
+        implementation::geometry geo;
+        geo.meshes = { mesh };
+        geo.transformations_buffer = reinterpret_cast<graphics_abstraction::buffer*>(impl->api->build(bb));
+        geo.should_reload_transformations = true;
+
+        impl->pipelines.insert({ mesh->_config, std::move(geo) });
+    }
     else
     {
-        impl->geometry_sources.insert({ target_pipeline, {comp} });
-
-        //Alloc 4kb vertices buffer
-        auto bb = impl->api->create_buffer_builder();
-        bb->buffer_type = graphics_abstraction::buffer_type::vertex;
-        bb->size = 1024 * sizeof(float);
-        auto vertices = reinterpret_cast<graphics_abstraction::buffer*>(impl->api->build(bb, false));
-
-        //Alloc 2kb vertices buffer
-        bb->buffer_type = graphics_abstraction::buffer_type::indicies;
-        bb->size = 512 * sizeof(int);
-        auto indicies = reinterpret_cast<graphics_abstraction::buffer*>(impl->api->build(bb));
-   
-        pipeline_buffers pt;
-        pt.vertices = vertices;
-        pt.indicies = indicies;
-        impl->pipelines.insert({ target_pipeline, {vertices, indicies} });
+        itr->second.meshes.push_back(mesh);
+        itr->second.should_reload_transformations = true;
     }
 }
 
-void renderer::unregister_geometry_component(entities::geometry_component* comp, pipeline_config target_pipeline)
+void renderer::unregister_mesh_component(entities::components::mesh* mesh)
 {
-    #define target impl->geometry_sources.at(target_pipeline)
-    if (impl->geometry_sources.find(target_pipeline) != impl->geometry_sources.end())
-        target.erase(std::remove(target.begin(), target.end(), comp), target.end());
-    #undef target
+    auto p_itr = impl->pipelines.find(mesh->_config);
+
+    if (p_itr == impl->pipelines.end())
+        return;
+
+    auto m_itr = std::find(
+        p_itr->second.meshes.begin(),
+        p_itr->second.meshes.end(),
+        mesh
+    );
+
+    p_itr->second.meshes.erase(m_itr);
+
+    if (p_itr->second.meshes.size() == 0)
+        impl->pipelines.erase(p_itr);
+    else
+        p_itr->second.should_reload_transformations = true;
 }
 
-void renderer::collect_geometry_data()
+void renderer::update_transformations()
 {
-    for (auto& x : impl->geometry_sources)
+    for (auto& pipeline : impl->pipelines)
     {
-        auto& buffers = impl->pipelines.at(x.first);
-       
-        void* ver_beg = buffers.vertices->open_data_stream();
-        void* ind_beg = buffers.indicies->open_data_stream();
+        if (!pipeline.second.should_reload_transformations)
+            continue;
+        pipeline.second.should_reload_transformations = false;
 
-        vertices_buffer_iterator ver_iter{ ver_beg };
-        indicies_buffer_iterator ind_iter{ ind_beg };
+        uint32_t buffer_size = pipeline.second.transformations_buffer->get_size();
 
-        for (auto& component : x.second)
+        void* buffer_begin = pipeline.second.transformations_buffer->open_data_stream();
+        transformations_buffer_iterator tbi{ buffer_begin };
+
+        for (auto& mesh : pipeline.second.meshes)
         {
-            component->push_geometry(ver_iter, ind_iter);
+            mesh->pass_transformation(tbi);
+            if (buffer_size - tbi.get_data_size() < impl->transformations_buffer_layout->get_vertex_size())
+            {
+                pipeline.second.transformations_buffer->reallocate(
+                    int(pipeline.second.meshes.size() * 1.5) * impl->transformations_buffer_layout->get_vertex_size()
+                );
+                pipeline.second.should_reload_transformations = true;
+                break;
+            }
         }
 
-        buffers.vertices->close_data_stream();
-        buffers.indicies->close_data_stream();
-        buffers.valid_indicies = ind_iter.get_data_size() / sizeof(int);
+        pipeline.second.visible_instances = tbi.get_data_size() / impl->transformations_buffer_layout->get_vertex_size();
+        pipeline.second.transformations_buffer->close_data_stream();
     }
 }
 
@@ -247,43 +307,77 @@ void renderer::render()
 
     auto screen_framebuffer = impl->pre_postprocess_buffer;
     impl->api->bind(screen_framebuffer);
+
+    impl->api->set_enabled(graphics_abstraction::functionalities::depth_testing, true);
+
     screen_framebuffer->clear_color_buffers(0.0f, 0.2f, 0.1f, 1.0f);
     screen_framebuffer->clear_depth_buffer();
     screen_framebuffer->clear_stencil_buffer();
+
     impl->api->bind(impl->textures);
 
     auto projection = impl->active_camera->get_projection();
     auto camera_view_center_v2 = impl->active_camera->get_view_center_location();
     glm::vec4 camera_view_center_v4 = { camera_view_center_v2.x, camera_view_center_v2.y , 0, 0 };
+    auto deepest_layer = impl->active_camera->get_deepest_rendered_layer();
+    int max_layer = impl->active_camera->rendered_layers;
 
     for (auto& pipeline : impl->pipelines)
     {
-        if (pipeline.first.shader != nullptr)
+        if (pipeline.first.material != nullptr)
         {
-            pipeline.first.shader->_shader->set_uniform_value(
+            pipeline.first.material->_shader->set_uniform_value(
                 "itr_projection", graphics_abstraction::data_type::mat4x4, glm::value_ptr(projection));
-            pipeline.first.shader->_shader->set_uniform_value(
+            pipeline.first.material->_shader->set_uniform_value(
                 "itr_camera_location", graphics_abstraction::data_type::vec4, glm::value_ptr(camera_view_center_v4));
+            pipeline.first.material->_shader->set_uniform_value(
+                "itr_deepest_layer", graphics_abstraction::data_type::Int, &deepest_layer);
+            pipeline.first.material->_shader->set_uniform_value(
+                "itr_max_layer", graphics_abstraction::data_type::Int, &max_layer);
 
-            impl->api->bind(pipeline.first.shader->_shader);
-            impl->api->bind(pipeline.first.shader->vertex_layout);
-            impl->api->bind(pipeline.second.vertices);
-            impl->api->bind(pipeline.second.indicies);
+            impl->api->bind(pipeline.first.material->_shader);
+            impl->api->bind(pipeline.first.material->vertex_layout);
+            impl->api->bind(pipeline.first.mesh->vertices);
+            if (pipeline.first.mesh->indicies != nullptr)
+                impl->api->bind(pipeline.first.mesh->indicies);
 
-            impl->textures->set_selection(
-                pipeline.first.textures
-            );
+            impl->api->bind(pipeline.second.transformations_buffer, impl->transformations_buffer_layout);
+
+            std::vector<graphics_abstraction::texture*> textures;
+
+            for (auto& txt : pipeline.first.textures)
+                textures.push_back(txt->_texture);
+
+            impl->textures->set_selection(textures);
 
             impl->api->apply_bindings();
 
-            impl->api->draw(graphics_abstraction::draw_args{
-                graphics_abstraction::draw_types::indexed,
-                graphics_abstraction::primitives::triangle,
-                graphics_abstraction::draw_args::indexed_draw_args
-                {
-                    pipeline.second.valid_indicies
-                }
-            });
+            if (pipeline.first.mesh->draw_type == assets::mesh::draw_type::indexed_triangles)
+            {
+                impl->api->draw(graphics_abstraction::draw_args{
+                    graphics_abstraction::draw_types::instanced_indexed,
+                        graphics_abstraction::primitives::triangle,
+                        graphics_abstraction::draw_args::instanced_indexed_draw_args
+                    {
+                        pipeline.first.mesh->indicies->get_size() / sizeof(int), (uint32_t)pipeline.second.meshes.size()
+                    }
+                });
+            }
+            else
+            {
+                impl->api->draw(graphics_abstraction::draw_args{
+                    graphics_abstraction::draw_types::instanced_array,
+                        graphics_abstraction::primitives::triangle_strip,
+                        graphics_abstraction::draw_args::instanced_array_draw_args
+                    {
+                        graphics_abstraction::draw_args::array_draw_args{
+                            0, 
+                            pipeline.first.mesh->vertices->get_size() / pipeline.first.material->vertex_layout->get_vertex_size()
+                        }
+                        , pipeline.second.visible_instances
+                    }
+                });
+            }
         }
     }
 
@@ -293,7 +387,11 @@ void renderer::render()
     impl->api->bind(impl->screen_quad_vertices_layout);
 
     impl->textures->set_selection({ impl->pre_postprocess_buffer_color });
+
+    impl->api->set_enabled(graphics_abstraction::functionalities::depth_testing, false);
+
     impl->api->apply_bindings();
+
     impl->api->draw(graphics_abstraction::draw_args{
         graphics_abstraction::draw_types::array,
         graphics_abstraction::primitives::triangle_strip,

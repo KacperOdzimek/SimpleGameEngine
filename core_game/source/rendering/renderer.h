@@ -1,5 +1,5 @@
 #pragma once
-#include "source/rendering/renderer_data_types.h"
+#include "render_config.h"
 
 namespace graphics_abstraction
 {
@@ -8,10 +8,10 @@ namespace graphics_abstraction
 
 namespace entities
 {
-	class geometry_component;
 	namespace components
 	{
-		class camera;
+		struct mesh;
+		struct camera;
 	}
 }
 
@@ -33,7 +33,7 @@ namespace rendering
 		*/
 
 		void create_window();
-		void create_api_instance();
+		void initialize();
 		/*
 			Main loop
 		*/
@@ -44,9 +44,10 @@ namespace rendering
 			Rendering
 		*/
 
-		void register_geometry_component(entities::geometry_component* comp, pipeline_config target_pipeline);
-		void unregister_geometry_component(entities::geometry_component* comp, pipeline_config target_pipeline);
-		void collect_geometry_data();
+		void mark_pipeline_dirty(const render_config& pipeline);
+		void register_mesh_component(entities::components::mesh* mesh);
+		void unregister_mesh_component(entities::components::mesh* mesh);
+		void update_transformations();
 		void render();
 
 		void set_active_camera(entities::components::camera* camera);

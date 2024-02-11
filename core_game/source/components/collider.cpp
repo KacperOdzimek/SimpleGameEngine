@@ -9,6 +9,11 @@ glm::vec2 entities::components::collider::get_world_pos()
 	return get_owner_location() + entity_offset;
 }
 
+int entities::components::collider::get_layer()
+{
+	return owner->layer + layer_offset;
+}
+
 void entities::components::collider::on_attach()
 {
 	common::collision_solver->register_collider(this);

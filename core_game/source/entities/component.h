@@ -3,12 +3,6 @@
 #include <memory>
 #include "include/glm/glm.hpp"
 
-namespace rendering
-{
-	class renderer;
-	struct vertices_buffer_iterator;
-}
-
 namespace entities
 {
 	class entity;

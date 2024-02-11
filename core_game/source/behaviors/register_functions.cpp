@@ -16,7 +16,6 @@ extern "C"
 
 #include "source/entities/entity.h"
 #include "source/entities/component.h"
-#include "source/entities/geometry_component.h"
 
 #include "source/common/common.h"
 
@@ -45,7 +44,7 @@ inline comp_class* load_component(lua_State* L, int entity_ptr_pos = 1, int comp
 	return dynamic_cast<comp_class*>(e->get_component(comp));
 }
 
-inline entities::geometry_draw_settings load_geometry_draw_settings(lua_State* L, int pos)
+/*inline entities::geometry_draw_settings load_geometry_draw_settings(lua_State* L, int pos)
 {
 	entities::geometry_draw_settings gds;
 	lua_pushnil(L);
@@ -82,7 +81,7 @@ inline entities::geometry_draw_settings load_geometry_draw_settings(lua_State* L
 	}
 
 	return gds;
-}
+}*/
 
 #include "source/behaviors_shared/databases_functions.h"
 #include "source/behaviors_shared/entities_functions.h"
