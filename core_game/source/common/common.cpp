@@ -7,7 +7,6 @@
 
 namespace common
 {
-	std::string current_mod_path = "";
 	double delta_time = 0.0;
 	double pixels_per_world_unit = 32;
 	std::unique_ptr<rendering::renderer> renderer = std::make_unique<rendering::renderer>();

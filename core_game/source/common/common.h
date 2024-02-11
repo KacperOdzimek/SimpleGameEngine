@@ -29,8 +29,13 @@ namespace physics
 
 namespace common
 {
-	extern std::string current_mod_path;
+	/*
+		previous frame duration
+	*/
 	extern double delta_time;
+	/*
+		texture pixels per world unit
+	*/
 	extern double pixels_per_world_unit;
 	extern std::unique_ptr<rendering::renderer> renderer;
 	extern std::unique_ptr<assets::assets_manager> assets_manager;
