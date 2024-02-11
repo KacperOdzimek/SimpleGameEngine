@@ -41,6 +41,9 @@ int main()
 	common::assets_manager->load_asset("mod/collision_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/collision_config"));
 
+	common::assets_manager->load_asset("mod/input_config");
+	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
+
 	common::assets_manager->load_asset("mod/shaders/cat_shader");
 	common::assets_manager->load_asset("mod/textures/cat_texture");
 	common::assets_manager->load_asset("mod/behaviors/move_right");

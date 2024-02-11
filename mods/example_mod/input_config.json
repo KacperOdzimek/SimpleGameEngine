@@ -1,0 +1,15 @@
+{
+    "asset_type" : "input_config",
+
+    "action_mappings" : {
+        "hit" : ["Left Mouse Button"],
+        "eq" : ["I"]
+    },
+
+    "axis_mappings" : {
+        "move_forward" : {
+            "W" : 1,
+            "S" : -1
+        }
+    }
+}
