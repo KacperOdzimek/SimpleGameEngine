@@ -83,8 +83,11 @@ namespace physics
 		if (moved_collider->get_layer() != other->get_layer())
 			return {};
 
-		other->extend += moved_collider->extend;
 		auto velocity = target_location - moved_collider->get_world_pos();
+		if (velocity.x == 0 && velocity.y == 0)
+			return {};
+
+		other->extend += moved_collider->extend;
 		auto event = check_if_ray_collide(moved_collider->preset, moved_collider->get_world_pos(), velocity, other);
 		other->extend -= moved_collider->extend;
 
