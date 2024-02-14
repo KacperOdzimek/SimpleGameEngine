@@ -26,7 +26,6 @@
 
 #include "source/physics/collision.h"
 #include <iostream>
-#include <bitset>
 //
 
 int main()

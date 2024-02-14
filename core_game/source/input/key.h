@@ -3,19 +3,26 @@
 
 namespace input
 {
+	enum class key_type
+	{
+		mouse, keyboard, gamepad
+	};
+
 	struct key
 	{
-		enum class key_type_enum
-		{
-			mouse_left, mouse_right, keyboard
-		};
-
-		const key_type_enum key_type;
-		const uint32_t keyboard_button;
-		const float value = 1;
-		key(std::string _button, float _value);
-		friend bool operator==(const key& lhs, const key& rhs);
+		key_type key_type;
+		uint32_t id;
+		float axis_value = 0;
 	};
 
 	bool operator== (const key& lhs, const key& rhs);
+	bool operator<  (const key & lhs, const key & rhs);
+
+	struct key_state
+	{
+		key key;
+		float state;
+	};
+
+	key get_key_from_key_name(const std::string& str);
 }

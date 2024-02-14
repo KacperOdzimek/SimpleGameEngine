@@ -3,20 +3,24 @@
 
 using namespace input;
 
-bool action_mapping::get_value(const std::vector<key>& _keys)
+bool action_mapping::get_value(const std::vector<key_state>& _keys) const
 {
+	std::vector<key> __keys;
+	for (auto& k : _keys)
+		__keys.push_back(k.key);
+
 	return std::find_first_of(keys.begin(), keys.end(),
-		_keys.begin(), _keys.end()) != keys.end();
+		__keys.begin(), __keys.end()) != keys.end();
 }
 
-float axis_mapping::get_value(const std::vector<key>& _keys)
+float axis_mapping::get_value(const std::vector<key_state>& _keys) const
 {
 	float value = 0.0f;
 	for (auto& key : _keys)
 	{
-		auto itr = std::find(keys.begin(), keys.end(), key);
+		auto itr = std::find(keys.begin(), keys.end(), key.key);
 		if (itr != keys.end())
-			value += itr->value * key.value;
+			value += itr->axis_value * key.key.axis_value;
 	}		
 	return value;
 }

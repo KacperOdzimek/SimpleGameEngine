@@ -2,7 +2,7 @@
     "asset_type" : "input_config",
 
     "action_mappings" : {
-        "hit" : ["Left Mouse Button"],
+        "hit" : ["E"],
         "eq" : ["I"]
     },
 

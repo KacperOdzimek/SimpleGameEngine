@@ -5,6 +5,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <set>
 
 namespace input
 {
@@ -14,6 +15,7 @@ namespace input
 		std::unordered_map<std::string, bool> action_mappings_states;
 		std::unordered_map<std::string, float> axis_mappings_states;
 		std::shared_ptr<assets::input_config> config_asset;
+		std::set<input::key> keys_to_check;
 	public:
 		void load_config(std::weak_ptr<assets::input_config> _config_asset);
 		void update_mappings_states();

@@ -216,8 +216,7 @@ namespace assets
 						abort("Action mapping keys should be strings");
 					std::string button_name;
 					key.get_to(button_name);
-					input::key k(button_name, 1);
-					am.keys.push_back(k);
+					am.keys.push_back(input::get_key_from_key_name(button_name));
 				}
 
 				actions_map.insert({action.key(), am});
@@ -242,7 +241,8 @@ namespace assets
 					if (!key.value().is_number())
 						abort("Axis key should be an number");
 
-					input::key k(key.key(), key.value());
+					input::key k = input::get_key_from_key_name(key.key());
+					k.axis_value = key.value();
 					am.keys.push_back(k);
 				}
 

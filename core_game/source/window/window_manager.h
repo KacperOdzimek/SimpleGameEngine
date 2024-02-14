@@ -1,5 +1,6 @@
 #pragma once 
 #include "source/assets/input_config_asset.h"
+#include "source/input/key.h"
 
 #include <functional>
 
@@ -22,5 +23,7 @@ namespace window
 		std::pair<int, int> get_size();
 
 		void set_resize_callback(std::function<void(void)> callback);
+
+		input::key_state get_key_state(input::key key);
 	};
 }

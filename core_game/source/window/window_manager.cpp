@@ -80,3 +80,13 @@ void window_manager::set_resize_callback(std::function<void()> callback)
 {
     impl->resize_callback = callback;
 }
+
+input::key_state window_manager::get_key_state(input::key key)
+{
+    input::key_state ks;
+    if (key.key_type == input::key_type::keyboard || key.key_type == input::key_type::mouse)
+        ks.state = glfwGetKey(impl->window, key.id);
+    else
+        ks.state = 0;
+    return ks;
+}

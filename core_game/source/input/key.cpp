@@ -1,45 +1,46 @@
 #include "key.h"
 #include "include/glfw/glfw3.h"
 #include "source/common/abort.h"
-
-uint32_t map_button(std::string _button)
-{
-	//ascii letters ids are the same as the glfw mapping for them eg.
-	//'Q' == 81 && GLFW_KEY_Q == 81
-	if (_button.size() == 1 && _button.at(0) >= 'A' && _button.at(0) <= 'Z')
-		return _button.at(0);
-
-#define implement(name, binding) else if (_button == #name) return binding;
-	implement("Enter", GLFW_KEY_ENTER)
-	implement("Left Shift", GLFW_KEY_LEFT_SHIFT)
-	implement("Right Shift", GLFW_KEY_RIGHT_SHIFT)
-
-#undef implement;
-
-	abort("Error while loading input config: Key not implemented: " + _button);
-	return 0;
-}
-
-input::key::key_type_enum map_key_type(std::string _button)
-{
-	if (_button == "Left Mouse Button")
-		return input::key::key_type_enum::mouse_left;
-
-	else if (_button == "Right Mouse Button")
-		return input::key::key_type_enum::mouse_right;
-
-	return input::key::key_type_enum::keyboard;
-}
-
-input::key::key(std::string _button, float _value)
-	: 
-	key_type(map_key_type(_button)),
-	keyboard_button(map_key_type(_button) == key_type_enum::keyboard ? map_button(_button) : 0),
-	value(_value)
-{
-}
+#include <cctype>
 
 bool input::operator== (const key& lhs, const key& rhs)
 {
-	return lhs.keyboard_button == rhs.keyboard_button;
+	return lhs.key_type == rhs.key_type && lhs.id == rhs.id;
+}
+
+bool input::operator< (const input::key& lhs, const input::key& rhs)
+{
+	return lhs.id < rhs.id;
+}
+
+input::key input::get_key_from_key_name(const std::string& str)
+{
+	input::key k;
+	k.id = UINT32_MAX;
+	k.key_type = input::key_type::keyboard;
+	//maps with ascii values
+	if (str.size() == 1)
+	{
+		char a = std::toupper(str.at(0));
+		k.id = a;
+	}
+	else if (str == "Enter")
+		k.id = GLFW_KEY_ENTER;
+	else if (str == "LShift")
+		k.id = GLFW_KEY_LEFT_SHIFT;
+	else if (str == "RShift")
+		k.id = GLFW_KEY_RIGHT_SHIFT;
+	else if (str == "Tab")
+		k.id = GLFW_KEY_TAB;
+	else if (str == "LCtrl")
+		k.id = GLFW_KEY_LEFT_CONTROL;
+	else if (str == "RCtrl")
+		k.id = GLFW_KEY_RIGHT_CONTROL;
+	else if (str == "Backspace")
+		k.id = GLFW_KEY_BACKSLASH;
+
+	if (k.id == UINT32_MAX)
+		abort("Trying to use not implemented key: " + str);
+	else
+		return k;
 }
