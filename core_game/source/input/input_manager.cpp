@@ -46,8 +46,13 @@ void input_manager::update_mappings_states()
 		}
 	}
 	
+	std::vector<key> pressed_keys;
+	for (auto& k : states)
+		if (k.state == 1)
+			pressed_keys.push_back(k.key);
+
 	for (const auto& action : config_asset->action_mappings)
-		action_mappings_states.at(action.first) = action.second.get_value(states);
+		action_mappings_states.at(action.first) = action.second.get_value(pressed_keys);
 
 	for (const auto& axis : config_asset->axis_mappings)
 		axis_mappings_states.at(axis.first) = axis.second.get_value(states);
@@ -65,6 +70,6 @@ float input_manager::get_axis_mapping_value(const std::string& mapping_name)
 {
 	auto itr = axis_mappings_states.find(mapping_name);
 	if (itr == axis_mappings_states.end())
-		abort("Trying to get value of non-existent action mapping");
+		abort("Trying to get value of non-existent axis mapping");
 	return itr->second;
 }
