@@ -1,5 +1,8 @@
 #pragma once 
+#include "source/assets/input_config_asset.h"
+
 #include "include/glm/vec2.hpp"
+
 #include <string>
 #include <unordered_map>
 
@@ -10,8 +13,9 @@ namespace input
 	private:
 		std::unordered_map<std::string, bool> action_mappings_states;
 		std::unordered_map<std::string, float> axis_mappings_states;
+		std::shared_ptr<assets::input_config> config_asset;
 	public:
-		void reload_config();
+		void load_config(std::weak_ptr<assets::input_config> _config_asset);
 		void update_mappings_states();
 
 		bool get_action_mapping_value(const std::string& mapping_name);

@@ -5,6 +5,7 @@
 #include "source/rendering/transformations_buffer_iterator.h"
 
 #include "source/common/common.h"
+#include "source/window/window_manager.h"
 
 #include "source/entities/component.h"
 #include "source/components/camera.h"
@@ -16,7 +17,6 @@
 
 #include "graphics_abstraction/graphics_abstraction.h"
 #include "opengl_3_3_api/opengl_3.3_api.h"
-#include "glfw/glfw3.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
@@ -27,10 +27,6 @@ using namespace rendering;
 struct renderer::implementation
 {
     struct geometry;
-
-    int window_width = 16 * 80;
-    int window_height = 9 * 80;
-    GLFWwindow* window;
 
     graphics_abstraction::api* api = nullptr;
 
@@ -50,16 +46,13 @@ struct renderer::implementation
 
     entities::components::camera* active_camera = nullptr;
 
-    static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+    static void resize()
     {
         auto& impl = common::renderer->impl;
 
-        impl->api->set_screen_size(width, height);
-        impl->window_width = width;
-        impl->window_height = height;
-
-        impl->pre_postprocess_buffer_color->resize(width, height);
-        impl->pre_postprocess_buffer_depth->resize(width, height);
+        auto size = common::window_manager->get_size();
+        
+        impl->api->set_screen_size(size.first, size.second);
     }
 
     struct geometry
@@ -106,25 +99,6 @@ renderer::~renderer()
     impl->api->free(impl->screen_quad_vertices_layout);
 
     delete impl->api;
-
-    glfwTerminate();
-}
-
-void renderer::create_window()
-{
-    //We are using opengl
-    if (glfwInit() == GLFW_FALSE)
-        abort("Cannot create window");
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    impl->window = glfwCreateWindow(impl->window_width, impl->window_height, "Top Down Game", NULL, NULL);
-    if (impl->window == nullptr)
-        abort("Cannot create window");
-    glfwMakeContextCurrent(impl->window);
-    glfwSetFramebufferSizeCallback(impl->window, implementation::framebuffer_size_callback);
-    glfwSetWindowAspectRatio(impl->window, 16, 9);
-    glfwSwapInterval(1);
 }
 
 void renderer::create_main_renderbuffer()
@@ -136,8 +110,8 @@ void renderer::create_main_renderbuffer()
     tb->texture_type = graphics_abstraction::texture_type::texture_2d;
     tb->internal_format = graphics_abstraction::texture_internal_format::rgb;
     tb->source_format = graphics_abstraction::texture_internal_format::unspecified;
-    tb->width = impl->window_width;
-    tb->height = impl->window_height;
+    tb->width = 1920;
+    tb->height = 1080;
     tb->generate_mipmaps = false;
 
     auto color_buffer = reinterpret_cast<graphics_abstraction::texture*>(impl->api->build(tb, false));
@@ -149,7 +123,6 @@ void renderer::create_main_renderbuffer()
     tb->internal_format = graphics_abstraction::texture_internal_format::depth24_stencil8;
 
     fb->depth_stencil_buffer = static_cast<graphics_abstraction::texture*>(impl->api->build(tb));
-
     impl->pre_postprocess_buffer_depth = fb->depth_stencil_buffer;
 
     impl->pre_postprocess_buffer = reinterpret_cast<graphics_abstraction::framebuffer*>(impl->api->build(fb));
@@ -204,17 +177,6 @@ void renderer::initialize()
         bypass_postprocess_code_frag
     };
     impl->postprocess_shader = reinterpret_cast<graphics_abstraction::shader*>(impl->api->build(sb));
-}
-
-bool renderer::should_window_close()
-{
-    return glfwWindowShouldClose(impl->window);
-}
-
-void renderer::update_window()
-{
-    glfwPollEvents();
-    glfwSwapBuffers(impl->window);
 }
 
 void renderer::mark_pipeline_dirty(const render_config& pipeline)
@@ -307,6 +269,7 @@ void renderer::render()
 
     auto screen_framebuffer = impl->pre_postprocess_buffer;
     impl->api->bind(screen_framebuffer);
+    impl->api->set_screen_size(1920, 1080);
 
     impl->api->set_enabled(graphics_abstraction::functionalities::depth_testing, true);
 
@@ -380,7 +343,10 @@ void renderer::render()
             }
         }
     }
+    
+    auto size = common::window_manager->get_size();
 
+    impl->api->set_screen_size(size.first, size.second);
     impl->api->bind(impl->api->get_default_framebuffer());
     impl->api->bind(impl->postprocess_shader);
     impl->api->bind(impl->screen_quad_vertices);
@@ -415,4 +381,9 @@ void renderer::set_active_camera(entities::components::camera* camera)
 entities::components::camera* renderer::get_active_camera()
 {
     return impl->active_camera;
+}
+
+std::function<void(void)> renderer::get_resize_function()
+{
+    return std::function<void(void)>{implementation::resize};
 }
