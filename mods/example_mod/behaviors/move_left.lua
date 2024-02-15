@@ -10,7 +10,9 @@ function on_update(e, dt)
     y_change = _i_axis("move_forward") * dt
 
     x, y = _e_get_location(e)
-    _e_sweep(e, x + x_change, y + y_change)
+    _e_sweep(e, x + x_change, y)
+    x, y = _e_get_location(e)
+    _e_sweep(e, x, y + y_change)
 end
 
 function on_destroy(e)

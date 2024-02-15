@@ -22,7 +22,5 @@ namespace input
 
 		bool get_action_mapping_value(const std::string& mapping_name);
 		float get_axis_mapping_value(const std::string& mapping_name);
-		//glm::vec2 get_mouse_position_world_space();
-		//glm::vec2 geo_mouse_position_screen_space();
 	};
 }
