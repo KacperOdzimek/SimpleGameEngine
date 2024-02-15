@@ -79,6 +79,9 @@ void entities::entity::teleport(glm::vec2 new_location)
 
 physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 {
+	if (new_location.x == location.x && new_location.y == location.y)
+		return {};
+
 	std::vector<physics::sweep_move_event> events;
 	int closest_event_id = -1;
 	components::collider* collider = nullptr;

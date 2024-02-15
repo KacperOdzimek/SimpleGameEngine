@@ -6,12 +6,13 @@ function on_init(e)
 end
 
 function on_update(e, dt)
-    a = _d_get("a")
+    x_change = _i_axis("move_right") * dt
+    y_change = _i_axis("move_forward") * dt
 
-    --rotate
-    x = _d_get("x"); y = _d_get("y")
-    _e_sweep(e, x + math.sin(a), y + math.cos(a))
-    _d_set_f("a", a - 4 * dt)
+    x, y = _e_get_location(e)
+    _e_sweep(e, x + x_change, y)
+    x, y = _e_get_location(e)
+    _e_sweep(e, x, y + y_change)
 end
 
 function on_destroy(e)
@@ -22,5 +23,5 @@ end
 
 function event_hit(e, args)
     io.write("Some num: "..args[1].."\n")
-    _e_kill(e)
+    --_e_kill(e)
 end

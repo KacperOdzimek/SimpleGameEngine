@@ -7,10 +7,10 @@ end
 
 function on_update(e, dt)
     a = _d_get("a")
-
+    
     --rotate
     x = _d_get("x"); y = _d_get("y")
-    _e_teleport(e, x + math.sin(a), y + math.cos(a))
+    --_e_teleport(e, x + math.sin(a), y + math.cos(a))
     _d_set_f("a", a + 4 * dt)
 end
 

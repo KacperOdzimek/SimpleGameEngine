@@ -1,5 +1,6 @@
 #pragma once
 #include "render_config.h"
+#include <functional>
 
 namespace graphics_abstraction
 {
@@ -32,14 +33,7 @@ namespace rendering
 			Initialization
 		*/
 
-		void create_window();
 		void initialize();
-		/*
-			Main loop
-		*/
-
-		bool should_window_close();
-		void update_window();
 		/*
 			Rendering
 		*/
@@ -57,5 +51,6 @@ namespace rendering
 			Data
 		*/
 		graphics_abstraction::api* get_api();
+		std::function<void(void)> get_resize_function();
 	};
 }

@@ -8,6 +8,7 @@
 #include "texture_asset.h"
 #include "behavior_asset.h"
 #include "mesh_asset.h"
+#include "input_config_asset.h"
 #include "collision_config_asset.h"
 
 #include <fstream>
@@ -188,6 +189,68 @@ namespace assets
 			if (indicies.size() == 0)
 				return std::make_shared<assets::mesh>(vertices);
 			return std::make_shared<assets::mesh>(vertices, indicies);
+		}
+
+		std::shared_ptr<asset> load_input_config(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+			std::shared_ptr<asset> input_config_asset;
+
+			//actions mappings
+			if (!header.contains("action_mappings"))
+				abort("Input config is missing action_mappings");
+
+			auto actions = header.at("action_mappings");
+			std::unordered_map<std::string, input::action_mapping> actions_map;
+
+			for (auto action = actions.begin(); action != actions.end(); ++action)
+			{
+				input::action_mapping am;
+
+				if (!action.value().is_array())
+					abort("Action mapping should be an array of keys");
+
+				for (auto& key : action.value())
+				{
+					if (!key.is_string())
+						abort("Action mapping keys should be strings");
+					std::string button_name;
+					key.get_to(button_name);
+					am.keys.push_back(input::get_key_from_key_name(button_name));
+				}
+
+				actions_map.insert({action.key(), am});
+			}
+
+			//axis mappings
+			if (!header.contains("axis_mappings"))
+				abort("Input config is missing axis_mappings");
+
+			auto axises = header.at("axis_mappings");
+			std::unordered_map<std::string, input::axis_mapping> axis_map;
+
+			for (auto axis = axises.begin(); axis != axises.end(); ++axis)
+			{
+				input::axis_mapping am;
+
+				if (!axis.value().is_object())
+					abort("Axis mapping should be an object");
+
+				for (auto key = axis.value().begin(); key != axis.value().end(); ++key)
+				{
+					if (!key.value().is_number())
+						abort("Axis key should be an number");
+
+					input::key k = input::get_key_from_key_name(key.key());
+					k.axis_value = key.value();
+					am.keys.push_back(k);
+				}
+
+				axis_map.insert({axis.key(), am});
+			}
+
+			input_config_asset = std::make_shared<assets::input_config>(std::move(actions_map), std::move(axis_map));
+			return input_config_asset;
 		}
 
 		std::shared_ptr<asset> load_collision_config(const load_data& ld)

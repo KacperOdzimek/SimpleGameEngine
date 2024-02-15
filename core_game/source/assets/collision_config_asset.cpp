@@ -8,7 +8,7 @@ namespace assets
 	{
 		auto itr = collision_presets.find(hashed_name);
 		if (itr == collision_presets.end())
-			abort("Trying to get not-existing collsion preset");
+			abort("Trying to get non-existent collsion preset");
 		return itr->second;
 	};
 }
