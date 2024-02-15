@@ -10,7 +10,7 @@ function on_update(e, dt)
     
     --rotate
     x = _d_get("x"); y = _d_get("y")
-    --_e_teleport(e, x + math.sin(a), y + math.cos(a))
+    _e_sweep(e, x + math.sin(a), y + math.cos(a))
     _d_set_f("a", a + 4 * dt)
 end
 
@@ -18,11 +18,4 @@ function on_destroy(e)
     --print some info
     x, y = _e_get_location(e)
     io.write("dead with x = "..x..", y ="..y.." and angle = ".._d_get("a").."[radians].\n")
-end
-
-function on_collide(e, otr)
-    _e_call(otr, "hit", {15})
-end
-
-function on_overlap(e, otr)
 end

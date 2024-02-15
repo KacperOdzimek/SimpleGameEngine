@@ -91,7 +91,11 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 		if (c_ptr != nullptr)
 		{
 			events.push_back(common::collision_solver->sweep_move(c_ptr, new_location));
-			if ((closest_event_id == -1 || events.back().collide_event.distance < events.at(closest_event_id).collide_event.distance) 
+			if (
+				(
+					closest_event_id == -1 
+					|| events.back().collide_event.distance < events.at(closest_event_id).collide_event.distance
+				) 
 				&& events.back().collide_event.other != nullptr)
 				closest_event_id = events.size() - 1;	
 			continue;
@@ -140,7 +144,8 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 			if (e->get() != this)
 				(*e)->call_on_overlap(overlaping_entities);
 
-		location = collide_event.location;
+		glm::vec2 velocity = new_location - location;
+		location += velocity * (glm::vec2(1, 1) - glm::vec2(std::abs(collide_event.normal.x), std::abs(collide_event.normal.y)));
 
 		call_on_collide(collide_event.other->get_owner_weak());
 		collide_event.other->get_owner_weak().lock()->call_on_collide(this->self);

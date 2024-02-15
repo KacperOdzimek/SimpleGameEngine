@@ -58,7 +58,7 @@ namespace physics
 		if (hit_far < 0) return {};
 
 		e.location = trace_begin + hit_near * trace_dir;
-		e.distance = hit_near;
+		e.distance = glm::distance(trace_begin, e.location);
 
 		if (near.x > near.y)
 			if (trace_dir.x < 0)
@@ -83,7 +83,7 @@ namespace physics
 		if (moved_collider->get_layer() != other->get_layer())
 			return {};
 
-		auto velocity = target_location - moved_collider->get_world_pos();
+		glm::vec2 velocity = target_location - moved_collider->get_world_pos();
 		if (velocity.x == 0 && velocity.y == 0)
 			return {};
 
@@ -91,7 +91,7 @@ namespace physics
 		auto event = check_if_ray_collide(moved_collider->preset, moved_collider->get_world_pos(), velocity, other);
 		other->extend -= moved_collider->extend;
 
-		if (event.distance < 1)
+		if (event.distance < glm::length(velocity))
 			return event;
 		return {};
 	}
