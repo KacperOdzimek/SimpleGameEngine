@@ -1,5 +1,4 @@
 function on_init(e)
-    --save intial postition - center of the circle
     x, y = _e_get_location(e)
     _d_set_f("a", 0); _d_set_f("x", x); _d_set_f("y", y)
     _c_cl_set_collision_preset(e, "collider1", "body")
