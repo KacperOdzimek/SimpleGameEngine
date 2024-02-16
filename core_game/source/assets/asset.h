@@ -12,6 +12,7 @@ namespace assets
 
 	struct asset
 	{
+		std::string package_name;
 		virtual ~asset() {};
 	};
 

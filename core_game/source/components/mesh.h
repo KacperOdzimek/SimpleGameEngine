@@ -47,6 +47,7 @@ namespace entities
 		public:
 			/*
 				determine if mesh should be rendered
+				change does not cause tranformation buffer update
 			*/
 			bool visible = true;
 
@@ -59,6 +60,9 @@ namespace entities
 				mesh scale
 			*/
 			glm::vec2 scale = { 1, 1 };
+
+			const rendering::render_config& get_render_config();
+			void set_render_config(const rendering::render_config& rc);
 
 			mesh(
 				uint32_t _id,

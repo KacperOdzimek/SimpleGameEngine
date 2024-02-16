@@ -1,6 +1,7 @@
 function on_init(e)
     _d_set_b("moving_up", true)
     _c_cl_set_collision_preset(e, "collider1", "body")
+    io.write(_c_cl_get_collision_preset(e, "collider1"))
 end
 
 function on_update(e, dt)
@@ -10,8 +11,6 @@ function on_update(e, dt)
     if (y > 3)  then moving_up = false end
     if (y < -3) then moving_up = true  end
 
-    io.write("V: "..tostring(moving_up).."\n")
-
     _d_set_b("moving_up", moving_up)
 
     if moving_up then
@@ -19,7 +18,6 @@ function on_update(e, dt)
     else
         _e_sweep(e, x, y - 3 * dt)
     end
-end
 
-function on_destroy(e)
+    _c_m_set_visible(e, "mesh", _c_m_get_visible(e, "mesh"))
 end

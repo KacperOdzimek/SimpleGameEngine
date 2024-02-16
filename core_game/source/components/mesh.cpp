@@ -58,3 +58,18 @@ void entities::components::mesh::pass_transformation(rendering::transformations_
 		tbi.put(owner->layer);
 	}
 }
+
+const rendering::render_config& entities::components::mesh::get_render_config()
+{
+	return _config;
+}
+
+void entities::components::mesh::set_render_config(const rendering::render_config& rc)
+{
+	if (!(_config == rc))
+	{
+		common::renderer->unregister_mesh_component(this);
+		_config = rc;
+		common::renderer->register_mesh_component(this);
+	}
+}

@@ -8,19 +8,21 @@
 #include "source/utilities/hash_string.h"
 #include "source/assets/load_asset.h"
 
+#include <unordered_map>
+
 using namespace assets;
 
 struct assets_manager::implementation
 {
     //pointers to existing / expired assets
-    std::map<uint32_t, std::weak_ptr<asset>> assets;
+    std::unordered_map<uint32_t, std::weak_ptr<asset>> assets;
     //pointers to just created assets
     //this is cleared every frame, so if loaded asset don't 
     //have reference outside of manager at the end of the frame it will be unloaded
     std::vector<std::shared_ptr<asset>> new_assets;
     //assets that are kept alive by asset_manager
     //to add / remove to this vector use lock_asset / unlock_asset
-    std::map<uint32_t, std::shared_ptr<asset>> locked_assets;
+    std::unordered_map<uint32_t, std::shared_ptr<asset>> locked_assets;
 };
 
 assets_manager::assets_manager()
@@ -35,7 +37,7 @@ assets_manager::~assets_manager()
 
 std::weak_ptr<asset> assets_manager::get_asset(uint32_t hashed_name)
 {
-    return impl->assets.at(hashed_name);
+    return impl->assets.at({ hashed_name }); //TODO: Handling errors
 }
 
 void assets_manager::load_asset(std::string path)
@@ -101,6 +103,8 @@ void assets_manager::load_asset(std::string path)
     impl->new_assets.push_back(
         new_asset
     );
+
+    new_asset->package_name = path;
 }
 
 void assets_manager::unload_unreferenced_assets()

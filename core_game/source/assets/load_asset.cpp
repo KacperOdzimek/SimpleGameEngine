@@ -278,6 +278,7 @@ namespace assets
 			
 			//load all collsion_presets
 			std::map<uint32_t, physics::collision_preset> collision_presets_loaded;
+			std::map<uint32_t, std::string> collision_presets_names;
 			{
 				auto& header = *ld.header_data;
 
@@ -329,11 +330,12 @@ namespace assets
 						collision_presets_loaded.insert({
 							utilities::hash_string(collision_preset.key()), physics::gen_flag(body_type_id, responses_loaded)
 						});
+						collision_presets_names.insert({ utilities::hash_string(collision_preset.key()), collision_preset.key()});
 					}
 				}
 			}
 
-			collision_config_asset = std::make_shared<assets::collision_config>(body_types_loaded, collision_presets_loaded);
+			collision_config_asset = std::make_shared<assets::collision_config>(body_types_loaded, collision_presets_loaded, collision_presets_names);
 			return collision_config_asset;
 		}
 	}

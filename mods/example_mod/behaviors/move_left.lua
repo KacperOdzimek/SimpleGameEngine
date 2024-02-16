@@ -13,9 +13,3 @@ function on_update(e, dt)
     x, y = _e_get_location(e)
     _e_sweep(e, x + x_change, y + y_change)
 end
-
-function on_destroy(e)
-    --print some info
-    x, y = _e_get_location(e)
-    io.write("dead with x = "..x..", y ="..y.." and angle = ".._d_get("a").."[radians].\n")
-end
