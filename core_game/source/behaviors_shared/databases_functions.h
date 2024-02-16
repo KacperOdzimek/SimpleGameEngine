@@ -21,6 +21,14 @@ namespace behaviors
 				return 0;
 			}
 
+			int _d_set_b(lua_State* L)
+			{
+				auto id = load_id(L, 1);
+				auto val = lua_toboolean(L, 2);
+				db->set_bool(id, val);
+				return 0;
+			}
+
 			int _d_set_s(lua_State* L)
 			{
 				auto id = load_id(L, 1);
@@ -50,6 +58,9 @@ namespace behaviors
 				case behaviors::database_data_types::Int:
 					lua_pushinteger(L, db->get_int(id));
 					return 1;
+				case behaviors::database_data_types::Bool:
+					lua_pushboolean(L, db->get_bool(id));
+					return 1;
 				case behaviors::database_data_types::string:
 					lua_pushstring(L, db->get_string(id).c_str());
 					return 1;	
@@ -65,6 +76,7 @@ namespace behaviors
 			{
 				lua_register(L, "_d_set_f", _d_set_f);
 				lua_register(L, "_d_set_i", _d_set_i);
+				lua_register(L, "_d_set_b", _d_set_b);
 				lua_register(L, "_d_set_s", _d_set_s);
 				lua_register(L, "_d_set_e", _d_set_e);
 				lua_register(L, "_d_get", _d_get);
