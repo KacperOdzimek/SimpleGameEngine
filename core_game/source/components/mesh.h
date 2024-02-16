@@ -66,6 +66,10 @@ namespace entities
 				std::weak_ptr<assets::shader> _material,
 				std::vector<std::weak_ptr<assets::texture>> _textures
 			);
+			mesh(
+				uint32_t _id,
+				rendering::render_config __config
+			);
 			virtual void on_attach();
 			~mesh();
 		};
