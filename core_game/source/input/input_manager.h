@@ -12,7 +12,13 @@ namespace input
 	class input_manager
 	{
 	private:
-		std::unordered_map<std::string, bool> action_mappings_states;
+		bool a_action_state_is_current = true;
+		struct action_mapping_state
+		{
+			bool a = false;
+			bool b = false;
+		};
+		std::unordered_map<std::string, action_mapping_state> action_mappings_states;
 		std::unordered_map<std::string, float> axis_mappings_states;
 		std::shared_ptr<assets::input_config> config_asset;
 		std::set<input::key> keys_to_check;
@@ -21,6 +27,8 @@ namespace input
 		void update_mappings_states();
 
 		bool get_action_mapping_value(const std::string& mapping_name);
+		bool get_action_mapping_was_just_pressed(const std::string& mapping_name);
+		bool get_action_mapping_was_just_relased(const std::string& mapping_name);
 		float get_axis_mapping_value(const std::string& mapping_name);
 	};
 }
