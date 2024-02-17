@@ -24,7 +24,7 @@ namespace behaviors
 				return 0;
 			}
 
-			int _e_is_valid(lua_State* L)
+			int _e_is_alive(lua_State* L)
 			{
 				auto e = reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, 1));
 				lua_pushboolean(L, !e->expired());
@@ -75,11 +75,26 @@ namespace behaviors
 				return 0;
 			}
 
+			int _e_get_layer(lua_State* L)
+			{
+				auto e = load_entity(L, 1);
+				lua_pushinteger(L, e->layer);
+				return 1;
+			}
+
+			int _e_set_layer(lua_State* L)
+			{
+				auto e = load_entity(L, 1);
+				int layer = lua_tointeger(L, 2);
+				e->layer = layer;
+				return 0;
+			}
+
 			void register_functions(lua_State* L)
 			{
 				lua_register(L, "_e_create", _e_create);
 				lua_register(L, "_e_kill", _e_kill);
-				lua_register(L, "_e_is_valid", _e_is_valid);
+				lua_register(L, "_e_is_alive", _e_is_alive);
 				lua_register(L, "_e_call", _e_call);
 				lua_register(L, "_e_teleport", _e_teleport);
 				lua_register(L, "_e_sweep", _e_sweep);
