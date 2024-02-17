@@ -22,11 +22,14 @@ namespace assets
 		preset is preset
 		*/
 		const std::map<uint32_t, physics::collision_preset> collision_presets;
+		const std::map<uint32_t, std::string> collision_presets_names;
 
 		collision_config(
 			std::map<uint32_t, uint8_t>& _body_types,
-			std::map<uint32_t, physics::collision_preset>& _collision_presets
-			) : body_types(std::move(_body_types)), collision_presets(std::move(_collision_presets))
+			std::map<uint32_t, physics::collision_preset>& _collision_presets,
+			std::map<uint32_t, std::string>& _collision_presets_names
+			) : body_types(std::move(_body_types)), collision_presets(std::move(_collision_presets)), 
+				collision_presets_names(std::move(_collision_presets_names))
 		{
 		}
 

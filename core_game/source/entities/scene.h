@@ -11,7 +11,7 @@ namespace entities
 	class scene
 	{
 		friend entity;
-	protected:
+	public:
 		/*
 			entities
 			vector of entities owned by the scene
@@ -19,6 +19,7 @@ namespace entities
 			may contain expired pointers
 		*/
 		std::vector<std::weak_ptr<entity>> entities;
+	protected:
 		/*
 			frames_since_purged
 			as entities can be destroyed due to game logic

@@ -47,6 +47,7 @@ namespace entities
 		public:
 			/*
 				determine if mesh should be rendered
+				change does not cause tranformation buffer update
 			*/
 			bool visible = true;
 
@@ -60,11 +61,18 @@ namespace entities
 			*/
 			glm::vec2 scale = { 1, 1 };
 
+			const rendering::render_config& get_render_config();
+			void set_render_config(const rendering::render_config& rc);
+
 			mesh(
 				uint32_t _id,
 				std::weak_ptr<assets::mesh> _mesh,
 				std::weak_ptr<assets::shader> _material,
 				std::vector<std::weak_ptr<assets::texture>> _textures
+			);
+			mesh(
+				uint32_t _id,
+				rendering::render_config __config
 			);
 			virtual void on_attach();
 			~mesh();

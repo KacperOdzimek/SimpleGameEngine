@@ -12,12 +12,14 @@ void input_manager::load_config(std::weak_ptr<assets::input_config> _config_asse
 {
 	config_asset = _config_asset.lock();
 
+	a_action_state_is_current = false;
+
 	action_mappings_states.clear();
 	axis_mappings_states.clear();
 
 	for (const auto& action : config_asset->action_mappings)
 	{
-		action_mappings_states.insert({ action.first, 0 });
+		action_mappings_states.insert({ action.first, {} });
 		for (auto& key : action.second.keys)
 			keys_to_check.insert(key);
 	}
@@ -32,6 +34,8 @@ void input_manager::load_config(std::weak_ptr<assets::input_config> _config_asse
 
 void input_manager::update_mappings_states()
 {
+	a_action_state_is_current = !a_action_state_is_current;
+
 	std::vector<key_state> states;
 	for (auto& k : keys_to_check)
 	{
@@ -52,7 +56,13 @@ void input_manager::update_mappings_states()
 			pressed_keys.push_back(k.key);
 
 	for (const auto& action : config_asset->action_mappings)
-		action_mappings_states.at(action.first) = action.second.get_value(pressed_keys);
+	{
+		auto& state = action_mappings_states.at(action.first);
+		if (a_action_state_is_current)
+			state.a = action.second.get_value(pressed_keys);
+		else
+			state.b = action.second.get_value(pressed_keys);
+	}
 
 	for (const auto& axis : config_asset->axis_mappings)
 		axis_mappings_states.at(axis.first) = axis.second.get_value(states);
@@ -63,7 +73,29 @@ bool input_manager::get_action_mapping_value(const std::string& mapping_name)
 	auto itr = action_mappings_states.find(mapping_name);
 	if (itr == action_mappings_states.end())
 		abort("Trying to get value of non-existent action mapping");
-	return itr->second;
+	if (a_action_state_is_current)
+		return itr->second.a;
+	return itr->second.b;
+}
+
+bool input_manager::get_action_mapping_was_just_pressed(const std::string& mapping_name)
+{
+	auto itr = action_mappings_states.find(mapping_name);
+	if (itr == action_mappings_states.end())
+		abort("Trying to get value of non-existent action mapping");
+	if (a_action_state_is_current)
+		return (itr->second.a && !itr->second.b);
+	return (itr->second.b && !itr->second.a);
+}
+
+bool input_manager::get_action_mapping_was_just_relased(const std::string& mapping_name)
+{
+	auto itr = action_mappings_states.find(mapping_name);
+	if (itr == action_mappings_states.end())
+		abort("Trying to get value of non-existent action mapping");
+	if (a_action_state_is_current)
+		return (!itr->second.a && itr->second.b);
+	return (!itr->second.b && itr->second.a);
 }
 
 float input_manager::get_axis_mapping_value(const std::string& mapping_name)

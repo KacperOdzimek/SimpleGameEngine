@@ -8,7 +8,7 @@ namespace behaviors
 {
 	enum class database_data_types : uint8_t
 	{
-		unspecified, Int, Float, string, entity
+		unspecified, Int, Bool, Float, string, entity
 	};
 
 	struct database
@@ -27,6 +27,9 @@ namespace behaviors
 
 		void set_int(uint32_t& id, int i);
 		int get_int(uint32_t& id);
+
+		void set_bool(uint32_t& id, bool b);
+		bool get_bool(uint32_t& id);
 
 		void set_string(uint32_t& id, std::string s);
 		std::string get_string(uint32_t& id);

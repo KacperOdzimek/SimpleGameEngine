@@ -51,6 +51,8 @@ namespace behaviors
 					delete (int*)data; break;
 				case behaviors::database_data_types::Float:
 					delete (float*)data; break;
+				case behaviors::database_data_types::Bool:
+					delete (bool*)data; break;
 				case behaviors::database_data_types::string:
 					delete (std::string*)data; break;
 				case behaviors::database_data_types::entity:
@@ -68,6 +70,9 @@ namespace behaviors
 					break;
 				case behaviors::database_data_types::Float:
 					*((float*)data) = *(float*)new_data;
+					break;
+				case behaviors::database_data_types::Bool:
+					*((bool*)data) = *((bool*)new_data);
 					break;
 				case behaviors::database_data_types::string:
 					*((std::string*)data) = *((std::string*)new_data);
@@ -89,6 +94,10 @@ namespace behaviors
 				case behaviors::database_data_types::Float:
 					data = new float;
 					*((float*)data) = *(float*)new_data;
+					break;
+				case behaviors::database_data_types::Bool:
+					data = new bool;
+					*((bool*)data) = *(bool*)new_data;
 					break;
 				case behaviors::database_data_types::string:
 					data = new std::string;
@@ -172,6 +181,16 @@ namespace behaviors
 	int database::get_int(uint32_t& id)
 	{
 		get_func(Int, id, 0, int)
+	}
+
+	void database::set_bool(uint32_t& id, bool b)
+	{
+		set_func(Bool, id, b)
+	}
+
+	bool database::get_bool(uint32_t& id)
+	{
+		get_func(Bool, id, 0, bool)
 	}
 
 	void database::set_string(uint32_t& id, std::string s)

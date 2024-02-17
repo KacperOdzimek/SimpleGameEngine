@@ -37,8 +37,8 @@ int main()
 	filesystem::set_mod_asset_path("C:/Projekty/TopDownGame/mods/example_mod/");
 	filesystem::set_core_asset_path("C:/Projekty/TopDownGame/core_game/assets");
 
-	common::assets_manager->load_asset("core/unit_square_mesh");
-	common::assets_manager->lock_asset(utilities::hash_string("core/unit_square_mesh"));
+	common::assets_manager->load_asset("core/square_mesh");
+	common::assets_manager->lock_asset(utilities::hash_string("core/square_mesh"));
 
 	common::assets_manager->load_asset("mod/collision_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/collision_config"));
@@ -63,7 +63,7 @@ int main()
 
 		auto mesh = new entities::components::mesh{ 
 			utilities::hash_string("mesh"), 
-			assets::cast_asset<assets::mesh>(common::assets_manager->get_asset(utilities::hash_string("core/unit_square_mesh"))),
+			assets::cast_asset<assets::mesh>(common::assets_manager->get_asset(utilities::hash_string("core/square_mesh"))),
 			assets::cast_asset<assets::shader>(common::assets_manager->get_asset(utilities::hash_string("mod/shaders/cat_shader"))),
 			{
 				assets::cast_asset<assets::texture>(common::assets_manager->get_asset(utilities::hash_string("mod/textures/cat_texture"))),
@@ -114,14 +114,19 @@ int main()
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
-		common::input_mananger->update_mappings_states();
+		//Remove expired entities Pointers
+		common::world->update();
 
+		//Game Logic
+		common::input_mananger->update_mappings_states();
 		common::behaviors_manager->call_update_functions();
 
+		//Rendering
 		common::renderer->update_transformations();
 		common::renderer->render();
 		common::window_manager->change_frame();
 
+		//Remove dont used assets
 		common::assets_manager->unload_unreferenced_assets();
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;

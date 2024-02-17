@@ -18,8 +18,6 @@ namespace entities
 
 namespace rendering
 {
-	struct pipeline_config;
-
 	class renderer
 	{
 		struct implementation;

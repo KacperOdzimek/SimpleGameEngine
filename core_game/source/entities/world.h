@@ -7,6 +7,7 @@ namespace entities
 
 	class world
 	{
+	public:
 		friend entity;
 		/*
 			persistent_scene
@@ -18,7 +19,7 @@ namespace entities
 			scene that can be deleted due to game logic
 		*/
 		std::unique_ptr<scene> active_scene;
-	public:
+
 		scene* create_active_scene();
 		void update();
 	};
