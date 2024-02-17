@@ -70,6 +70,12 @@ namespace entities
 		void kill_component(uint32_t id);
 
 		/*
+			get_weak
+			returns weak pointer connected with entity::self
+		*/
+		std::weak_ptr<entities::entity> get_weak();
+
+		/*
 			call_event
 			calls event event_<name> function on every behavior component in the entity
 		*/

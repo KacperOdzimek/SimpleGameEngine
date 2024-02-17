@@ -179,6 +179,11 @@ void entities::entity::kill()
 	self.reset();
 }
 
+std::weak_ptr<entities::entity> entities::entity::get_weak()
+{
+	return self;
+}
+
 entities::entity::~entity()
 {
 }

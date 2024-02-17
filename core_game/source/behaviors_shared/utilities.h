@@ -25,7 +25,9 @@ extern "C"
 
 inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id)
 {
-	return reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, arg_id))->lock();
+	//return reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, arg_id))->lock();
+	auto a = reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, arg_id));
+	return a->lock();
 }
 
 inline uint32_t load_id(lua_State* L, int arg_id)

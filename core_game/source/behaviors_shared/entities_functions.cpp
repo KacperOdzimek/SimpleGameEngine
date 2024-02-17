@@ -4,6 +4,9 @@
 
 #include "source/components/behavior.h"
 
+#include "source/common/common.h"
+#include "source/entities/world.h"
+
 namespace behaviors
 {
 	namespace lua_functions
@@ -13,7 +16,7 @@ namespace behaviors
 			int _e_create(lua_State* L)
 			{
 				auto e = new ::entities::entity;
-				lua_pushinteger(L, (uint64_t)e);
+				lua_pushinteger(L, (uint64_t)&common::world->active_scene->entities.back());
 				return 1;
 			}
 
@@ -100,6 +103,8 @@ namespace behaviors
 				lua_register(L, "_e_sweep", _e_sweep);
 				lua_register(L, "_e_get_location", _e_get_location);
 				lua_register(L, "_e_kill_component", _e_kill_component);
+				lua_register(L, "_e_get_layer", _e_get_layer);
+				lua_register(L, "_e_set_layer", _e_set_layer);
 			}
 		}
 	}

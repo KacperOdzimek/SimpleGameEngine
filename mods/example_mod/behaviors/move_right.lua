@@ -1,7 +1,6 @@
 function on_init(e)
     _d_set_b("moving_up", true)
     _c_cl_set_collision_preset(e, "collider1", "body")
-    io.write(_c_cl_get_collision_preset(e, "collider1"))
 end
 
 function on_update(e, dt)
