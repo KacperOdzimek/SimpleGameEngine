@@ -10,7 +10,7 @@ namespace entities
 
 	void world::update()
 	{
-		active_scene->update();
-		persistent_scene->update();
+		if (active_scene.get() != nullptr) active_scene->update();
+		if (persistent_scene.get() != nullptr) persistent_scene->update();
 	}
 }

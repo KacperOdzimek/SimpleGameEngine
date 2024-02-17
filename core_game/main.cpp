@@ -114,14 +114,19 @@ int main()
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
-		common::input_mananger->update_mappings_states();
+		//Remove expired entities Pointers
+		common::world->update();
 
+		//Game Logic
+		common::input_mananger->update_mappings_states();
 		common::behaviors_manager->call_update_functions();
 
+		//Rendering
 		common::renderer->update_transformations();
 		common::renderer->render();
 		common::window_manager->change_frame();
 
+		//Remove dont used assets
 		common::assets_manager->unload_unreferenced_assets();
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
