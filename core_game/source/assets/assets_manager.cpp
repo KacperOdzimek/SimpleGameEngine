@@ -2,7 +2,7 @@
 
 #include "source/filesystem/filesystem.h"
 
-#include "source/common/abort.h"
+#include "source/common/crash.h"
 #include "include/nlohmann/json.hpp"
 
 #include "source/utilities/hash_string.h"
@@ -37,25 +37,31 @@ assets_manager::~assets_manager()
 
 std::weak_ptr<asset> assets_manager::get_asset(uint32_t hashed_name)
 {
-    return impl->assets.at({ hashed_name }); //TODO: Handling errors
+    auto itr = impl->assets.find({ hashed_name });
+    if (itr == impl->assets.end())
+        error_handling::crash(error_handling::error_source::core,
+            "[asset_manager::get_asset]", "Missing asset: " + hashed_name);
+    return  itr->second;
 }
 
 void assets_manager::load_asset(std::string path)
 {
     auto file = filesystem::load_file(path + ".json");
     if (file.fail())
-        abort("Missing asset: " + path);
+        error_handling::crash(error_handling::error_source::core, "[asset_manager::load_asset]", "Missing asset: " + path); 
 
     nlohmann::json data = nlohmann::json::parse(file);
     file.close();
 
     if (!data.contains("asset_type"))
-        abort("Invalid asset: " + path + "\nMissing asset_type");
+        error_handling::crash(error_handling::error_source::core, 
+            "[asset_manager::load_asset]", "Invalid asset: " + path + " Missing asset_type");
 
     auto at = data.at("asset_type");
 
     if (!at.is_string())
-        abort("Invalid asset: " + path + "\nasset_type should be string");
+        error_handling::crash(error_handling::error_source::core,
+            "[asset_manager::load_asset]", "Invalid asset: " + path + " asset_type should be string");
 
     std::string asset_type;
     at.get_to(asset_type);
@@ -87,11 +93,13 @@ void assets_manager::load_asset(std::string path)
         new_asset = loading::load_collision_config(load_data);
         break;
     default:
-        abort("Invalid asset: " + path + "\nInvalid asset_type");
+        error_handling::crash(error_handling::error_source::core,
+            "[asset_manager::load_asset]", "Invalid asset: " + path + "invalid asset_type");
     }
 
     if (new_asset == nullptr)
-        abort("Invalid asset: " + path + "\nInvalid params or path");
+        error_handling::crash(error_handling::error_source::core,
+            "[asset_manager::load_asset]", "Failed to load asset: " + path);
 
     impl->assets.insert(
         { 

@@ -1,6 +1,6 @@
 #include "load_asset.h"
 
-#include "source/common/abort.h"
+#include "source/common/crash.h"
 #include "source/filesystem/filesystem.h"
 #include "source/utilities/hash_string.h"
 
@@ -24,7 +24,8 @@ namespace assets
 			std::shared_ptr<asset> texture_asset;
 
 			if (!(header.contains("path") && header.at("path").is_string()))
-				abort("Invalid texture asset");
+				error_handling::crash(error_handling::error_source::core, "[loading::load_texture]",
+					"Invalid/Missing image path");
 
 			std::string source_path = ld.package + std::string(header.at("path"));
 			auto image = filesystem::load_image(source_path);
@@ -43,7 +44,8 @@ namespace assets
 			std::string fragment_code;
 
 			if (!(header.contains("path") && header.at("path").is_string()))
-				abort("Invalid shader asset");
+				error_handling::crash(error_handling::error_source::core, "[loading::load_shader]",
+					"Invalid/Missing shader path");
 
 			std::string source_path = ld.package + std::string(header.at("path"));
 			auto source_file = filesystem::load_file(source_path);
@@ -111,7 +113,8 @@ namespace assets
 			std::shared_ptr<asset> behavior_asset;
 
 			if (!(header.contains("path") && header.at("path").is_string()))
-				abort("Invalid behavior asset");
+				error_handling::crash(error_handling::error_source::core, "[loading::load_behavior]",
+					"Invalid/Missing behavior path");
 
 			std::string source_path = ld.package + std::string(header.at("path"));
 			behavior_asset = std::make_shared<assets::behavior>(source_path);
@@ -126,7 +129,8 @@ namespace assets
 			std::shared_ptr<asset> mesh_asset;
 
 			if (!(header.contains("path") && header.at("path").is_string()))
-				abort("Invalid mesh asset");
+				error_handling::crash(error_handling::error_source::core, "[loading::load_mesh]",
+					"Invalid/Missing mesh path");
 
 			std::string source_path = ld.package + std::string(header.at("path"));
 			std::fstream source_file = filesystem::load_file(source_path);
@@ -198,7 +202,8 @@ namespace assets
 
 			//actions mappings
 			if (!header.contains("action_mappings"))
-				abort("Input config is missing action_mappings");
+				error_handling::crash(error_handling::error_source::core, "[loading::load_input_config]",
+					"Input config is missing action_mappings");
 
 			auto actions = header.at("action_mappings");
 			std::unordered_map<std::string, input::action_mapping> actions_map;
@@ -208,12 +213,14 @@ namespace assets
 				input::action_mapping am;
 
 				if (!action.value().is_array())
-					abort("Action mapping should be an array of keys");
+					error_handling::crash(error_handling::error_source::core, "[loading::load_input_config]",
+						"Action mapping should be an array of keys");
 
 				for (auto& key : action.value())
 				{
 					if (!key.is_string())
-						abort("Action mapping keys should be strings");
+						error_handling::crash(error_handling::error_source::core, "[loading::load_input_config]",
+							"Action mapping keys should be strings");
 					std::string button_name;
 					key.get_to(button_name);
 					am.keys.push_back(input::get_key_from_key_name(button_name));
@@ -224,7 +231,8 @@ namespace assets
 
 			//axis mappings
 			if (!header.contains("axis_mappings"))
-				abort("Input config is missing axis_mappings");
+				error_handling::crash(error_handling::error_source::core, "[loading::load_input_config]",
+					"Input config is missing axis_mappings");
 
 			auto axises = header.at("axis_mappings");
 			std::unordered_map<std::string, input::axis_mapping> axis_map;
@@ -234,12 +242,14 @@ namespace assets
 				input::axis_mapping am;
 
 				if (!axis.value().is_object())
-					abort("Axis mapping should be an object");
+					error_handling::crash(error_handling::error_source::core, "[loading::load_input_config]",
+						"Axis mapping should be an object");
 
 				for (auto key = axis.value().begin(); key != axis.value().end(); ++key)
 				{
 					if (!key.value().is_number())
-						abort("Axis key should be an number");
+						error_handling::crash(error_handling::error_source::core, "[loading::load_input_config]",
+							"Axis key should be an number");
 
 					input::key k = input::get_key_from_key_name(key.key());
 					k.axis_value = key.value();
@@ -264,12 +274,14 @@ namespace assets
 			{
 				auto& body_types = header.at("body_types");
 				if (!body_types.is_object())
-					abort("Invalid collision config: \nbody_types should be an object");
+					error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
+						"Invalid collision config: \nbody_types should be an object");
 
 				for (auto body_type = body_types.begin(); body_type != body_types.end(); ++body_type)
 				{
 					if (!body_type.value().is_number())
-						abort("Invalid collision config: \nbody_types element value should be an number");
+						error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
+							"Invalid collision config: \nbody_types element value should be an number");
 					uint8_t value;
 					body_type.value().get_to(value);
 					body_types_loaded.insert({ utilities::hash_string(body_type.key()), value });
@@ -284,12 +296,14 @@ namespace assets
 
 				auto& collision_presets = header.at("collision_presets");
 				if (!collision_presets.is_object())
-					abort("Invalid collision config: \ncollision_presets should be an object");
+					error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
+						"Invalid collision config: \ncollision_presets should be an object");
 				//load collsion_presets
 				for (auto collision_preset = collision_presets.begin(); collision_preset != collision_presets.end(); ++collision_preset)
 				{
 					if (!collision_preset.value().is_object())
-						abort("Invalid collision config: \ncollsion presets should be objects made of \n[string] body_type\n[object] responses");
+						error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
+					"Invalid collision config: \ncollsion presets should be objects made of \n[string] body_type\n[object] responses");
 
 					//load collsion_preset::body_type
 					uint8_t body_type_id;
@@ -298,7 +312,8 @@ namespace assets
 						collision_preset.value().at("body_type").get_to(body_type_name);
 						auto bt_id_itr = body_types_loaded.find(utilities::hash_string(body_type_name));
 						if (bt_id_itr == body_types_loaded.end())
-							abort("Invalid collision config: \ninvalid body_type in collsion preset");
+							error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
+								"Invalid collision config: \ninvalid body_type in collsion preset");
 						body_type_id = bt_id_itr->second;
 					}
 					//load collsion_preset::responses
@@ -306,16 +321,19 @@ namespace assets
 					{
 						auto& responses = collision_preset.value().at("responses");
 						if (!responses.is_object())
-							abort("Invalid collision config: \nresposnses in collision_presets should be an object");
+							error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
+								"Invalid collision config: \nresposnses in collision_presets should be an object");
 						for (auto response = responses.begin(); response != responses.end(); ++response)
 						{
 							std::string target_body_type = response.key();
 							if (!response.value().is_string())
-								abort("Invalid collision config: \nresposnse in collision_presets should either \n\"ignore\" \n\"overlap\" \n\"collide\"");
+								error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
+									"Invalid collision config : \nresposnse in collision_presets should either \n\"ignore\" \n\"overlap\" \n\"collide\"");
 							std::string response_response_type = response.value();
 							auto bt_id_itr = body_types_loaded.find(utilities::hash_string(response.key()));
 							if (bt_id_itr == body_types_loaded.end())
-								abort("Invalid collision config: \ninvalid body type name in collsion presets response");
+								error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]", 
+									"Invalid collision config: \ninvalid body type name in collsion presets response");
 							uint8_t target_body_type_id = bt_id_itr->second;
 							
 							if (response_response_type == "collide")
@@ -325,7 +343,8 @@ namespace assets
 							else if (response_response_type == "ignore")
 								responses_loaded.at(target_body_type_id) = physics::collision_response::ignore;
 							else
-								abort("Invalid collision config: \ninvalid response type");
+								error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]", 
+									"Invalid collision config: \ninvalid response type");
 						}
 						collision_presets_loaded.insert({
 							utilities::hash_string(collision_preset.key()), physics::gen_flag(body_type_id, responses_loaded)

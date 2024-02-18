@@ -14,7 +14,7 @@ namespace behaviors
 #define db common::behaviors_manager->get_active_database().lock()
 			int _d_set_f(lua_State* L)
 			{
-				auto id = load_id(L, 1);
+				auto id = load_id(L, 1, "[_d_set_f]", "Variable ");
 				auto val = lua_tonumber(L, 2);
 				db->set_float(id, val);
 				return 0;
@@ -22,7 +22,7 @@ namespace behaviors
 
 			int _d_set_i(lua_State* L)
 			{
-				auto id = load_id(L, 1);
+				auto id = load_id(L, 1, "[_d_set_i]", "Variable ");
 				auto val = lua_tointeger(L, 2);
 				db->set_int(id, val);
 				return 0;
@@ -30,7 +30,7 @@ namespace behaviors
 
 			int _d_set_b(lua_State* L)
 			{
-				auto id = load_id(L, 1);
+				auto id = load_id(L, 1, "[_d_set_b]", "Variable ");
 				auto val = lua_toboolean(L, 2);
 				db->set_bool(id, val);
 				return 0;
@@ -38,7 +38,7 @@ namespace behaviors
 
 			int _d_set_s(lua_State* L)
 			{
-				auto id = load_id(L, 1);
+				auto id = load_id(L, 1, "[_d_set_s]", "Variable ");
 				auto val = lua_tostring(L, 2);
 				db->set_string(id, val);
 				return 0;
@@ -46,7 +46,7 @@ namespace behaviors
 
 			int _d_set_e(lua_State* L)
 			{
-				auto id = load_id(L, 1);
+				auto id = load_id(L, 1, "[_d_set_e]", "Variable ");
 				auto val = reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, 2));
 				db->set_entity(id, val);
 				return 0;
@@ -54,7 +54,7 @@ namespace behaviors
 
 			int _d_get(lua_State* L)
 			{
-				auto id = load_id(L, 1);
+				auto id = load_id(L, 1, "[_d_get]", "Variable ");
 				switch (db->get_data_type_at(id))
 				{
 				case behaviors::database_data_types::unspecified:

@@ -15,7 +15,7 @@ extern "C"
 
 #include "source/components/behavior.h"
 
-#include "source/common/abort.h"
+#include "source/common/crash.h"
 #include "register_functions.h"
 
 #include <unordered_map>
@@ -67,16 +67,6 @@ struct behaviors::behaviors_manager::implementation
         this guarantee that needed databases wont be deleted during the execution
     */
     std::list<std::shared_ptr<database>> databases_stack;
-
-    /*
-       protected lua call
-       if function called as this function argument throw an error this error will cause {abort}
-    */
-    void pcall(int r)
-    {
-        if (r != LUA_OK)
-            ::abort(lua_tostring(L, -1));
-    }
 };
 
 /*
@@ -145,7 +135,12 @@ std::string behaviors::behaviors_manager::create_behavior(const std::string& fil
     auto& L = impl->L;
     std::string path = filesystem::get_global_path(file_path);
 
-    impl->pcall(luaL_loadfile(L, path.c_str()));
+    int error;
+    error = luaL_loadfile(L, path.c_str());
+
+    if (error != LUA_OK)
+        error_handling::crash(error_handling::error_source::core, "[behaviors_manager::create_behavior]", lua_tostring(L, -1));
+
     lua_newtable(L);
     lua_newtable(L);
     lua_getglobal(L, "_G");
@@ -154,7 +149,10 @@ std::string behaviors::behaviors_manager::create_behavior(const std::string& fil
     lua_setfield(L, LUA_REGISTRYINDEX, name.c_str());
     lua_getfield(L, LUA_REGISTRYINDEX, name.c_str());
     lua_setupvalue(L, 1, 1);
-    impl->pcall(lua_pcall(L, 0, LUA_MULTRET, 0));
+
+    error = lua_pcall(L, 0, LUA_MULTRET, 0);
+    if (error != LUA_OK)
+        error_handling::crash(error_handling::error_source::core, "[behaviors_manager::create_behavior]", lua_tostring(L, -1));
 
     return name;
 }
@@ -216,10 +214,7 @@ void behaviors::behaviors_manager::call(int args_amount)
 {
     auto err = lua_pcall(impl->L, args_amount, 0, 0);
     if (err != LUA_OK)
-    {
-        std::string error = lua_tostring(impl->L, -1);
-        ::abort(error + '\n');
-    }
+        error_handling::crash(error_handling::error_source::core, "[behaviors_manager::call]", lua_tostring(impl->L, -1));
 }
 
 void behaviors::behaviors_manager::abort()

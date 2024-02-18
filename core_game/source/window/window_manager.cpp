@@ -1,7 +1,7 @@
 #include "window_manager.h"
 
 #include "source/common/common.h"
-#include "source/common/abort.h"
+#include "source/common/crash.h"
 
 #include "glfw/glfw3.h"
 
@@ -40,7 +40,8 @@ window_manager::~window_manager()
 void window_manager::create_window(std::string title, int width, int height, bool fullscreen)
 {
     if (glfwInit() == GLFW_FALSE)
-        abort("Cannot create window");
+        error_handling::crash(error_handling::error_source::core, "[renderer::initialize]",
+            "Cannot create window");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -52,7 +53,8 @@ void window_manager::create_window(std::string title, int width, int height, boo
     impl->fullscreen = fullscreen;
 
     if (impl->window == nullptr)
-        abort("Cannot create window");
+        error_handling::crash(error_handling::error_source::core, "[renderer::initialize]",
+            "Cannot create window");
 
     glfwMakeContextCurrent(impl->window);
     glfwSetFramebufferSizeCallback(impl->window, &implementation::glfw_window_resize_callback);

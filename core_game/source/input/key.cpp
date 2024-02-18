@@ -1,6 +1,6 @@
 #include "key.h"
 #include "include/glfw/glfw3.h"
-#include "source/common/abort.h"
+#include "source/common/crash.h"
 #include <cctype>
 
 bool input::operator== (const key& lhs, const key& rhs)
@@ -40,7 +40,8 @@ input::key input::get_key_from_key_name(const std::string& str)
 		k.id = GLFW_KEY_BACKSLASH;
 
 	if (k.id == UINT32_MAX)
-		abort("Trying to use not implemented key: " + str);
+		error_handling::crash(error_handling::error_source::core, "[input::get_key_from_key_name]",
+			"Trying to use not implemented key: " + str);
 	else
 		return k;
 }

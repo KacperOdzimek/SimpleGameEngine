@@ -1,5 +1,5 @@
 #include "filesystem.h"
-#include "source/common/abort.h"
+#include "source/common/crash.h"
 #include "include/stb/stb_image.h"
 
 static std::string mod_assets_path;
@@ -39,8 +39,10 @@ std::fstream filesystem::load_file(std::string path)
 
 	std::fstream file;
 	file.open(global_path);
+
 	if (file.fail())
-		abort("No such file: " + global_path);
+		error_handling::crash(error_handling::error_source::core, "[filesystem::load_file]", 
+			"No such file: \n" + path + "\n" + global_path);
 
 	return file;
 }
@@ -62,7 +64,8 @@ std::unique_ptr<filesystem::image_file> filesystem::load_image(std::string path)
 	0);
 
 	if (file->image_source_pointer == nullptr)
-		abort("No image: " + path);
+		error_handling::crash(error_handling::error_source::core, "[filesystem::load_file]",
+			"No such image: \n" + path + "\n" + filesystem::get_global_path(path));
 
 	return file;
 }

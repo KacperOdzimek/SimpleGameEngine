@@ -1,5 +1,5 @@
 #include "input_manager.h"
-#include "source/common/abort.h"
+#include "source/common/crash.h"
 
 #include "source/assets/input_config_asset.h"
 
@@ -72,7 +72,8 @@ bool input_manager::get_action_mapping_value(const std::string& mapping_name)
 {
 	auto itr = action_mappings_states.find(mapping_name);
 	if (itr == action_mappings_states.end())
-		abort("Trying to get value of non-existent action mapping");
+		error_handling::crash(error_handling::error_source::core, "[input_manager::get_action_mapping_value]", 
+			"Trying to get value of non-existent action mapping: " + mapping_name);
 	if (a_action_state_is_current)
 		return itr->second.a;
 	return itr->second.b;
@@ -82,7 +83,8 @@ bool input_manager::get_action_mapping_was_just_pressed(const std::string& mappi
 {
 	auto itr = action_mappings_states.find(mapping_name);
 	if (itr == action_mappings_states.end())
-		abort("Trying to get value of non-existent action mapping");
+		error_handling::crash(error_handling::error_source::core, "[input_manager::get_action_mapping_was_just_pressed]",
+			"Trying to get value of non-existent action mapping: " + mapping_name);
 	if (a_action_state_is_current)
 		return (itr->second.a && !itr->second.b);
 	return (itr->second.b && !itr->second.a);
@@ -92,7 +94,8 @@ bool input_manager::get_action_mapping_was_just_relased(const std::string& mappi
 {
 	auto itr = action_mappings_states.find(mapping_name);
 	if (itr == action_mappings_states.end())
-		abort("Trying to get value of non-existent action mapping");
+		error_handling::crash(error_handling::error_source::core, "[input_manager::get_action_mapping_was_just_relased]",
+			"Trying to get value of non-existent action mapping: " + mapping_name);
 	if (a_action_state_is_current)
 		return (!itr->second.a && itr->second.b);
 	return (!itr->second.b && itr->second.a);
@@ -102,6 +105,7 @@ float input_manager::get_axis_mapping_value(const std::string& mapping_name)
 {
 	auto itr = axis_mappings_states.find(mapping_name);
 	if (itr == axis_mappings_states.end())
-		abort("Trying to get value of non-existent axis mapping");
+		error_handling::crash(error_handling::error_source::core, "[input_manager::get_axis_mapping_value]",
+			"Trying to get value of non-existent axis mapping: " + mapping_name);
 	return itr->second;
 }

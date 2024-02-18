@@ -1,6 +1,6 @@
 #pragma once
 #include "collision_config_asset.h"
-#include "source/common/abort.h"
+#include "source/common/crash.h"
 
 namespace assets
 {
@@ -8,7 +8,8 @@ namespace assets
 	{
 		auto itr = collision_presets.find(hashed_name);
 		if (itr == collision_presets.end())
-			abort("Trying to get non-existent collsion preset");
+			error_handling::crash(error_handling::error_source::core, "[collision_config::get_preset]",
+				"Trying to get non-existent collision preset: " + hashed_name);
 		return itr->second;
 	};
 }

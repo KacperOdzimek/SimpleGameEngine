@@ -31,7 +31,7 @@ namespace behaviors
 
 			int _c_m_get_render_config(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L);
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_render_config]");
 				auto& rc = mesh->get_render_config();
 
 				lua_createtable(L, 0, 0);
@@ -61,8 +61,8 @@ namespace behaviors
 
 			int _c_m_set_render_config(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L);
-				rendering::render_config rc = load_render_config(L, 3);
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_render_config]");
+				rendering::render_config rc = load_render_config(L, 3, "[_c_m_set_render_config]");
 
 				mesh->set_render_config(rc);
 
@@ -71,21 +71,21 @@ namespace behaviors
 
 			int _c_m_get_visible(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L);
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_visible]");
 				lua_pushboolean(L, mesh->visible);
 				return 1;
 			}
 
 			int _c_m_set_visible(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L);
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_visible]");
 				mesh->visible = lua_toboolean(L, 3);
 				return 0;
 			}
 
 			int _c_m_get_scale(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L);
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_scale]");
 				lua_pushnumber(L, mesh->scale.x);
 				lua_pushnumber(L, mesh->scale.y);
 				return 2;
@@ -93,7 +93,7 @@ namespace behaviors
 
 			int _c_m_set_scale(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L);
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_scale]");
 				float x = lua_tonumber(L, 3);
 				float y = lua_tonumber(L, 4);
 				mesh->scale = { x, y };
@@ -102,7 +102,7 @@ namespace behaviors
 
 			int _c_m_get_offset(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L);
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_offset]");
 				lua_pushnumber(L, mesh->offset.x);
 				lua_pushnumber(L, mesh->offset.y);
 				return 2;
@@ -110,7 +110,7 @@ namespace behaviors
 
 			int _c_m_set_offset(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L);
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_offset]");
 				float x = lua_tonumber(L, 3);
 				float y = lua_tonumber(L, 4);
 				mesh->offset = { x, y };
@@ -123,7 +123,7 @@ namespace behaviors
 
 			int _c_c_get_ortho_width(lua_State* L)
 			{
-				auto camera = load_component<::entities::components::camera>(L);
+				auto camera = load_component<::entities::components::camera>(L, "[_c_c_get_ortho_width]");
 				if (camera != nullptr)
 					lua_pushnumber(L, camera->ortho_width);
 				else
@@ -133,7 +133,7 @@ namespace behaviors
 
 			int _c_c_set_ortho_width(lua_State* L)
 			{
-				auto camera = load_component<::entities::components::camera>(L);
+				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_ortho_width]");
 				float width = lua_tonumber(L, 3);
 				if (camera != nullptr)
 					camera->ortho_width = width;
@@ -142,28 +142,28 @@ namespace behaviors
 
 			int _c_c_get_rendered_layers(lua_State* L)
 			{
-				auto camera = load_component<::entities::components::camera>(L);
+				auto camera = load_component<::entities::components::camera>(L, "[_c_c_get_rendered_layers]");
 				lua_pushinteger(L, camera->rendered_layers);
 				return 1;
 			}
 
 			int _c_c_set_rendered_layers(lua_State* L)
 			{
-				auto camera = load_component<::entities::components::camera>(L);
+				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_rendered_layers]");
 				camera->rendered_layers = lua_tonumber(L, 3);
 				return 0;
 			}
 
 			int _c_c_get_active(lua_State* L)
 			{
-				auto camera = load_component<::entities::components::camera>(L);
+				auto camera = load_component<::entities::components::camera>(L, "[_c_c_get_active]");
 				lua_pushboolean(L, common::renderer->get_active_camera() == camera);
 				return 1;
 			}
 
 			int _c_c_set_active(lua_State* L)
 			{
-				auto camera = load_component<::entities::components::camera>(L);
+				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_active]");
 				if (camera != nullptr)
 					common::renderer->set_active_camera(camera);
 				return 0;
@@ -175,18 +175,17 @@ namespace behaviors
 
 			int _c_b_get_behavior(lua_State* L)
 			{
-				auto ptr = load_component<::entities::components::behavior>(L);
+				auto ptr = load_component<::entities::components::behavior>(L, "[_c_b_get_behavior]");
 				lua_pushstring(L, ptr->behavior_asset->package_name.c_str());
 				return 1;
 			}
 
 			int _c_b_set_behavior(lua_State* L)
 			{
-				auto ptr = load_component<::entities::components::behavior>(L);
-				auto asset = load_id(L, 3);
+				auto ptr = load_component<::entities::components::behavior>(L, "[_c_b_set_behavior]");
+				auto asset = load_id(L, 3, "[_c_b_set_behavior]", "Behavior");
 				if (ptr != nullptr)
 					ptr->behavior_asset = ::assets::cast_asset<::assets::behavior>(::common::assets_manager->get_asset(asset)).lock();
-
 				return 0;
 			}
 
@@ -196,8 +195,9 @@ namespace behaviors
 
 			int _c_cl_get_collision_preset(lua_State* L)
 			{
-				auto ptr = load_component<::entities::components::collider>(L);
-				auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config"))).lock();
+				auto ptr = load_component<::entities::components::collider>(L, "[_c_cl_get_collision_preset]");
+				auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(
+					utilities::hash_string("mod/collision_config"))).lock();
 
 				auto it = std::find_if(config->collision_presets.begin(), config->collision_presets.end(),
 					[&ptr](auto&& p) { return p.second == ptr->preset; });
@@ -212,7 +212,7 @@ namespace behaviors
 
 			int _c_cl_set_collision_preset(lua_State* L)
 			{
-				auto ptr = load_component<::entities::components::collider>(L);
+				auto ptr = load_component<::entities::components::collider>(L, "[_c_cl_set_collision_preset]");
 				auto preset = lua_tostring(L, 3);
 
 				auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
@@ -224,7 +224,7 @@ namespace behaviors
 
 			int _c_cl_get_offset(lua_State* L)
 			{
-				auto cl = load_component<::entities::components::collider>(L);
+				auto cl = load_component<::entities::components::collider>(L, "[_c_cl_get_offset]");
 				lua_pushnumber(L, cl->entity_offset.x);
 				lua_pushnumber(L, cl->entity_offset.y);
 				return 2;
@@ -232,7 +232,7 @@ namespace behaviors
 
 			int _c_cl_set_offset(lua_State* L)
 			{
-				auto cl = load_component<::entities::components::collider>(L);
+				auto cl = load_component<::entities::components::collider>(L, "[_c_cl_set_offset]");
 				cl->entity_offset.x = lua_tonumber(L, 3);
 				cl->entity_offset.y = lua_tonumber(L, 4);
 				return 0;
@@ -240,7 +240,7 @@ namespace behaviors
 
 			int _c_cl_get_extend(lua_State* L)
 			{
-				auto cl = load_component<::entities::components::collider>(L);
+				auto cl = load_component<::entities::components::collider>(L, "[_c_cl_get_extend]");
 				lua_pushnumber(L, cl->extend.x);
 				lua_pushnumber(L, cl->extend.y);
 				return 2;
@@ -248,7 +248,7 @@ namespace behaviors
 
 			int _c_cl_set_extend(lua_State* L)
 			{
-				auto cl = load_component<::entities::components::collider>(L);
+				auto cl = load_component<::entities::components::collider>(L, "[_c_cl_set_extend]");
 				cl->extend.x = lua_tonumber(L, 3);
 				cl->extend.y = lua_tonumber(L, 4);
 				return 0;
@@ -256,14 +256,14 @@ namespace behaviors
 
 			int _c_cl_get_layer_offset(lua_State* L)
 			{
-				auto cl = load_component<::entities::components::collider>(L);
+				auto cl = load_component<::entities::components::collider>(L, "[_c_cl_get_layer_offset]");
 				lua_pushinteger(L, cl->layer_offset);
 				return 1;
 			}
 
 			int _c_cl_set_layer_offset(lua_State* L)
 			{
-				auto cl = load_component<::entities::components::collider>(L);
+				auto cl = load_component<::entities::components::collider>(L, "[_c_cl_set_layer_offset]");
 				cl->layer_offset = lua_tointeger(L, 3);
 				return 0;
 			}

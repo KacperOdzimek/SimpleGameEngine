@@ -22,7 +22,7 @@ namespace behaviors
 
 			int _e_kill(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
+				auto e = load_entity(L, 1, "[_e_kill]");
 				e->kill();
 				return 0;
 			}
@@ -36,7 +36,7 @@ namespace behaviors
 
 			int _e_call(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
+				auto e = load_entity(L, 1, "[_e_call]");
 				const char* name = lua_tostring(L, 2);
 				lua_remove(L, 2);
 				e->call_event(name);
@@ -45,7 +45,7 @@ namespace behaviors
 
 			int _e_teleport(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
+				auto e = load_entity(L, 1, "[_e_teleport]");
 				float x = (float)lua_tonumber(L, 2);
 				float y = (float)lua_tonumber(L, 3);
 				e->teleport({ x, y });
@@ -54,7 +54,7 @@ namespace behaviors
 
 			int _e_sweep(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
+				auto e = load_entity(L, 1, "[_e_sweep]");
 				float x = (float)lua_tonumber(L, 2);
 				float y = (float)lua_tonumber(L, 3);
 				auto event = e->sweep({ x, y });
@@ -64,7 +64,7 @@ namespace behaviors
 
 			int _e_get_location(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
+				auto e = load_entity(L, 1, "[_e_get_location]");
 				lua_pushnumber(L, e->get_location().x);
 				lua_pushnumber(L, e->get_location().y);
 				return 2;
@@ -72,22 +72,22 @@ namespace behaviors
 
 			int _e_kill_component(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
-				uint32_t id = load_id(L, 2);
+				auto e = load_entity(L, 1, "[_e_kill_component]");
+				uint32_t id = load_id(L, 2, "[_e_kill_component]", "Component");
 				e->kill_component(id);
 				return 0;
 			}
 
 			int _e_get_layer(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
+				auto e = load_entity(L, 1, "[_e_set_layer]");
 				lua_pushinteger(L, e->layer);
 				return 1;
 			}
 
 			int _e_set_layer(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
+				auto e = load_entity(L, 1, "[_e_set_layer]");
 				int layer = lua_tointeger(L, 2);
 				e->layer = layer;
 				return 0;

@@ -21,9 +21,9 @@ namespace behaviors
 		{
 			int _e_add_behavior(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
-				uint32_t id = load_id(L, 2);
-				uint32_t bhv = load_id(L, 3);
+				auto e = load_entity(L, 1, "[_e_add_behavior]");
+				uint32_t id = load_id(L, 2, "[_e_add_behavior]", "Component");
+				uint32_t bhv = load_id(L, 3, "[_e_add_behavior]", "Behavior");
 
 				e->attach_component(
 					new ::entities::components::behavior{
@@ -37,8 +37,8 @@ namespace behaviors
 
 			int _e_add_camera(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
-				uint32_t id = load_id(L, 2);
+				auto e = load_entity(L, 1, "[_e_add_camera]");
+				uint32_t id = load_id(L, 2, "[_e_add_camera]", "Component");
 				float width = lua_tonumber(L, 3);
 				
 				e->attach_component(
@@ -52,9 +52,9 @@ namespace behaviors
 
 			int _e_add_mesh(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
-				uint32_t id = load_id(L, 2);
-				rendering::render_config rc = load_render_config(L, 3);
+				auto e = load_entity(L, 1, "[_e_add_mesh]");
+				uint32_t id = load_id(L, 2, "[_e_add_mesh]", "Component");
+				rendering::render_config rc = load_render_config(L, 3, "[_e_add_mesh]");
 
 				e->attach_component(
 					new ::entities::components::mesh{
@@ -67,8 +67,8 @@ namespace behaviors
 
 			int _e_add_collider(lua_State* L)
 			{
-				auto e = load_entity(L, 1);
-				uint32_t id = load_id(L, 2);
+				auto e = load_entity(L, 1, "[_e_add_collider]");
+				uint32_t id = load_id(L, 2, "[_e_add_collider]", "Component");
 				auto preset_name = lua_tostring(L, 3);
 				physics::collision_preset preset;
 

@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-#include "source/common/abort.h"
+#include "source/common/crash.h"
 #include "source/rendering/render_config.h"
 #include "source/rendering/transformations_buffer_iterator.h"
 
@@ -132,7 +132,8 @@ void renderer::initialize()
 {
     impl->api = new graphics_abstraction::implementations::opengl_3_3_api::opengl_3_3_api;
     if (impl->api == nullptr)
-        abort("Cannot create api instance");
+        error_handling::crash(error_handling::error_source::core, "[renderer::initialize]",
+            "Cannot initialize api instance");
     impl->textures = reinterpret_cast<graphics_abstraction::textures_set*>(
         impl->api->build(impl->api->create_textures_set_builder())
     );
