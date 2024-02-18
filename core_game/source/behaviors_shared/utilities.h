@@ -55,7 +55,15 @@ inline comp_class* load_component(lua_State* L, const std::string parent_functio
 {
 	auto e = load_entity(L, entity_ptr_pos, parent_function);
 	uint32_t comp = load_id(L, component_id_pos, parent_function, "Component");
-	return dynamic_cast<comp_class*>(e->get_component(comp));
+	auto component = e->get_component(comp);
+	if (component == nullptr)
+		error_handling::crash(error_handling::error_source::mod, parent_function, 
+			"Entity does not contain component with tag: " + std::to_string(comp));
+	auto casted = dynamic_cast<comp_class*>(component);
+	if (casted == nullptr)
+		error_handling::crash(error_handling::error_source::mod, parent_function, 
+			"Component: " + std::to_string(comp) + " is not of the type you try to operate on");
+	return casted;
 }
 
 inline rendering::render_config load_render_config(lua_State* L, int arg_id, const std::string parent_function)

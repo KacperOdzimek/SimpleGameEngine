@@ -45,7 +45,8 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-
+	common::assets_manager->load_asset("mod/shaders/cat_shader");
+	common::assets_manager->load_asset("mod/textures/cat_texture");
 	common::assets_manager->load_asset("mod/behaviors/move_right");
 	common::assets_manager->load_asset("mod/behaviors/move_left");
 
@@ -54,32 +55,12 @@ int main()
 	/*
 		The Box
 	*/
-	auto create_spining_box = [&](glm::vec2 pos, std::string beh_path)
+	auto create_entity_with_bhv = [&](glm::vec2 pos, std::string beh_path)
 	{
-		auto box = new entities::entity;
-		box->teleport(pos);
+		auto e = new entities::entity;
+		e->teleport(pos);
 
-		/*auto mesh = new entities::components::mesh{
-			utilities::hash_string("mesh"), 
-			assets::cast_asset<assets::mesh>(common::assets_manager->get_asset(utilities::hash_string("core/square_mesh"))),
-			assets::cast_asset<assets::shader>(common::assets_manager->get_asset(utilities::hash_string("mod/shaders/cat_shader"))),
-			{
-				assets::cast_asset<assets::texture>(common::assets_manager->get_asset(utilities::hash_string("mod/textures/cat_texture"))),
-			}
-		};
-
-		box->attach_component(mesh);*/
-
-		auto f = physics::gen_flag(0, { physics::collision_response::ignore });
-		auto col = new entities::components::collider
-		{
-			utilities::hash_string("collider1"), f, {0.5f, 0.5f}
-		};
-		box->attach_component(
-			col
-		);
-
-		box->attach_component(
+		e->attach_component(
 			new entities::components::behavior
 			{
 				utilities::hash_string("bhv"),
@@ -87,11 +68,11 @@ int main()
 			}
 		);
 
-		return std::pair<entities::entity*, entities::components::collider*>{ box, col };
+		return e;
 	};
 
-	auto b1 = create_spining_box({-1.0f, 0.0f}, "mod/behaviors/move_left");
-	auto b2 = create_spining_box({1.0f, 0.0f}, "mod/behaviors/move_right");
+	auto b1 = create_entity_with_bhv({-1.0f, 0.0f}, "mod/behaviors/move_left");
+	auto b2 = create_entity_with_bhv({1.0f, 0.0f}, "mod/behaviors/move_right");
 
 	/*
 		Camera Actor

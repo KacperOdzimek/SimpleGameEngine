@@ -1,7 +1,6 @@
 function on_init(e)
     x, y = _e_get_location(e)
     _d_set_f("a", 0); _d_set_f("x", x); _d_set_f("y", y)
-    _c_cl_set_collision_preset(e, "collider1", "body")
 
     config = {
         shader = "mod/shaders/cat_shader",
@@ -12,6 +11,7 @@ function on_init(e)
     }
 
     _e_add_mesh(e, "mesh", config)
+    _e_add_collider(e, "collider", "body", 0.5, 0.5)
 end
 
 function on_update(e, dt)
