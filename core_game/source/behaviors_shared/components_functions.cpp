@@ -183,9 +183,9 @@ namespace behaviors
 			int _c_b_set_behavior(lua_State* L)
 			{
 				auto ptr = load_component<::entities::components::behavior>(L, "[_c_b_set_behavior]");
-				auto asset = load_id(L, 3, "[_c_b_set_behavior]", "Behavior");
+				auto asset = load_asset_path(L, 3, "[_c_b_set_behavior]");
 				if (ptr != nullptr)
-					ptr->behavior_asset = ::assets::cast_asset<::assets::behavior>(::common::assets_manager->get_asset(asset)).lock();
+					ptr->behavior_asset = ::assets::cast_asset<::assets::behavior>(::common::assets_manager->safe_get_asset(asset)).lock();
 				return 0;
 			}
 
@@ -215,7 +215,8 @@ namespace behaviors
 				auto ptr = load_component<::entities::components::collider>(L, "[_c_cl_set_collision_preset]");
 				auto preset = lua_tostring(L, 3);
 
-				auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
+				auto config = ::assets::cast_asset<::assets::collision_config>(
+					::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
 
 				if (ptr != nullptr)
 					ptr->preset = config.lock()->get_preset(utilities::hash_string(preset));

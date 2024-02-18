@@ -44,6 +44,15 @@ std::weak_ptr<asset> assets_manager::get_asset(uint32_t hashed_name)
     return  itr->second;
 }
 
+std::weak_ptr<asset> assets_manager::safe_get_asset(std::string path)
+{
+    auto itr = impl->assets.find({ utilities::hash_string(path) });
+    if (itr != impl->assets.end())
+        return itr->second;
+    load_asset(path);
+    return get_asset(utilities::hash_string(path));
+}
+
 void assets_manager::load_asset(std::string path)
 {
     auto file = filesystem::load_file(path + ".json");

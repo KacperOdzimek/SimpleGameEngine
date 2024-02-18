@@ -45,8 +45,7 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	common::assets_manager->load_asset("mod/shaders/cat_shader");
-	common::assets_manager->load_asset("mod/textures/cat_texture");
+
 	common::assets_manager->load_asset("mod/behaviors/move_right");
 	common::assets_manager->load_asset("mod/behaviors/move_left");
 
@@ -60,7 +59,7 @@ int main()
 		auto box = new entities::entity;
 		box->teleport(pos);
 
-		auto mesh = new entities::components::mesh{ 
+		/*auto mesh = new entities::components::mesh{
 			utilities::hash_string("mesh"), 
 			assets::cast_asset<assets::mesh>(common::assets_manager->get_asset(utilities::hash_string("core/square_mesh"))),
 			assets::cast_asset<assets::shader>(common::assets_manager->get_asset(utilities::hash_string("mod/shaders/cat_shader"))),
@@ -69,7 +68,7 @@ int main()
 			}
 		};
 
-		box->attach_component(mesh);
+		box->attach_component(mesh);*/
 
 		auto f = physics::gen_flag(0, { physics::collision_response::ignore });
 		auto col = new entities::components::collider

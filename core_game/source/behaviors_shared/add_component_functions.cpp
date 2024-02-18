@@ -23,12 +23,12 @@ namespace behaviors
 			{
 				auto e = load_entity(L, 1, "[_e_add_behavior]");
 				uint32_t id = load_id(L, 2, "[_e_add_behavior]", "Component");
-				uint32_t bhv = load_id(L, 3, "[_e_add_behavior]", "Behavior");
+				auto bhv = load_asset_path(L, 3, "[_e_add_behavior]");
 
 				e->attach_component(
 					new ::entities::components::behavior{
 						id,
-						::assets::cast_asset<::assets::behavior>(::common::assets_manager->get_asset(bhv))
+						::assets::cast_asset<::assets::behavior>(::common::assets_manager->safe_get_asset(bhv))
 					}
 				);
 

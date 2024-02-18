@@ -43,6 +43,13 @@ inline uint32_t load_id(lua_State* L, int arg_id, std::string parent_function, c
 	error_handling::crash(error_handling::error_source::mod, parent_function, id_of_what + " id should be integer or string");
 }
 
+inline std::string load_asset_path(lua_State* L, int arg_id, std::string parent_function)
+{
+	if (lua_isstring(L, arg_id))
+		return lua_tostring(L, arg_id);
+	error_handling::crash(error_handling::error_source::mod, parent_function, "Asset path should be string");
+}
+
 template<class comp_class>
 inline comp_class* load_component(lua_State* L, const std::string parent_function, int entity_ptr_pos = 1, int component_id_pos = 2)
 {
@@ -65,17 +72,15 @@ inline rendering::render_config load_render_config(lua_State* L, int arg_id, con
 				std::string key = lua_tostring(L, -2);
 				if (key == "shader")
 				{
-					rc.material = assets::cast_asset<assets::shader>(common::assets_manager->get_asset(
-						load_id(L, -1, parent_function, "Shader")
+					rc.material = assets::cast_asset<assets::shader>(common::assets_manager->safe_get_asset(
+						load_asset_path(L, -1, parent_function)
 					)).lock();
 				}
 				else if (key == "mesh")
 				{
-					rc.textures.push_back(
-						assets::cast_asset<assets::texture>(common::assets_manager->get_asset(
-							load_id(L, -1, parent_function, "Mesh")
-						)).lock()
-					);
+					rc.mesh = assets::cast_asset<assets::mesh>(common::assets_manager->safe_get_asset(
+						load_asset_path(L, -1, parent_function)
+					)).lock();
 				}
 				else if (key == "textures")
 				{
@@ -85,8 +90,8 @@ inline rendering::render_config load_render_config(lua_State* L, int arg_id, con
 						while (lua_next(L, arg_id + 2) != 0)
 						{
 							rc.textures.push_back(
-								assets::cast_asset<assets::texture>(common::assets_manager->get_asset(
-									load_id(L, -1, parent_function, "Texture")
+								assets::cast_asset<assets::texture>(common::assets_manager->safe_get_asset(
+									load_asset_path(L, -1, parent_function)
 								)).lock()
 							);
 							lua_pop(L, 1);
