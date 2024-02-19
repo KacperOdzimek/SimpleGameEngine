@@ -7,7 +7,7 @@ function on_update(e, dt)
 
     x_change = _i_axis("move_right") * dt * speed
     y_change = _i_axis("move_forward") * dt * speed
-
+    
     x, y = _e_get_location(e)
     _e_sweep(e, x + x_change, y + y_change)
 end

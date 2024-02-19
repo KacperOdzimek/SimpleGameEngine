@@ -47,7 +47,7 @@ std::weak_ptr<asset> assets_manager::get_asset(uint32_t hashed_name)
 std::weak_ptr<asset> assets_manager::safe_get_asset(std::string path)
 {
     auto itr = impl->assets.find({ utilities::hash_string(path) });
-    if (itr != impl->assets.end())
+    if (itr != impl->assets.end() && !itr->second.expired())
         return itr->second;
     load_asset(path);
     return get_asset(utilities::hash_string(path));

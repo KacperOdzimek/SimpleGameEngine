@@ -54,9 +54,6 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	common::assets_manager->load_asset("mod/behaviors/move_right");
-	common::assets_manager->load_asset("mod/behaviors/move_left");
-
 	common::world->create_active_scene();
 
 	/*
@@ -71,7 +68,7 @@ int main()
 			new entities::components::behavior
 			{
 				utilities::hash_string("bhv"),
-				assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string(beh_path))).lock()
+				assets::cast_asset<assets::behavior>(common::assets_manager->safe_get_asset(beh_path)).lock()
 			}
 		);
 
