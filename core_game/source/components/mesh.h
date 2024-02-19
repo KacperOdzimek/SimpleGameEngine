@@ -23,7 +23,7 @@ namespace entities
 			component that links the rendering subsystem with game logic
 			mesh adds rendered geometry to the entity
 		*/
-		class mesh : public entities::component
+		class mesh : virtual public entities::component
 		{
 			friend entities::entity;
 			friend rendering::renderer;

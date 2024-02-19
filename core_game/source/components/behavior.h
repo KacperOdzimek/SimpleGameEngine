@@ -19,7 +19,7 @@ namespace entities
 			component that links the game logic to the entity
 			behavior adds behavior assets to the entity
 		*/
-		class behavior : public entities::component
+		class behavior : virtual public entities::component
 		{	
 		protected:
 			std::shared_ptr<behaviors::database> database;
@@ -37,7 +37,7 @@ namespace entities
 				calls function of given name on the behavior
 			*/
 			void call_custom_function(const std::string& name);
-			virtual void on_attach();
+			virtual void on_attach() override;
 		};
 	}
 }

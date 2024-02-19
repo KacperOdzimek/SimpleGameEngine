@@ -10,7 +10,7 @@
 namespace common
 {
 	double delta_time = 0.0;
-	double pixels_per_world_unit = 32;
+	double pixels_per_world_unit = 1024;
 	std::unique_ptr<rendering::renderer> renderer = std::make_unique<rendering::renderer>();
 	std::unique_ptr<assets::assets_manager> assets_manager = std::make_unique<assets::assets_manager>();
 	std::unique_ptr<entities::world> world = std::make_unique<entities::world>();

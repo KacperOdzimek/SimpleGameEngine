@@ -12,6 +12,7 @@
 #include "source/components/camera.h"
 #include "source/components/collider.h"
 #include "source/components/mesh.h"
+#include "source/components/sprite.h"
 
 namespace behaviors
 {
@@ -70,8 +71,8 @@ namespace behaviors
 				auto e = load_entity(L, 1, "[_e_add_collider]");
 				uint32_t id = load_id(L, 2, "[_e_add_collider]", "Component");
 				auto preset_name = lua_tostring(L, 3);
-				physics::collision_preset preset;
 
+				physics::collision_preset preset;
 				{
 					auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
 					preset = config.lock()->get_preset(utilities::hash_string(preset_name));
@@ -90,12 +91,37 @@ namespace behaviors
 				return 0;
 			}
 
+			int _e_add_sprite(lua_State* L)
+			{
+				auto e = load_entity(L, 1, "[_e_add_sprite]");
+				uint32_t id = load_id(L, 2, "[_e_add_sprite]", "Component");
+				auto texture = load_asset_path(L, 3, "[_e_add_sprite]");
+				auto preset_name = lua_tostring(L, 4);
+
+				physics::collision_preset preset;
+				{
+					auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
+					preset = config.lock()->get_preset(utilities::hash_string(preset_name));
+				}
+
+				e->attach_component(
+					new ::entities::components::sprite{
+						id,
+						::assets::cast_asset<::assets::texture>(::common::assets_manager->safe_get_asset(texture)),
+						preset
+					}
+				);
+
+				return 0;
+			}
+
 			void register_functions(lua_State* L)
 			{
 				lua_register(L, "_e_add_behavior", _e_add_behavior);
 				lua_register(L, "_e_add_camera", _e_add_camera);
 				lua_register(L, "_e_add_mesh", _e_add_mesh);
 				lua_register(L, "_e_add_collider", _e_add_collider);
+				lua_register(L, "_e_add_sprite", _e_add_sprite);
 			}
 		}
 	}

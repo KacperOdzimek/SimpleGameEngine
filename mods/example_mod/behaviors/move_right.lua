@@ -2,7 +2,7 @@ function on_init(e)
     _d_set_b("moving_up", true)
 
     config = {
-        shader = "mod/shaders/cat_shader",
+        shader = "core/sprite_shader",
         mesh = "core/square_mesh",
         textures = {
             "mod/textures/cat_texture"

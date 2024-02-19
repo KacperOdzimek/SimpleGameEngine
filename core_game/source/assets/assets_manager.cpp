@@ -40,7 +40,7 @@ std::weak_ptr<asset> assets_manager::get_asset(uint32_t hashed_name)
     auto itr = impl->assets.find({ hashed_name });
     if (itr == impl->assets.end())
         error_handling::crash(error_handling::error_source::core,
-            "[asset_manager::get_asset]", "Missing asset: " + hashed_name);
+            "[asset_manager::get_asset]", "Missing asset: " + std::to_string(hashed_name));
     return  itr->second;
 }
 
