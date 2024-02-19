@@ -54,7 +54,7 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	common::assets_manager->load_asset("mod/behaviors/move_right");
+	//common::assets_manager->load_asset("mod/behaviors/move_right");
 	common::assets_manager->load_asset("mod/behaviors/move_left");
 
 	common::world->create_active_scene();
@@ -79,7 +79,7 @@ int main()
 	};
 
 	auto b1 = create_entity_with_bhv({0.0f, 0.0f}, "mod/behaviors/move_left");
-	auto b2 = create_entity_with_bhv({1.0f, 0.0f}, "mod/behaviors/move_right");
+	//auto b2 = create_entity_with_bhv({1.0f, 0.0f}, "mod/behaviors/move_right");
 
 	/*
 		Camera Actor

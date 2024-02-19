@@ -27,6 +27,4 @@ function on_update(e, dt)
     else
         _e_sweep(e, x, y - 3 * dt)
     end
-
-    _c_m_set_visible(e, "mesh", _c_m_get_visible(e, "mesh"))
 end
