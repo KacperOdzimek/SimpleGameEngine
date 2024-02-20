@@ -57,8 +57,12 @@ int main()
 	common::world->create_active_scene();
 
 	/*
-		The Box
+		TEMP
 	*/
+
+	common::assets_manager->load_asset("mod/textures/sprite_sheet");
+	common::assets_manager->lock_asset(utilities::hash_string("mod/textures/sprite_sheet"));
+
 	auto create_entity_with_bhv = [&](glm::vec2 pos, std::string beh_path)
 	{
 		auto e = new entities::entity;

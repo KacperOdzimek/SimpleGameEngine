@@ -95,6 +95,9 @@ void assets_manager::load_asset(std::string path)
     case utilities::hash_string("mesh"):
         new_asset = loading::load_mesh(load_data);
         break;
+    case utilities::hash_string("sprite_sheet"):
+        new_asset = loading::load_sprite_sheet(load_data);
+        break;
     case utilities::hash_string("input_config"):
         new_asset = loading::load_input_config(load_data);
         break;
