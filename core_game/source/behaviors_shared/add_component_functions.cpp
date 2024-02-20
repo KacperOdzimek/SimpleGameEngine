@@ -11,7 +11,7 @@
 #include "source/components/behavior.h"
 #include "source/components/camera.h"
 #include "source/components/collider.h"
-#include "source/components/mesh.h"
+#include "source/components/static_mesh.h"
 #include "source/components/sprite.h"
 
 namespace behaviors
@@ -51,14 +51,14 @@ namespace behaviors
 				return 0;
 			}
 
-			int _e_add_mesh(lua_State* L)
+			int _e_add_static_mesh(lua_State* L)
 			{
-				auto e = load_entity(L, 1, "[_e_add_mesh]");
-				uint32_t id = load_id(L, 2, "[_e_add_mesh]", "Component");
-				rendering::render_config rc = load_render_config(L, 3, "[_e_add_mesh]");
+				auto e = load_entity(L, 1, "[_e_add_static_mesh]");
+				uint32_t id = load_id(L, 2, "[_e_add_static_mesh]", "Component");
+				rendering::render_config rc = load_render_config(L, 3, "[_e_add_static_mesh]");
 
 				e->attach_component(
-					new ::entities::components::mesh{
+					new ::entities::components::static_mesh{
 						id, rc
 					}
 				);
@@ -119,7 +119,7 @@ namespace behaviors
 			{
 				lua_register(L, "_e_add_behavior", _e_add_behavior);
 				lua_register(L, "_e_add_camera", _e_add_camera);
-				lua_register(L, "_e_add_mesh", _e_add_mesh);
+				lua_register(L, "_e_add_static_mesh", _e_add_static_mesh);
 				lua_register(L, "_e_add_collider", _e_add_collider);
 				lua_register(L, "_e_add_sprite", _e_add_sprite);
 			}

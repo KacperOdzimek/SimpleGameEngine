@@ -9,7 +9,7 @@ function on_init(e)
         }
     }
 
-    _e_add_mesh(e, "mesh", config)
+    _e_add_static_mesh(e, "mesh", config)
     _e_add_collider(e, "collider", "body", 0.5, 0.5)
 end
 

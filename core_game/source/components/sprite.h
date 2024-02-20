@@ -6,14 +6,17 @@ namespace entities
 {
 	namespace components
 	{
-		class sprite : public mesh, public collider
+		class sprite : virtual public mesh, virtual public collider
 		{
 		private:
-			std::shared_ptr<assets::texture> texture;
+			rendering::render_config rc;
 		public:
 			sprite(uint32_t _id, std::weak_ptr<assets::texture> _texture, physics::collision_preset preset);
-			virtual void on_attach() override;
 			~sprite();
+
+			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
+			virtual void on_attach() override;
+			virtual const rendering::render_config& get_render_config() override;
 		};
 	}
 }

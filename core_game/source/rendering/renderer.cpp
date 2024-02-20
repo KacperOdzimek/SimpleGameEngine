@@ -187,7 +187,7 @@ void renderer::mark_pipeline_dirty(const render_config& pipeline)
 
 void renderer::register_mesh_component(entities::components::mesh* mesh)
 {
-    auto itr = impl->pipelines.find(mesh->_config);
+    auto itr = impl->pipelines.find(mesh->get_render_config());
     if (itr == impl->pipelines.end())
     {
         auto bb = impl->api->create_buffer_builder();
@@ -202,7 +202,7 @@ void renderer::register_mesh_component(entities::components::mesh* mesh)
         geo.transformations_buffer = reinterpret_cast<graphics_abstraction::buffer*>(impl->api->build(bb));
         geo.should_reload_transformations = true;
 
-        impl->pipelines.insert({ mesh->_config, std::move(geo) });
+        impl->pipelines.insert({ mesh->get_render_config(), std::move(geo) });
     }
     else
     {
@@ -213,7 +213,7 @@ void renderer::register_mesh_component(entities::components::mesh* mesh)
 
 void renderer::unregister_mesh_component(entities::components::mesh* mesh)
 {
-    auto p_itr = impl->pipelines.find(mesh->_config);
+    auto p_itr = impl->pipelines.find(mesh->get_render_config());
 
     if (p_itr == impl->pipelines.end())
         return;

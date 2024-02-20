@@ -17,7 +17,7 @@
 #include "source/components/camera.h"
 #include "source/components/behavior.h"
 #include "source/components/collider.h"
-#include "source/components/mesh.h"
+#include "source/components/static_mesh.h"
 
 namespace behaviors
 {
@@ -26,12 +26,12 @@ namespace behaviors
 		namespace components
 		{
 			/*
-				Mesh
+				Static Mesh
 			*/
 
-			int _c_m_get_render_config(lua_State* L)
+			int _c_sm_get_render_config(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_render_config]");
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_get_render_config]");
 				auto& rc = mesh->get_render_config();
 
 				lua_createtable(L, 0, 0);
@@ -59,58 +59,58 @@ namespace behaviors
 				return 1;
 			}
 
-			int _c_m_set_render_config(lua_State* L)
+			int _c_sm_set_render_config(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_render_config]");
-				rendering::render_config rc = load_render_config(L, 3, "[_c_m_set_render_config]");
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_set_render_config]");
+				rendering::render_config rc = load_render_config(L, 3, "[_c_sm_set_render_config]");
 
 				mesh->set_render_config(rc);
 
 				return 0;
 			}
 
-			int _c_m_get_visible(lua_State* L)
+			int _c_sm_get_visible(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_visible]");
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_get_visible]");
 				lua_pushboolean(L, mesh->visible);
 				return 1;
 			}
 
-			int _c_m_set_visible(lua_State* L)
+			int _c_sm_set_visible(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_visible]");
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_set_visible]");
 				mesh->visible = lua_toboolean(L, 3);
 				return 0;
 			}
 
-			int _c_m_get_scale(lua_State* L)
+			int _c_sm_get_scale(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_scale]");
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_get_scale]");
 				lua_pushnumber(L, mesh->scale.x);
 				lua_pushnumber(L, mesh->scale.y);
 				return 2;
 			}
 
-			int _c_m_set_scale(lua_State* L)
+			int _c_sm_set_scale(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_scale]");
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_set_scale]");
 				float x = lua_tonumber(L, 3);
 				float y = lua_tonumber(L, 4);
 				mesh->scale = { x, y };
 				return 0;
 			}
 
-			int _c_m_get_offset(lua_State* L)
+			int _c_sm_get_offset(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_offset]");
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_get_offset]");
 				lua_pushnumber(L, mesh->offset.x);
 				lua_pushnumber(L, mesh->offset.y);
 				return 2;
 			}
 
-			int _c_m_set_offset(lua_State* L)
+			int _c_sm_set_offset(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_offset]");
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_set_offset]");
 				float x = lua_tonumber(L, 3);
 				float y = lua_tonumber(L, 4);
 				mesh->offset = { x, y };
@@ -275,14 +275,14 @@ namespace behaviors
 
 			void register_functions(lua_State* L)
 			{
-				lua_register(L, "_c_m_get_render_config", _c_m_get_render_config);
-				lua_register(L, "_c_m_set_render_config", _c_m_set_render_config);
-				lua_register(L, "_c_m_get_visible", _c_m_get_visible);
-				lua_register(L, "_c_m_set_visible", _c_m_set_visible);
-				lua_register(L, "_c_m_get_scale", _c_m_get_scale);
-				lua_register(L, "_c_m_set_scale", _c_m_set_scale);
-				lua_register(L, "_c_m_set_offset", _c_m_set_offset);
-				lua_register(L, "_c_m_get_offset", _c_m_get_offset);
+				lua_register(L, "_c_sm_get_render_config", _c_sm_get_render_config);
+				lua_register(L, "_c_sm_set_render_config", _c_sm_set_render_config);
+				lua_register(L, "_c_sm_get_visible", _c_sm_get_visible);
+				lua_register(L, "_c_sm_set_visible", _c_sm_set_visible);
+				lua_register(L, "_c_sm_get_scale", _c_sm_get_scale);
+				lua_register(L, "_c_sm_set_scale", _c_sm_set_scale);
+				lua_register(L, "_c_sm_set_offset", _c_sm_set_offset);
+				lua_register(L, "_c_sm_get_offset", _c_sm_get_offset);
 
 				lua_register(L, "_c_c_get_ortho_width", _c_c_get_ortho_width);
 				lua_register(L, "_c_c_set_ortho_width", _c_c_set_ortho_width);
