@@ -2,6 +2,6 @@
     "asset_type" : "sprite_sheet",
     "path" : "/textures/abcdef.png",
 
-    "sprite_width" : 16,
-    "sprite_height" : 16
+    "sprite_width" : 32,
+    "sprite_height" : 32
 }

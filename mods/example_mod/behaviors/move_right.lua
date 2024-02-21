@@ -1,16 +1,6 @@
 function on_init(e)
     _d_set_b("moving_up", true)
-
-    config = {
-        shader = "core/sprite_shader",
-        mesh = "core/square_mesh",
-        textures = {
-            "mod/textures/cat_texture"
-        }
-    }
-
-    _e_add_static_mesh(e, "mesh", config)
-    _e_add_collider(e, "collider", "body", 0.5, 0.5)
+    _e_add_sprite(e, "sprite", "mod/textures/cat_texture", 0, "body")
 end
 
 function on_update(e, dt)

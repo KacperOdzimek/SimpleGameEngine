@@ -7,21 +7,34 @@
 #include "source/physics/collision_solver.h"
 #include "source/rendering/renderer.h"
 
+#include "source/assets/sprite_sheet.h"
+
 #include "source/utilities/hash_string.h"
-#include "source/assets/texture_asset.h"
 
 using namespace entities;
 using namespace components;
+
+glm::vec2 get_extend_from_texture(const std::weak_ptr<assets::texture>& txt)
+{
+	auto ptr = txt.lock().get();
+	auto casted = dynamic_cast<assets::sprite_sheet*>(ptr);
+	if (casted != nullptr)
+		return	{
+			casted->sprite_width / common::pixels_per_world_unit,
+			casted->sprite_height / common::pixels_per_world_unit
+	};
+	else
+		return {
+			ptr->get_width() / common::pixels_per_world_unit,
+			ptr->get_height() / common::pixels_per_world_unit
+		};
+}
 
 sprite::sprite(uint32_t _id, std::weak_ptr<assets::texture> _texture, physics::collision_preset preset)
 	: component(_id),
 	mesh(_id),
 	collider(
-		_id, preset, 
-		{
-			_texture.lock()->get_width() / common::pixels_per_world_unit / 2,
-			_texture.lock()->get_height() / common::pixels_per_world_unit / 2
-		}
+		_id, preset, get_extend_from_texture(_texture) / 2.0f
 	)
 {
 	rc.material = assets::cast_asset<assets::shader>(
@@ -31,11 +44,14 @@ sprite::sprite(uint32_t _id, std::weak_ptr<assets::texture> _texture, physics::c
 		common::assets_manager->get_asset(utilities::hash_string("core/square_mesh"))).lock();
 
 	rc.textures = { _texture.lock() };
+
+	sprite_extend = get_extend_from_texture(_texture);
 }
 
 void sprite::on_attach()
 {
 	common::renderer->register_mesh_component(this);
+	common::collision_solver->register_collider(this);
 }
 
 void sprite::pass_transformation(rendering::transformations_buffer_iterator& tbi)
@@ -47,10 +63,11 @@ void sprite::pass_transformation(rendering::transformations_buffer_iterator& tbi
 		tbi.put(std::move(location.x));
 		tbi.put(std::move(location.y));
 
-		tbi.put(1.0f);
-		tbi.put(1.0f);
+		tbi.put(sprite_extend.x);
+		tbi.put(sprite_extend.y);
 
 		tbi.put(owner->layer);
+		tbi.put(sprite_id);
 	}
 }
 

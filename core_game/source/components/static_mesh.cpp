@@ -50,6 +50,7 @@ void entities::components::static_mesh::pass_transformation(rendering::transform
 		tbi.put(scale.y);
 
 		tbi.put(owner->layer);
+		tbi.put(0);
 	}
 }
 

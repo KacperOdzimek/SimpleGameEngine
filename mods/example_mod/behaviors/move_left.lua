@@ -1,6 +1,5 @@
 function on_init(e)
-    _e_add_sprite(e, "sprite", "mod/textures/cat_texture", "body")
-
+    _e_add_sprite(e, "sprite", "mod/textures/sprite_sheet", 1, "body")
 end
 
 function on_update(e, dt)

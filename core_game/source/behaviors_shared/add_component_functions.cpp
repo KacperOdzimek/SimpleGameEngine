@@ -96,7 +96,8 @@ namespace behaviors
 				auto e = load_entity(L, 1, "[_e_add_sprite]");
 				uint32_t id = load_id(L, 2, "[_e_add_sprite]", "Component");
 				auto texture = load_asset_path(L, 3, "[_e_add_sprite]");
-				auto preset_name = lua_tostring(L, 4);
+				int sprite_id = lua_tointeger(L, 4);
+				auto preset_name = lua_tostring(L, 5);
 
 				physics::collision_preset preset;
 				{
@@ -104,13 +105,14 @@ namespace behaviors
 					preset = config.lock()->get_preset(utilities::hash_string(preset_name));
 				}
 
-				e->attach_component(
-					new ::entities::components::sprite{
+				auto sprite = new ::entities::components::sprite{
 						id,
 						::assets::cast_asset<::assets::texture>(::common::assets_manager->safe_get_asset(texture)),
 						preset
-					}
-				);
+				};
+
+				e->attach_component(sprite);
+				sprite->sprite_id = sprite_id;
 
 				return 0;
 			}
