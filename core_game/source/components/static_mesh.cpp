@@ -11,7 +11,7 @@ entities::components::static_mesh::static_mesh(
 	std::weak_ptr<assets::shader> _material,
 	std::vector<std::weak_ptr<assets::texture>> _textures	
 )
-	: component(_id), offset({0, 0}), mesh(_id)
+	: component(_id), mesh(_id)
 {
 	_config.mesh = _mesh.lock();
 	_config.material = _material.lock();
@@ -23,7 +23,7 @@ entities::components::static_mesh::static_mesh(
 	uint32_t _id,
 	rendering::render_config __config
 )
-	: component(_id), offset({ 0, 0 }), _config(__config), mesh(_id)
+	: component(_id),  _config(__config), mesh(_id)
 {
 }
 

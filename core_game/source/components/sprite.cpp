@@ -54,6 +54,15 @@ void sprite::on_attach()
 	common::collision_solver->register_collider(this);
 }
 
+void sprite::set_sprite_id(int new_sprite_id)
+{
+	if (sprite_id != new_sprite_id)
+	{
+		sprite_id = new_sprite_id;
+		common::renderer->mark_pipeline_dirty(this->get_render_config());
+	}
+}
+
 void sprite::pass_transformation(rendering::transformations_buffer_iterator& tbi)
 {
 	if (visible)

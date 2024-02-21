@@ -30,8 +30,32 @@ namespace entities
 		protected:
 			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) = 0;
 			void mark_pipeline_dirty();
-		public:
 			bool visible = true;
+			glm::vec2 offset = { 0, 0 };
+			glm::vec2 scale = { 1, 1 };
+		public:
+			void set_visible(bool visiblity) { if (visible != visiblity) { visible = visiblity; mark_pipeline_dirty(); } }
+			bool get_visible() { return visible; }
+
+			void set_offset(glm::vec2 new_offset) 
+			{ 
+				if (offset.x != new_offset.x || offset.y != new_offset.y) 
+				{ 
+					offset = new_offset;
+					mark_pipeline_dirty(); 
+				} 
+			}
+			const glm::vec2& get_offset() { return offset; }
+
+			void set_scale(glm::vec2 new_scale)
+			{
+				if (scale.x != new_scale.x || scale.y != new_scale.y)
+				{
+					scale = new_scale;
+					mark_pipeline_dirty();
+				}
+			}
+			const glm::vec2& get_scale() { return scale; }
 
 			virtual const rendering::render_config& get_render_config() = 0;
 			virtual void on_attach() override;

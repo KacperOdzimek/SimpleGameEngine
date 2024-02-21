@@ -30,17 +30,6 @@ namespace entities
 			*/
 			void mark_pipeline_dirty();
 		public:
-
-			/*
-				entity-relative location
-			*/
-			glm::vec2 offset = { 0, 0 };
-
-			/*
-				mesh scale
-			*/
-			glm::vec2 scale = { 1, 1 };
-
 			virtual const rendering::render_config& get_render_config() override;
 			void set_render_config(const rendering::render_config& rc);
 

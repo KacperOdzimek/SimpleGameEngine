@@ -66,6 +66,32 @@ namespace behaviors
 				return 0;
 			}
 
+			int _e_add_sprite(lua_State* L)
+			{
+				auto e = load_entity(L, 1, "[_e_add_sprite]");
+				uint32_t id = load_id(L, 2, "[_e_add_sprite]", "Component");
+				auto texture = load_asset_path(L, 3, "[_e_add_sprite]");
+				int sprite_id = lua_tointeger(L, 4);
+				auto preset_name = lua_tostring(L, 5);
+
+				physics::collision_preset preset;
+				{
+					auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
+					preset = config.lock()->get_preset(utilities::hash_string(preset_name));
+				}
+
+				auto sprite = new ::entities::components::sprite{
+						id,
+						::assets::cast_asset<::assets::texture>(::common::assets_manager->safe_get_asset(texture)),
+						preset
+				};
+
+				e->attach_component(sprite);
+				sprite->set_sprite_id(sprite_id);
+
+				return 0;
+			}
+
 			int _e_add_collider(lua_State* L)
 			{
 				auto e = load_entity(L, 1, "[_e_add_collider]");
@@ -91,39 +117,13 @@ namespace behaviors
 				return 0;
 			}
 
-			int _e_add_sprite(lua_State* L)
-			{
-				auto e = load_entity(L, 1, "[_e_add_sprite]");
-				uint32_t id = load_id(L, 2, "[_e_add_sprite]", "Component");
-				auto texture = load_asset_path(L, 3, "[_e_add_sprite]");
-				int sprite_id = lua_tointeger(L, 4);
-				auto preset_name = lua_tostring(L, 5);
-
-				physics::collision_preset preset;
-				{
-					auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
-					preset = config.lock()->get_preset(utilities::hash_string(preset_name));
-				}
-
-				auto sprite = new ::entities::components::sprite{
-						id,
-						::assets::cast_asset<::assets::texture>(::common::assets_manager->safe_get_asset(texture)),
-						preset
-				};
-
-				e->attach_component(sprite);
-				sprite->sprite_id = sprite_id;
-
-				return 0;
-			}
-
 			void register_functions(lua_State* L)
 			{
 				lua_register(L, "_e_add_behavior", _e_add_behavior);
 				lua_register(L, "_e_add_camera", _e_add_camera);
 				lua_register(L, "_e_add_static_mesh", _e_add_static_mesh);
-				lua_register(L, "_e_add_collider", _e_add_collider);
 				lua_register(L, "_e_add_sprite", _e_add_sprite);
+				lua_register(L, "_e_add_collider", _e_add_collider);
 			}
 		}
 	}
