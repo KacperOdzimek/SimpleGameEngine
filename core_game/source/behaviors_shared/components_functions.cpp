@@ -19,6 +19,7 @@
 #include "source/components/collider.h"
 #include "source/components/static_mesh.h"
 #include "source/components/sprite.h"
+#include "source/components/dynamics.h"
 
 namespace behaviors
 {
@@ -298,6 +299,27 @@ namespace behaviors
 			}
 
 			/*
+				Dynamics
+			*/
+
+			int _c_d_add_force(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_add_force]");
+				float x = lua_tonumber(L, 3);
+				float y = lua_tonumber(L, 4);
+				d->add_force({ x, y });
+				return 0;
+			}
+
+			int _c_d_sweep(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_sweep]");
+				d->apply_forces();
+				d->get_owner_weak().lock()->sweep(d->get_owner_weak().lock()->get_location() + d->get_velocity());
+				return 0;
+			}
+
+			/*
 				Register
 			*/
 
@@ -334,6 +356,9 @@ namespace behaviors
 				lua_register(L, "_c_cl_set_extend", _c_cl_set_extend);
 				lua_register(L, "_c_cl_get_layer_offset", _c_cl_get_layer_offset);
 				lua_register(L, "_c_cl_set_layer_offset", _c_cl_set_layer_offset);
+
+				lua_register(L, "_c_d_add_force", _c_d_add_force);
+				lua_register(L, "_c_d_sweep", _c_d_sweep);
 			}
 		}
 	}
