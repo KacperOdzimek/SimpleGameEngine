@@ -13,6 +13,7 @@
 #include "source/components/collider.h"
 #include "source/components/static_mesh.h"
 #include "source/components/sprite.h"
+#include "source/components/dynamics.h"
 
 namespace behaviors
 {
@@ -117,6 +118,20 @@ namespace behaviors
 				return 0;
 			}
 
+			int _e_add_dynamics(lua_State* L)
+			{
+				auto e = load_entity(L, 1, "[_e_add_dynamics]");
+				uint32_t id = load_id(L, 2, "[_e_add_dynamics]", "Component");
+
+				e->attach_component(
+					new ::entities::components::dynamics{
+						id
+					}
+				);
+
+				return 0;
+			}
+
 			void register_functions(lua_State* L)
 			{
 				lua_register(L, "_e_add_behavior", _e_add_behavior);
@@ -124,6 +139,7 @@ namespace behaviors
 				lua_register(L, "_e_add_static_mesh", _e_add_static_mesh);
 				lua_register(L, "_e_add_sprite", _e_add_sprite);
 				lua_register(L, "_e_add_collider", _e_add_collider);
+				lua_register(L, "_e_add_dynamics", _e_add_dynamics);
 			}
 		}
 	}
