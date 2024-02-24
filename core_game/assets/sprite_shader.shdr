@@ -33,7 +33,7 @@
         gl_Position = projected_pos;
 
         vec2 unit_sprite = vec2(1, 1) / itr_sprites;
-        TexCoord = vec2(mod(aInstance.sprite_id, itr_sprites.x), floor(aInstance.sprite_id / itr_sprites.x)) * unit_sprite + aTexCoord * unit_sprite;
+        TexCoord = vec2(mod(aInstance.sprite_id, itr_sprites.x), 1 - floor(aInstance.sprite_id / itr_sprites.x)) * unit_sprite + aTexCoord * unit_sprite;
     }
 >
 

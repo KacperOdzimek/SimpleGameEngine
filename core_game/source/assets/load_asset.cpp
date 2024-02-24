@@ -93,16 +93,16 @@ namespace assets
 			if (!(header.contains("collisions") && header.at("collisions").is_array()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
 					"Invalid/Missing collisions");
-			std::vector<int> tiles;
+			std::vector<int> layers;
 			for (auto tile_id : header.at("collisions"))
 			{
 				if (!tile_id.is_number_integer())
 					error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
 						"Each tile_id in collisions should be an integer");
-				tiles.push_back(tile_id);
+				layers.push_back(tile_id);
 			}
 
-			tileset_asset = std::make_shared<assets::tileset>(image.get(), tile_width, tile_height, tiles);
+			tileset_asset = std::make_shared<assets::tileset>(image.get(), tile_width, tile_height, layers);
 
 			return tileset_asset;
 		}
@@ -133,7 +133,7 @@ namespace assets
 					"Source file is missing height");
 			unsigned int height = source.at("height");
 
-			std::vector<tilemap::layer> tiles;
+			std::vector<tilemap::layer> layers;
 			if (!(source.contains("layers") && source.at("layers").is_array()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]",
 					"Source file is missing layers");
@@ -141,7 +141,7 @@ namespace assets
 			int layers_iterator = 0;
 			for (auto& layer : source.at("layers"))
 			{
-				tiles.push_back({});
+				layers.push_back({});
 
 				if (!layer.is_object()) 
 					error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]","Invalid layer");
@@ -154,17 +154,17 @@ namespace assets
 				{
 					if (current_row.size() == width)
 					{
-						tiles.at(layers_iterator).push_back(std::move(current_row));
+						layers.at(layers_iterator).push_back(std::move(current_row));
 						current_row = {};
 					}
 					current_row.push_back(tile);
 				}
-				tiles.at(layers_iterator).push_back(std::move(current_row));
+				layers.at(layers_iterator).push_back(std::move(current_row));
 				layers_iterator++;
 			}
 
 			std::shared_ptr<asset> tilemap_asset 
-				= std::make_shared<assets::tilemap>(width, height, tiles);
+				= std::make_shared<assets::tilemap>(width, height, layers);
 			return tilemap_asset;
 		}
 

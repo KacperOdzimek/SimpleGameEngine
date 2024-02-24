@@ -16,6 +16,7 @@
 #include "source/components/camera.h"
 #include "source/components/behavior.h"
 #include "source/components/collider.h"
+#include "source/components/tilemap.h"
 
 #include "source/assets/texture_asset.h"
 #include "source/assets/behavior_asset.h"
@@ -79,21 +80,33 @@ int main()
 				assets::cast_asset<assets::behavior>(common::assets_manager->safe_get_asset(beh_path)).lock()
 			}
 		);
-
+		e->layer = 1;
 		return e;
 	};
 
-	auto b1 = create_entity_with_bhv({0.0f, 0.0f}, "mod/behaviors/move_left");
+	auto b1 = create_entity_with_bhv({-1.0f, 0.0f}, "mod/behaviors/move_left");
 	auto b2 = create_entity_with_bhv({1.0f, 0.0f}, "mod/behaviors/move_right");
 
 	/*
-		Camera Actor
+		Tilemap Entity
+	*/
+	auto tilemap_e = new entities::entity;
+	auto tilemap_c = new entities::components::tilemap{
+		utilities::hash_string("tilemap"),
+		assets::cast_asset<assets::tilemap>(common::assets_manager->safe_get_asset("mod/tilemaps/tilemap")).lock(),
+		assets::cast_asset<assets::tileset>(common::assets_manager->safe_get_asset("mod/textures/tileset")).lock()
+	};
+	tilemap_e->attach_component(tilemap_c);
+	tilemap_e->teleport({ 0.0f, 0.0f });
+
+	/*
+		Camera Entity
 	*/
 	auto camera_entity = new entities::entity;
-	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 32 };
+	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 16 };
 	camera_entity->attach_component(camera_comp);
 	common::renderer->set_active_camera(camera_comp);
-	camera_comp->rendered_layers = 2;
+	camera_comp->rendered_layers = 16;
 	camera_entity->layer = 0;
 	camera_entity->teleport({ 0.0f, 0.0f });
 

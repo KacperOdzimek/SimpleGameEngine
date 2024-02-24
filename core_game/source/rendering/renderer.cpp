@@ -15,6 +15,7 @@
 #include "source/assets/texture_asset.h"
 #include "source/assets/mesh_asset.h"
 #include "source/assets/sprite_sheet.h"
+#include "source/assets/tileset_asset.h"
 
 #include "graphics_abstraction/graphics_abstraction.h"
 #include "opengl_3_3_api/opengl_3.3_api.h"
@@ -197,7 +198,7 @@ void renderer::register_mesh_component(entities::components::mesh* mesh)
         //at default each pipeline can draw 64 meshes at once
         //if this initial buffer turns out to be to small new bigger buffer will be allocated
         //(see renderer::update_transformations)
-        bb->size = impl->transformations_buffer_layout->get_vertex_size() * 64;
+        bb->size = impl->transformations_buffer_layout->get_vertex_size() * 1024;
         bb->buffer_type = graphics_abstraction::buffer_type::instanced;
 
         implementation::geometry geo;
@@ -304,16 +305,20 @@ void renderer::render()
 
             if (pipeline.first.textures.size() != 0)
             {
-                auto sprite_sheet = dynamic_cast<assets::sprite_sheet*>(pipeline.first.textures.at(0).get());
-                glm::vec2 sprites_count;
+                glm::vec2 sprites_count = { 1, 1 };
 
-                if (sprite_sheet != nullptr)
-                    sprites_count = { 
-                        sprite_sheet->get_width() / sprite_sheet->sprite_width,
-                        sprite_sheet->get_height() / sprite_sheet->sprite_height
+                auto as_sprite_sheet = dynamic_cast<assets::sprite_sheet*>(pipeline.first.textures.at(0).get());
+                auto as_tileset = dynamic_cast<assets::tileset*>(pipeline.first.textures.at(0).get());
+                if (as_sprite_sheet != nullptr)
+                    sprites_count = {
+                        as_sprite_sheet->get_width()  / as_sprite_sheet->sprite_width,
+                        as_sprite_sheet->get_height() / as_sprite_sheet->sprite_height
                     };
-                else
-                    sprites_count = { 1, 1 };
+                else if (as_tileset != nullptr)
+                    sprites_count = {
+                        as_tileset->get_width()  / as_tileset->tile_width,
+                        as_tileset->get_height() / as_tileset->tile_height
+                    };
 
                 pipeline.first.material->_shader->set_uniform_value(
                     "itr_sprites", graphics_abstraction::data_type::vec2, glm::value_ptr(sprites_count));

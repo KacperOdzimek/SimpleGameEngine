@@ -1,5 +1,4 @@
 #pragma once
-
 #include "asset.h"
 #include <vector>
 
@@ -23,7 +22,7 @@ namespace assets
 	struct texture : public asset
 	{
 		friend rendering::renderer;
-	private:
+	protected:
 		graphics_abstraction::texture* _texture;
 	public:
 		//data is required to be filesystem::image_file*
