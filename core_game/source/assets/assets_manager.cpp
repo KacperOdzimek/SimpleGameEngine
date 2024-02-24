@@ -92,6 +92,9 @@ void assets_manager::load_asset(std::string path)
     case utilities::hash_string("tileset"):
         new_asset = loading::load_tileset(load_data);
         break;
+    case utilities::hash_string("tilemap"):
+        new_asset = loading::load_tilemap(load_data);
+        break;
     case utilities::hash_string("shader"):
         new_asset = loading::load_shader(load_data);
         break;

@@ -62,6 +62,8 @@ int main()
 	common::assets_manager->lock_asset(utilities::hash_string("mod/textures/sprite_sheet"));
 	common::assets_manager->load_asset("mod/textures/tileset");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/textures/tileset"));
+	common::assets_manager->load_asset("mod/tilemaps/tilemap");
+	common::assets_manager->lock_asset(utilities::hash_string("mod/tilemaps/tilemap"));
 
 	common::world->create_active_scene();
 
