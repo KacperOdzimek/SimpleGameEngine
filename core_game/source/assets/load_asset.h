@@ -14,6 +14,7 @@ namespace assets
 		};
 
 		std::shared_ptr<asset> load_texture(const load_data& data);
+		std::shared_ptr<asset> load_sprite_sheet(const load_data& data);
 		std::shared_ptr<asset> load_shader(const load_data& data);
 		std::shared_ptr<asset> load_behavior(const load_data& data);
 		std::shared_ptr<asset> load_mesh(const load_data& data);

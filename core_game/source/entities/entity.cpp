@@ -98,13 +98,11 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 				) 
 				&& events.back().collide_event.other != nullptr)
 				closest_event_id = events.size() - 1;	
-			continue;
 		}
 		auto m_ptr = dynamic_cast<components::mesh*>(c);
 		if (m_ptr != nullptr)
 		{
 			m_ptr->mark_pipeline_dirty();
-			continue;
 		}
 	}
 

@@ -12,7 +12,7 @@ namespace entities
 			component that links the collision detection subsystem with game logic
 			collider makes body collide / overlap with other bodies containing colliders
 		*/
-		class collider : public component
+		class collider : virtual public component
 		{
 		public:
 			/*

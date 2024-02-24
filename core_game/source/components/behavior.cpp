@@ -15,8 +15,8 @@ entities::components::behavior::~behavior()
 
 void entities::components::behavior::on_attach()
 {
-	call_function(behaviors::functions::init);
 	common::behaviors_manager->register_behavior_component(this);
+	call_function(behaviors::functions::init);
 }
 
 void entities::components::behavior::call_function(behaviors::functions func, std::weak_ptr<entities::entity> other)

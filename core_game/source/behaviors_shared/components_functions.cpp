@@ -17,7 +17,9 @@
 #include "source/components/camera.h"
 #include "source/components/behavior.h"
 #include "source/components/collider.h"
-#include "source/components/mesh.h"
+#include "source/components/static_mesh.h"
+#include "source/components/sprite.h"
+#include "source/components/dynamics.h"
 
 namespace behaviors
 {
@@ -26,12 +28,64 @@ namespace behaviors
 		namespace components
 		{
 			/*
-				Mesh
+				Any Mesh
 			*/
 
-			int _c_m_get_render_config(lua_State* L)
+			int _c_m_get_scale(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_render_config]");
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_scale]");
+				lua_pushnumber(L, mesh->get_scale().x);
+				lua_pushnumber(L, mesh->get_scale().y);
+				return 2;
+			}
+
+			int _c_m_set_scale(lua_State* L)
+			{
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_scale]");
+				float x = lua_tonumber(L, 3);
+				float y = lua_tonumber(L, 4);
+				mesh->set_scale({ x, y });
+				return 0;
+			}
+
+			int _c_m_get_offset(lua_State* L)
+			{
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_offset]");
+				lua_pushnumber(L, mesh->get_offset().x);
+				lua_pushnumber(L, mesh->get_offset().y);
+				return 2;
+			}
+
+			int _c_m_set_offset(lua_State* L)
+			{
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_offset]");
+				float x = lua_tonumber(L, 3);
+				float y = lua_tonumber(L, 4);
+				mesh->set_offset({ x, y });
+				return 0;
+			}
+
+			int _c_m_get_visible(lua_State* L)
+			{
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_visible]");
+				lua_pushboolean(L, mesh->get_visible());
+				return 1;
+			}
+
+			int _c_m_set_visible(lua_State* L)
+			{
+				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_visible]");
+				mesh->set_visible(lua_toboolean(L, 3));
+				return 0;
+			}
+
+			/*
+				Static Mesh
+			*/
+
+			int _c_sm_get_render_config(lua_State* L)
+			{
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_get_render_config]");
 				auto& rc = mesh->get_render_config();
 
 				lua_createtable(L, 0, 0);
@@ -59,61 +113,36 @@ namespace behaviors
 				return 1;
 			}
 
-			int _c_m_set_render_config(lua_State* L)
+			int _c_sm_set_render_config(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_render_config]");
-				rendering::render_config rc = load_render_config(L, 3, "[_c_m_set_render_config]");
+				auto mesh = load_component<::entities::components::static_mesh>(L, "[_c_sm_set_render_config]");
+				rendering::render_config rc = load_render_config(L, 3, "[_c_sm_set_render_config]");
 
 				mesh->set_render_config(rc);
 
 				return 0;
 			}
 
-			int _c_m_get_visible(lua_State* L)
-			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_visible]");
-				lua_pushboolean(L, mesh->visible);
-				return 1;
-			}
+			/*
+				Sprite
+			*/
 
-			int _c_m_set_visible(lua_State* L)
+			int _c_s_get_sprite(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_visible]");
-				mesh->visible = lua_toboolean(L, 3);
+				auto sprite = load_component<::entities::components::sprite>(L, "[_c_s_set_sprite]");
+
+				lua_pushinteger(L, sprite->get_sprite_id());
+
 				return 0;
 			}
 
-			int _c_m_get_scale(lua_State* L)
+			int _c_s_set_sprite(lua_State* L)
 			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_scale]");
-				lua_pushnumber(L, mesh->scale.x);
-				lua_pushnumber(L, mesh->scale.y);
-				return 2;
-			}
+				auto sprite = load_component<::entities::components::sprite>(L, "[_c_s_set_sprite]");
+				int sprite_id = lua_tointeger(L, 3);
 
-			int _c_m_set_scale(lua_State* L)
-			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_scale]");
-				float x = lua_tonumber(L, 3);
-				float y = lua_tonumber(L, 4);
-				mesh->scale = { x, y };
-				return 0;
-			}
+				sprite->set_sprite_id(sprite_id);
 
-			int _c_m_get_offset(lua_State* L)
-			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_get_offset]");
-				lua_pushnumber(L, mesh->offset.x);
-				lua_pushnumber(L, mesh->offset.y);
-				return 2;
-			}
-
-			int _c_m_set_offset(lua_State* L)
-			{
-				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_offset]");
-				float x = lua_tonumber(L, 3);
-				float y = lua_tonumber(L, 4);
-				mesh->offset = { x, y };
 				return 0;
 			}
 
@@ -190,7 +219,7 @@ namespace behaviors
 			}
 
 			/*
-				Colider
+				Collider
 			*/
 
 			int _c_cl_get_collision_preset(lua_State* L)
@@ -270,19 +299,43 @@ namespace behaviors
 			}
 
 			/*
+				Dynamics
+			*/
+
+			int _c_d_add_force(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_add_force]");
+				float x = lua_tonumber(L, 3);
+				float y = lua_tonumber(L, 4);
+				d->add_force({ x, y });
+				return 0;
+			}
+
+			int _c_d_sweep(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_sweep]");
+				d->sweep();
+				return 0;
+			}
+
+			/*
 				Register
 			*/
 
 			void register_functions(lua_State* L)
 			{
-				lua_register(L, "_c_m_get_render_config", _c_m_get_render_config);
-				lua_register(L, "_c_m_set_render_config", _c_m_set_render_config);
 				lua_register(L, "_c_m_get_visible", _c_m_get_visible);
 				lua_register(L, "_c_m_set_visible", _c_m_set_visible);
 				lua_register(L, "_c_m_get_scale", _c_m_get_scale);
 				lua_register(L, "_c_m_set_scale", _c_m_set_scale);
 				lua_register(L, "_c_m_set_offset", _c_m_set_offset);
 				lua_register(L, "_c_m_get_offset", _c_m_get_offset);
+
+				lua_register(L, "_c_sm_get_render_config", _c_sm_get_render_config);
+				lua_register(L, "_c_sm_set_render_config", _c_sm_set_render_config);
+
+				lua_register(L, "_c_s_get_sprite", _c_s_get_sprite);
+				lua_register(L, "_c_s_set_sprite", _c_s_set_sprite);
 
 				lua_register(L, "_c_c_get_ortho_width", _c_c_get_ortho_width);
 				lua_register(L, "_c_c_set_ortho_width", _c_c_set_ortho_width);
@@ -302,6 +355,9 @@ namespace behaviors
 				lua_register(L, "_c_cl_set_extend", _c_cl_set_extend);
 				lua_register(L, "_c_cl_get_layer_offset", _c_cl_get_layer_offset);
 				lua_register(L, "_c_cl_set_layer_offset", _c_cl_set_layer_offset);
+
+				lua_register(L, "_c_d_add_force", _c_d_add_force);
+				lua_register(L, "_c_d_sweep", _c_d_sweep);
 			}
 		}
 	}

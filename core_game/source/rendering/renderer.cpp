@@ -14,6 +14,7 @@
 #include "source/assets/shader_asset.h"
 #include "source/assets/texture_asset.h"
 #include "source/assets/mesh_asset.h"
+#include "source/assets/sprite_sheet.h"
 
 #include "graphics_abstraction/graphics_abstraction.h"
 #include "opengl_3_3_api/opengl_3.3_api.h"
@@ -69,6 +70,7 @@ struct renderer::implementation
             this->meshes = std::move(othr.meshes);
             this->transformations_buffer = std::move(othr.transformations_buffer);
             othr.transformations_buffer = nullptr;
+            should_reload_transformations = othr.should_reload_transformations;
         }
 
         ~geometry()
@@ -165,7 +167,8 @@ void renderer::initialize()
     vlb->vertex_components = {
         graphics_abstraction::data_type::vec2,  //Instance World Position
         graphics_abstraction::data_type::vec2,  //Instance Scale
-        graphics_abstraction::data_type::Int    //Instance Layer
+        graphics_abstraction::data_type::Int,   //Instance Layer
+        graphics_abstraction::data_type::Int    //Instance Sprite ID
     };
     impl->transformations_buffer_layout = reinterpret_cast<graphics_abstraction::vertex_layout*>(impl->api->build(vlb));
 
@@ -187,7 +190,7 @@ void renderer::mark_pipeline_dirty(const render_config& pipeline)
 
 void renderer::register_mesh_component(entities::components::mesh* mesh)
 {
-    auto itr = impl->pipelines.find(mesh->_config);
+    auto itr = impl->pipelines.find(mesh->get_render_config());
     if (itr == impl->pipelines.end())
     {
         auto bb = impl->api->create_buffer_builder();
@@ -202,7 +205,7 @@ void renderer::register_mesh_component(entities::components::mesh* mesh)
         geo.transformations_buffer = reinterpret_cast<graphics_abstraction::buffer*>(impl->api->build(bb));
         geo.should_reload_transformations = true;
 
-        impl->pipelines.insert({ mesh->_config, std::move(geo) });
+        impl->pipelines.insert({ mesh->get_render_config(), std::move(geo) });
     }
     else
     {
@@ -213,7 +216,7 @@ void renderer::register_mesh_component(entities::components::mesh* mesh)
 
 void renderer::unregister_mesh_component(entities::components::mesh* mesh)
 {
-    auto p_itr = impl->pipelines.find(mesh->_config);
+    auto p_itr = impl->pipelines.find(mesh->get_render_config());
 
     if (p_itr == impl->pipelines.end())
         return;
@@ -298,6 +301,23 @@ void renderer::render()
                 "itr_deepest_layer", graphics_abstraction::data_type::Int, &deepest_layer);
             pipeline.first.material->_shader->set_uniform_value(
                 "itr_max_layer", graphics_abstraction::data_type::Int, &max_layer);
+
+            if (pipeline.first.textures.size() != 0)
+            {
+                auto sprite_sheet = dynamic_cast<assets::sprite_sheet*>(pipeline.first.textures.at(0).get());
+                glm::vec2 sprites_count;
+
+                if (sprite_sheet != nullptr)
+                    sprites_count = { 
+                        sprite_sheet->get_width() / sprite_sheet->sprite_width,
+                        sprite_sheet->get_height() / sprite_sheet->sprite_height
+                    };
+                else
+                    sprites_count = { 1, 1 };
+
+                pipeline.first.material->_shader->set_uniform_value(
+                    "itr_sprites", graphics_abstraction::data_type::vec2, glm::value_ptr(sprites_count));
+            }
 
             impl->api->bind(pipeline.first.material->_shader);
             impl->api->bind(pipeline.first.material->vertex_layout);

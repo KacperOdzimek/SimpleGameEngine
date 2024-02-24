@@ -129,10 +129,11 @@ void behaviors::behaviors_manager::call_update_functions()
 
 std::string behaviors::behaviors_manager::create_behavior(const std::string& file_path)
 {
+    auto& L = impl->L;
+
     std::string name = std::to_string(impl->behaviors_id_iterator);
     impl->behaviors_id_iterator++;
 
-    auto& L = impl->L;
     std::string path = filesystem::get_global_path(file_path);
 
     int error;
@@ -148,7 +149,7 @@ std::string behaviors::behaviors_manager::create_behavior(const std::string& fil
     lua_setmetatable(L, -2);
     lua_setfield(L, LUA_REGISTRYINDEX, name.c_str());
     lua_getfield(L, LUA_REGISTRYINDEX, name.c_str());
-    lua_setupvalue(L, 1, 1);
+    lua_setupvalue(L, -2, 1);
 
     error = lua_pcall(L, 0, LUA_MULTRET, 0);
     if (error != LUA_OK)

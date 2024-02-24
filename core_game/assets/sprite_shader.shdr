@@ -11,6 +11,7 @@
         vec2 pos;
         vec2 scale;
         float layer;
+        float sprite_id;
     };
     layout (location = 2) in instanceData aInstance;
 
@@ -20,17 +21,19 @@
     uniform vec4 itr_camera_location;
     uniform int itr_deepest_layer;
     uniform int itr_max_layer;
+    uniform vec2 itr_sprites;
 
     void main()
     {  
         float depth = -1 * (aInstance.layer - itr_deepest_layer) / (itr_max_layer - itr_deepest_layer);
 
-        vec2 transformed_pos = (aPos + aInstance.pos) * aInstance.scale;
+        vec2 transformed_pos = (aPos * aInstance.scale) + aInstance.pos;
         vec4 projected_pos = (vec4(transformed_pos, 0, 1.0) - itr_camera_location) * itr_projection;
         projected_pos.z = depth;
         gl_Position = projected_pos;
 
-        TexCoord = aTexCoord;
+        vec2 unit_sprite = vec2(1, 1) / itr_sprites;
+        TexCoord = vec2(mod(aInstance.sprite_id, itr_sprites.x), floor(aInstance.sprite_id / itr_sprites.x)) * unit_sprite + aTexCoord * unit_sprite;
     }
 >
 

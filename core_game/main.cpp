@@ -36,25 +36,33 @@ int main()
 	filesystem::set_mod_asset_path("C:/Projekty/TopDownGame/mods/example_mod/");
 	filesystem::set_core_asset_path("C:/Projekty/TopDownGame/core_game/assets");
 
+	/*
+		Core Assets
+	*/
 	common::assets_manager->load_asset("core/square_mesh");
 	common::assets_manager->lock_asset(utilities::hash_string("core/square_mesh"));
 
+	common::assets_manager->load_asset("core/sprite_shader");
+	common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
+
+	/*
+		Mod Configuration
+	*/
 	common::assets_manager->load_asset("mod/collision_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/collision_config"));
 
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	common::assets_manager->load_asset("mod/shaders/cat_shader");
-	common::assets_manager->load_asset("mod/textures/cat_texture");
-	common::assets_manager->load_asset("mod/behaviors/move_right");
-	common::assets_manager->load_asset("mod/behaviors/move_left");
-
 	common::world->create_active_scene();
 
 	/*
-		The Box
+		TEMP
 	*/
+
+	common::assets_manager->load_asset("mod/textures/sprite_sheet");
+	common::assets_manager->lock_asset(utilities::hash_string("mod/textures/sprite_sheet"));
+
 	auto create_entity_with_bhv = [&](glm::vec2 pos, std::string beh_path)
 	{
 		auto e = new entities::entity;
@@ -64,21 +72,21 @@ int main()
 			new entities::components::behavior
 			{
 				utilities::hash_string("bhv"),
-				assets::cast_asset<assets::behavior>(common::assets_manager->get_asset(utilities::hash_string(beh_path))).lock()
+				assets::cast_asset<assets::behavior>(common::assets_manager->safe_get_asset(beh_path)).lock()
 			}
 		);
 
 		return e;
 	};
 
-	auto b1 = create_entity_with_bhv({-1.0f, 0.0f}, "mod/behaviors/move_left");
+	auto b1 = create_entity_with_bhv({0.0f, 0.0f}, "mod/behaviors/move_left");
 	auto b2 = create_entity_with_bhv({1.0f, 0.0f}, "mod/behaviors/move_right");
 
 	/*
 		Camera Actor
 	*/
 	auto camera_entity = new entities::entity;
-	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 16 };
+	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 32 };
 	camera_entity->attach_component(camera_comp);
 	common::renderer->set_active_camera(camera_comp);
 	camera_comp->rendered_layers = 2;

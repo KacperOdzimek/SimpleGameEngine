@@ -40,14 +40,14 @@ std::weak_ptr<asset> assets_manager::get_asset(uint32_t hashed_name)
     auto itr = impl->assets.find({ hashed_name });
     if (itr == impl->assets.end())
         error_handling::crash(error_handling::error_source::core,
-            "[asset_manager::get_asset]", "Missing asset: " + hashed_name);
+            "[asset_manager::get_asset]", "Missing asset: " + std::to_string(hashed_name));
     return  itr->second;
 }
 
 std::weak_ptr<asset> assets_manager::safe_get_asset(std::string path)
 {
     auto itr = impl->assets.find({ utilities::hash_string(path) });
-    if (itr != impl->assets.end())
+    if (itr != impl->assets.end() && !itr->second.expired())
         return itr->second;
     load_asset(path);
     return get_asset(utilities::hash_string(path));
@@ -94,6 +94,9 @@ void assets_manager::load_asset(std::string path)
         break;
     case utilities::hash_string("mesh"):
         new_asset = loading::load_mesh(load_data);
+        break;
+    case utilities::hash_string("sprite_sheet"):
+        new_asset = loading::load_sprite_sheet(load_data);
         break;
     case utilities::hash_string("input_config"):
         new_asset = loading::load_input_config(load_data);

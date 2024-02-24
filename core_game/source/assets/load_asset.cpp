@@ -6,6 +6,7 @@
 
 #include "shader_asset.h"
 #include "texture_asset.h"
+#include "sprite_sheet.h"
 #include "behavior_asset.h"
 #include "mesh_asset.h"
 #include "input_config_asset.h"
@@ -31,6 +32,36 @@ namespace assets
 			auto image = filesystem::load_image(source_path);
 
 			texture_asset = std::make_shared<assets::texture>(image.get());
+
+			return texture_asset;
+		}
+
+		std::shared_ptr<asset> load_sprite_sheet(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+
+			std::shared_ptr<asset> texture_asset;
+
+			if (!(header.contains("path") && header.at("path").is_string()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_sprite_sheet]",
+					"Invalid/Missing image path");
+
+			std::string source_path = ld.package + std::string(header.at("path"));
+			auto image = filesystem::load_image(source_path);
+
+			if (!(header.contains("sprite_width") && header.at("sprite_width").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_sprite_sheet]",
+					"Invalid/Missing sprite_width");
+
+			unsigned int sprite_width = header.at("sprite_width");
+
+			if (!(header.contains("sprite_height") && header.at("sprite_height").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_sprite_sheet]",
+					"Invalid/Missing sprite_height");
+
+			unsigned int sprite_height = header.at("sprite_height");
+
+			texture_asset = std::make_shared<assets::sprite_sheet>(image.get(), sprite_width, sprite_height);
 
 			return texture_asset;
 		}

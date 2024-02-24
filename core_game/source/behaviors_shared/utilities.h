@@ -27,7 +27,7 @@ inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id,
 {
 	if (!lua_isinteger(L, arg_id))
 		error_handling::crash(error_handling::error_source::mod, parent_function,
-			"Render config is missing shader");
+			"Entity reference should be an int pointer");
 	auto ptr = reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, arg_id));
 	if (ptr->expired())
 		error_handling::crash(error_handling::error_source::mod, parent_function, "Trying to perform operations on dead entity.");

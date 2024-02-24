@@ -10,7 +10,7 @@ namespace entities
 			camera
 			component that adds viewport to the game
 		*/
-		class camera : public entities::component
+		class camera : virtual public entities::component
 		{
 		public:
 			camera(uint32_t _id, float _ortho_width) : ortho_width(_ortho_width), component(_id) {}
