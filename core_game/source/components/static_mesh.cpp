@@ -63,3 +63,8 @@ void entities::components::static_mesh::set_render_config(const rendering::rende
 		common::renderer->register_mesh_component(this);
 	}
 }
+
+uint32_t entities::components::static_mesh::get_instances_amount()
+{
+	return 1;
+}

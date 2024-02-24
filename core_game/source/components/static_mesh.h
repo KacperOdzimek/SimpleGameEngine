@@ -26,6 +26,7 @@ namespace entities
 		public:
 			virtual const rendering::render_config& get_render_config() override;
 			void set_render_config(const rendering::render_config& rc);
+			virtual uint32_t get_instances_amount() override;
 
 			static_mesh(
 				uint32_t _id,

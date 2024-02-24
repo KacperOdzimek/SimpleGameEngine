@@ -38,8 +38,6 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 		float y_mod = -1 * (float(tilemap_asset->height) / 2) * tile_y_size;
 		auto row = layer.end() - 1;
 
-		int debug = 0;
-
 		while (row != layer.begin())
 		{
 			float x_mod = -1 * (float(tilemap_asset->width) / 2) * tile_x_size;
@@ -61,9 +59,6 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 				tbi.put(tile + id_offset);
 
 				x_mod += tile_x_size;
-				debug++;
-
-				//if (debug > 30) return;
 			}
 			y_mod += tile_y_size;
 			row--;
@@ -74,6 +69,11 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 const rendering::render_config& tilemap::get_render_config()
 {
 	return _config;
+}
+
+uint32_t tilemap::get_instances_amount()
+{
+	return tilemap_asset->width * tilemap_asset->height * tilemap_asset->layers.size();
 }
 
 tilemap::~tilemap()

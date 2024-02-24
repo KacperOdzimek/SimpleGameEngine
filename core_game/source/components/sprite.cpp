@@ -85,6 +85,11 @@ const rendering::render_config& sprite::get_render_config()
 	return rc;
 }
 
+uint32_t entities::components::sprite::get_instances_amount()
+{
+	return 1;
+}
+
 sprite::~sprite()
 {
 	common::renderer->unregister_mesh_component(this);

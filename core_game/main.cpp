@@ -55,17 +55,6 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	/*
-		TEMP
-	*/
-
-	common::assets_manager->load_asset("mod/textures/sprite_sheet");
-	common::assets_manager->lock_asset(utilities::hash_string("mod/textures/sprite_sheet"));
-	common::assets_manager->load_asset("mod/textures/tileset");
-	common::assets_manager->lock_asset(utilities::hash_string("mod/textures/tileset"));
-	common::assets_manager->load_asset("mod/tilemaps/tilemap");
-	common::assets_manager->lock_asset(utilities::hash_string("mod/tilemaps/tilemap"));
-
 	common::world->create_active_scene();
 
 	auto create_entity_with_bhv = [&](glm::vec2 pos, std::string beh_path)

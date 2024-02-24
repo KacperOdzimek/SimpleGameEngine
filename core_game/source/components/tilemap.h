@@ -20,6 +20,7 @@ namespace entities
 			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
 		public:
 			virtual const rendering::render_config& get_render_config() override;
+			virtual uint32_t get_instances_amount() override;
 			tilemap(
 				uint32_t _id,
 				std::weak_ptr<assets::tilemap> _tilemap,
