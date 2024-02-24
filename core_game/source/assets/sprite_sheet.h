@@ -1,6 +1,11 @@
 #pragma once
 #include "texture_asset.h"
 
+namespace filesystem
+{
+	struct image_file;
+}
+
 namespace assets
 {
 	struct sprite_sheet : public texture
@@ -8,8 +13,7 @@ namespace assets
 	public:
 		const unsigned int sprite_width;
 		const unsigned int sprite_height;
-		//data is required to be filesystem::image_file*
-		sprite_sheet(void* data, unsigned int _sprite_width, unsigned int _sprite_height);
+		sprite_sheet(filesystem::image_file* data, unsigned int _sprite_width, unsigned int _sprite_height);
 		~sprite_sheet();
 	};
 }

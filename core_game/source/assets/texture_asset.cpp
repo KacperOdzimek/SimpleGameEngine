@@ -6,10 +6,8 @@
 
 namespace assets
 {
-	texture::texture(void* data_uncasted)
+	texture::texture(filesystem::image_file* data)
 	{
-		filesystem::image_file* data = reinterpret_cast<filesystem::image_file*>(data_uncasted);
-
 		auto api = common::renderer->get_api();
 		auto tb = api->create_texture_builder();
 		tb->texture_type = graphics_abstraction::texture_type::texture_2d;

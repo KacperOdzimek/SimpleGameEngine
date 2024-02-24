@@ -6,11 +6,13 @@
 
 #include "shader_asset.h"
 #include "texture_asset.h"
+#include "tileset_asset.h"
 #include "sprite_sheet.h"
 #include "behavior_asset.h"
 #include "mesh_asset.h"
 #include "input_config_asset.h"
 #include "collision_config_asset.h"
+
 
 #include <fstream>
 
@@ -64,6 +66,45 @@ namespace assets
 			texture_asset = std::make_shared<assets::sprite_sheet>(image.get(), sprite_width, sprite_height);
 
 			return texture_asset;
+		}
+
+		std::shared_ptr<asset> load_tileset(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+
+			std::shared_ptr<asset> tileset_asset;
+
+			if (!(header.contains("path") && header.at("path").is_string()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+					"Invalid/Missing image path");
+			std::string source_path = ld.package + std::string(header.at("path"));
+			auto image = filesystem::load_image(source_path);
+
+			if (!(header.contains("tile_width") && header.at("tile_width").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+					"Invalid/Missing tile_width");
+			unsigned int tile_width = header.at("tile_width");
+
+			if (!(header.contains("tile_height") && header.at("tile_height").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+					"Invalid/Missing tile_height");
+			unsigned int tile_height = header.at("tile_height");
+
+			if (!(header.contains("collisions") && header.at("collisions").is_array()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+					"Invalid/Missing collisions");
+			std::vector<int> tiles;
+			for (auto tile_id : header.at("collisions"))
+			{
+				if (!tile_id.is_number_integer())
+					error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+						"Each tile_id in collisions should be an integer");
+				tiles.push_back(tile_id);
+			}
+
+			tileset_asset = std::make_shared<assets::tileset>(image.get(), tile_width, tile_height, tiles);
+
+			return tileset_asset;
 		}
 
 		std::shared_ptr<asset> load_shader(const load_data& ld)
