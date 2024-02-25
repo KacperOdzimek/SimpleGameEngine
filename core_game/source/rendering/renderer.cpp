@@ -294,7 +294,7 @@ void renderer::render()
 
     impl->api->set_enabled(graphics_abstraction::functionalities::depth_testing, true);
 
-    screen_framebuffer->clear_color_buffers(0.0f, 0.2f, 0.1f, 1.0f);
+    screen_framebuffer->clear_color_buffers(0.0f, 0.0f, 0.0f, 1.0f);
     screen_framebuffer->clear_depth_buffer();
     screen_framebuffer->clear_stencil_buffer();
 
