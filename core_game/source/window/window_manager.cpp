@@ -12,7 +12,14 @@ struct window_manager::implementation
 	GLFWwindow* window;
     int width;
     int height;
+
     bool fullscreen;
+    int width_before_fullscreen;
+    int height_before_fullscreen;
+    int posx_before_fullscreen;
+    int posy_before_fullscreen;
+
+    bool previous_f11_key_state = 0;
 
     std::function<void(void)> resize_callback;
 
@@ -62,10 +69,38 @@ void window_manager::create_window(std::string title, int width, int height, boo
     glfwSwapInterval(1);
 }
 
-void window_manager::change_frame()
+GLFWmonitor* get_current_monitor(GLFWwindow* window);
+
+void window_manager::update()
 {
     glfwPollEvents();
     glfwSwapBuffers(impl->window);
+    if (glfwGetKey(impl->window, GLFW_KEY_F11) == GLFW_PRESS && !impl->previous_f11_key_state)
+    {
+        impl->previous_f11_key_state = 1;
+        impl->fullscreen = !impl->fullscreen;
+        if (impl->fullscreen)
+        {
+            impl->width_before_fullscreen = impl->width;
+            impl->height_before_fullscreen = impl->height;
+
+            glfwGetWindowPos(impl->window, &impl->posx_before_fullscreen, &impl->posy_before_fullscreen);
+
+            GLFWmonitor* monitor = get_current_monitor(impl->window);
+            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+            glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+            glfwSetWindowMonitor(impl->window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+        }
+        else
+        {
+            glfwSetWindowMonitor(impl->window, NULL, 
+                impl->posx_before_fullscreen, impl->posy_before_fullscreen, 
+                impl->width_before_fullscreen, impl->height_before_fullscreen, 
+                GLFW_DONT_CARE);
+        }
+    }
+    else
+        impl->previous_f11_key_state = glfwGetKey(impl->window, GLFW_KEY_F11) == GLFW_PRESS;
 }
 
 bool window_manager::should_close()
@@ -93,4 +128,41 @@ input::key_state window_manager::get_key_state(input::key key)
     else
         ks.state = 0;
     return ks;
+}
+
+//Credit: https://stackoverflow.com/questions/21421074/how-to-create-a-full-screen-window-on-the-current-monitor-with-glfw
+GLFWmonitor* get_current_monitor(GLFWwindow* window)
+{
+    int nmonitors, i;
+    int wx, wy, ww, wh;
+    int mx, my, mw, mh;
+    int overlap, bestoverlap;
+    GLFWmonitor* bestmonitor;
+    GLFWmonitor** monitors;
+    const GLFWvidmode* mode;
+
+    bestoverlap = 0;
+    bestmonitor = NULL;
+
+    glfwGetWindowPos(window, &wx, &wy);
+    glfwGetWindowSize(window, &ww, &wh);
+    monitors = glfwGetMonitors(&nmonitors);
+
+    for (i = 0; i < nmonitors; i++) {
+        mode = glfwGetVideoMode(monitors[i]);
+        glfwGetMonitorPos(monitors[i], &mx, &my);
+        mw = mode->width;
+        mh = mode->height;
+
+        overlap =
+            std::max(0, std::min(wx + ww, mx + mw) - std::max(wx, mx)) *
+            std::max(0, std::min(wy + wh, my + mh) - std::max(wy, my));
+
+        if (bestoverlap < overlap) {
+            bestoverlap = overlap;
+            bestmonitor = monitors[i];
+        }
+    }
+
+    return bestmonitor;
 }

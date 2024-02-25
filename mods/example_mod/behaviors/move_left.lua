@@ -10,9 +10,4 @@ function on_update(e, dt)
 
     x, y = _e_get_location(e)
     _e_sweep(e, x + x_change, y + y_change)
-    io.write("\n")
-end
-
-function on_collide(e, oth)
-    io.write("COL\n")
 end

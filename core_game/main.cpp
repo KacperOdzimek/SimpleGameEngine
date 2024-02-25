@@ -117,7 +117,7 @@ int main()
 		//Rendering
 		common::renderer->update_transformations();
 		common::renderer->render();
-		common::window_manager->change_frame();
+		common::window_manager->update();
 
 		//Remove dont used assets
 		common::assets_manager->unload_unreferenced_assets();

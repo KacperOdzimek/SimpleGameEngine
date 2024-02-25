@@ -17,7 +17,7 @@ namespace window
 
 		void create_window(std::string title, int width, int height, bool fullscreen);
 
-		void change_frame();
+		void update();
 		bool should_close();
 
 		std::pair<int, int> get_size();
