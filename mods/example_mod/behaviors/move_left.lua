@@ -3,11 +3,16 @@ function on_init(e)
 end
 
 function on_update(e, dt)
-    speed = 4
+    speed = 1
 
     x_change = _i_axis("move_right") * dt * speed
     y_change = _i_axis("move_forward") * dt * speed
 
     x, y = _e_get_location(e)
     _e_sweep(e, x + x_change, y + y_change)
+    io.write("\n")
+end
+
+function on_collide(e, oth)
+    io.write("COL\n")
 end

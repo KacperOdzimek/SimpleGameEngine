@@ -74,7 +74,7 @@ int main()
 	};
 
 	auto b1 = create_entity_with_bhv({-1.0f, 0.0f}, "mod/behaviors/move_left");
-	auto b2 = create_entity_with_bhv({1.0f, 0.0f}, "mod/behaviors/move_right");
+	//auto b2 = create_entity_with_bhv({1.0f, 0.0f}, "mod/behaviors/move_right");
 
 	/*
 		Tilemap Entity
@@ -92,7 +92,7 @@ int main()
 		Camera Entity
 	*/
 	auto camera_entity = new entities::entity;
-	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 16 };
+	auto camera_comp = new entities::components::camera{ utilities::hash_string("cam"), 32 };
 	camera_entity->attach_component(camera_comp);
 	common::renderer->set_active_camera(camera_comp);
 	camera_comp->rendered_layers = 16;

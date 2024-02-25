@@ -72,6 +72,58 @@ const rendering::render_config& tilemap::get_render_config()
 	return _config;
 }
 
+void tilemap::on_attach()
+{
+	common::renderer->register_mesh_component(this);
+	build_colliders();
+}
+
+#include "collider.h"
+
+void tilemap::build_colliders()
+{
+	auto check_if_tile_collide = [&](const int& tile) -> bool
+	{
+		auto itr = std::find(tileset_asset->colliding_tiles.begin(), tileset_asset->colliding_tiles.end(), tile);
+		return itr != tileset_asset->colliding_tiles.end();
+	};
+
+	int layer_counter = 0;
+
+	float tile_x_size = (tileset_asset->tile_width / common::pixels_per_world_unit);
+	float tile_y_size = (tileset_asset->tile_width / common::pixels_per_world_unit);
+	glm::vec2 extend = { tile_x_size / 2, tile_y_size /2 };
+
+	for (auto& layer : tilemap_asset->layers)
+	{
+		float y_mod = -1 * (float(tilemap_asset->height) / 2) * tile_y_size;
+		auto row = layer.end() - 1;
+
+		while (row != layer.begin())
+		{
+			float x_mod = -1 * (float(tilemap_asset->width) / 2) * tile_x_size;
+			for (auto& tile : *row)
+			{
+				if (!check_if_tile_collide(tile))
+				{
+					x_mod += tile_x_size;
+					continue;
+				}
+
+				auto collider = new components::collider{ uint32_t(owned_colliders.size()), preset, extend };
+				collider->layer_offset = 1;
+				collider->entity_offset = { x_mod, y_mod };
+				collider->initialize_in_tilemap(owner);
+				owned_colliders.push_back(collider);
+				collider->on_attach();
+				x_mod += tile_x_size;
+			}
+			y_mod += tile_y_size;
+			row--;
+		}
+	}
+}
+
 uint32_t tilemap::get_instances_amount()
 {
 	return tilemap_asset->width * tilemap_asset->height * tilemap_asset->layers.size();
@@ -79,5 +131,8 @@ uint32_t tilemap::get_instances_amount()
 
 tilemap::~tilemap()
 {
+	for (auto& collider : owned_colliders)
+		delete collider;
+
 	common::renderer->unregister_mesh_component(this);
 }
