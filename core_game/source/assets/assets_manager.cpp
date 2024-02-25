@@ -86,6 +86,15 @@ void assets_manager::load_asset(std::string path)
     case utilities::hash_string("texture"):
         new_asset = loading::load_texture(load_data);
         break;
+    case utilities::hash_string("sprite_sheet"):
+        new_asset = loading::load_sprite_sheet(load_data);
+        break;
+    case utilities::hash_string("tileset"):
+        new_asset = loading::load_tileset(load_data);
+        break;
+    case utilities::hash_string("tilemap"):
+        new_asset = loading::load_tilemap(load_data);
+        break;
     case utilities::hash_string("shader"):
         new_asset = loading::load_shader(load_data);
         break;
@@ -95,9 +104,6 @@ void assets_manager::load_asset(std::string path)
     case utilities::hash_string("mesh"):
         new_asset = loading::load_mesh(load_data);
         break;
-    case utilities::hash_string("sprite_sheet"):
-        new_asset = loading::load_sprite_sheet(load_data);
-        break;
     case utilities::hash_string("input_config"):
         new_asset = loading::load_input_config(load_data);
         break;
@@ -106,7 +112,7 @@ void assets_manager::load_asset(std::string path)
         break;
     default:
         error_handling::crash(error_handling::error_source::core,
-            "[asset_manager::load_asset]", "Invalid asset: " + path + "invalid asset_type");
+            "[asset_manager::load_asset]", "Invalid asset: " + path + " invalid asset_type");
     }
 
     if (new_asset == nullptr)

@@ -6,6 +6,8 @@
 
 #include "shader_asset.h"
 #include "texture_asset.h"
+#include "tileset_asset.h"
+#include "tilemap_asset.h"
 #include "sprite_sheet.h"
 #include "behavior_asset.h"
 #include "mesh_asset.h"
@@ -64,6 +66,106 @@ namespace assets
 			texture_asset = std::make_shared<assets::sprite_sheet>(image.get(), sprite_width, sprite_height);
 
 			return texture_asset;
+		}
+
+		std::shared_ptr<asset> load_tileset(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+
+			std::shared_ptr<asset> tileset_asset;
+
+			if (!(header.contains("path") && header.at("path").is_string()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+					"Invalid/Missing image path");
+			std::string source_path = ld.package + std::string(header.at("path"));
+			auto image = filesystem::load_image(source_path);
+
+			if (!(header.contains("tile_width") && header.at("tile_width").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+					"Invalid/Missing tile_width");
+			unsigned int tile_width = header.at("tile_width");
+
+			if (!(header.contains("tile_height") && header.at("tile_height").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+					"Invalid/Missing tile_height");
+			unsigned int tile_height = header.at("tile_height");
+
+			if (!(header.contains("collisions") && header.at("collisions").is_array()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+					"Invalid/Missing collisions");
+			std::vector<int> layers;
+			for (auto tile_id : header.at("collisions"))
+			{
+				if (!tile_id.is_number_integer())
+					error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
+						"Each tile_id in collisions should be an integer");
+				layers.push_back(tile_id);
+			}
+
+			tileset_asset = std::make_shared<assets::tileset>(image.get(), tile_width, tile_height, layers);
+
+			return tileset_asset;
+		}
+
+		std::shared_ptr<asset> load_tilemap(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+
+			if (!(header.contains("path") && header.at("path").is_string()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]",
+					"Invalid/Missing path");
+
+			std::string file_path = ld.package + std::string(header.at("path"));
+			auto file = filesystem::load_file(file_path);
+			if (file.fail())
+				error_handling::crash(error_handling::error_source::core, "[asset_manager::load_tilemap]", 
+					"Missing .tmj tilemap: " + header.at("path"));
+			nlohmann::json source = nlohmann::json::parse(file);
+			file.close();
+
+			if (!(source.contains("width") && source.at("width").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]",
+					"Source file is missing width");
+			unsigned int width = source.at("width");
+
+			if (!(source.contains("height") && source.at("height").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]",
+					"Source file is missing height");
+			unsigned int height = source.at("height");
+
+			std::vector<tilemap::layer> layers;
+			if (!(source.contains("layers") && source.at("layers").is_array()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]",
+					"Source file is missing layers");
+
+			int layers_iterator = 0;
+			for (auto& layer : source.at("layers"))
+			{
+				layers.push_back({});
+
+				if (!layer.is_object()) 
+					error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]","Invalid layer");
+
+				if (!(layer.contains("data") && layer.at("data").is_array()))
+					error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]", "Invalid layer");
+
+				tilemap::row current_row;
+				for (auto& tile : layer.at("data"))
+				{
+					if (current_row.size() == width)
+					{
+						layers.at(layers_iterator).push_back(std::move(current_row));
+						current_row = {};
+					}
+					current_row.push_back(tile);
+				}
+				layers.at(layers_iterator).push_back(std::move(current_row));
+				layers_iterator++;
+			}
+
+			std::shared_ptr<asset> tilemap_asset 
+				= std::make_shared<assets::tilemap>(width, height, layers);
+			return tilemap_asset;
 		}
 
 		std::shared_ptr<asset> load_shader(const load_data& ld)

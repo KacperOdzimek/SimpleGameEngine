@@ -32,11 +32,6 @@ entities::components::static_mesh::~static_mesh()
 	common::renderer->unregister_mesh_component(this);
 }
 
-void entities::components::static_mesh::mark_pipeline_dirty()
-{
-	common::renderer->mark_pipeline_dirty(_config);
-}
-
 void entities::components::static_mesh::pass_transformation(rendering::transformations_buffer_iterator& tbi)
 {
 	if (visible)
@@ -67,4 +62,9 @@ void entities::components::static_mesh::set_render_config(const rendering::rende
 		_config = rc;
 		common::renderer->register_mesh_component(this);
 	}
+}
+
+uint32_t entities::components::static_mesh::get_instances_amount()
+{
+	return 1;
 }

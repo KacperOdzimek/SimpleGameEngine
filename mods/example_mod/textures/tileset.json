@@ -1,0 +1,11 @@
+{
+    "asset_type" : "tileset",
+    "path" : "/textures/tileset.png",
+
+    "tile_width" : 16,
+    "tile_height" : 16,
+    
+    "collisions" : [
+        1, 2, 3, 6, 8, 11, 12, 13
+    ]
+}

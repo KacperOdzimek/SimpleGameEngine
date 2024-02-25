@@ -7,6 +7,8 @@ namespace entities
 {
 	namespace components
 	{
+		class tilemap;
+
 		/*
 			collider
 			component that links the collision detection subsystem with game logic
@@ -14,6 +16,11 @@ namespace entities
 		*/
 		class collider : virtual public component
 		{
+			friend tilemap;
+			void initialize_in_tilemap(entities::entity* _owner)
+			{
+				owner = _owner;
+			}
 		public:
 			/*
 				flag that determine how should collider interact with other colliders

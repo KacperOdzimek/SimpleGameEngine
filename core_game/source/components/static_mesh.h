@@ -22,16 +22,11 @@ namespace entities
 				pass_transformation
 				passes mesh transformation to the buffer on the GPU
 			*/
-			void pass_transformation(rendering::transformations_buffer_iterator& tbi);
-
-			/*
-				mark_pipeline_dirty
-				force renderer to reload transformations for the pipeline used by this instace of the mesh
-			*/
-			void mark_pipeline_dirty();
+			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
 		public:
 			virtual const rendering::render_config& get_render_config() override;
 			void set_render_config(const rendering::render_config& rc);
+			virtual uint32_t get_instances_amount() override;
 
 			static_mesh(
 				uint32_t _id,

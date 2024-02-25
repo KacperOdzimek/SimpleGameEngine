@@ -50,5 +50,6 @@ namespace rendering
 		*/
 		graphics_abstraction::api* get_api();
 		std::function<void(void)> get_resize_function();
+		uint32_t get_new_uid();
 	};
 }

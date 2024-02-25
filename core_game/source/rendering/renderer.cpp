@@ -15,6 +15,7 @@
 #include "source/assets/texture_asset.h"
 #include "source/assets/mesh_asset.h"
 #include "source/assets/sprite_sheet.h"
+#include "source/assets/tileset_asset.h"
 
 #include "graphics_abstraction/graphics_abstraction.h"
 #include "opengl_3_3_api/opengl_3.3_api.h"
@@ -47,6 +48,8 @@ struct renderer::implementation
 
     entities::components::camera* active_camera = nullptr;
 
+    uint32_t current_uid = 0;
+
     static void resize()
     {
         auto& impl = common::renderer->impl;
@@ -59,9 +62,13 @@ struct renderer::implementation
     struct geometry
     {
         bool should_reload_transformations = false;
-        uint32_t visible_instances = 0;
         std::vector<entities::components::mesh*> meshes;
+
+        uint32_t visible_instances = 0;
         graphics_abstraction::buffer* transformations_buffer;
+
+        bool should_resize_buffer = false;
+        uint32_t new_buffer_size;
         
         geometry() {};
         geometry(geometry& othr) = delete;
@@ -243,26 +250,36 @@ void renderer::update_transformations()
             continue;
         pipeline.second.should_reload_transformations = false;
 
+        if (pipeline.second.should_resize_buffer)
+        {
+            pipeline.second.transformations_buffer->reallocate(pipeline.second.new_buffer_size);
+        }
+
         uint32_t buffer_size = pipeline.second.transformations_buffer->get_size();
 
         void* buffer_begin = pipeline.second.transformations_buffer->open_data_stream();
         transformations_buffer_iterator tbi{ buffer_begin };
 
+        uint32_t instances_to_add = 0;
+
         for (auto& mesh : pipeline.second.meshes)
         {
-            mesh->pass_transformation(tbi);
-            if (buffer_size - tbi.get_data_size() < impl->transformations_buffer_layout->get_vertex_size())
-            {
-                pipeline.second.transformations_buffer->reallocate(
-                    int(pipeline.second.meshes.size() * 1.5) * impl->transformations_buffer_layout->get_vertex_size()
-                );
-                pipeline.second.should_reload_transformations = true;
-                break;
-            }
+            if ((buffer_size - tbi.get_data_size()) / impl->transformations_buffer_layout->get_vertex_size() < mesh->get_instances_amount())
+                instances_to_add += mesh->get_instances_amount();
+            else
+                mesh->pass_transformation(tbi);
         }
 
         pipeline.second.visible_instances = tbi.get_data_size() / impl->transformations_buffer_layout->get_vertex_size();
         pipeline.second.transformations_buffer->close_data_stream();
+
+        if (instances_to_add != 0)
+        {
+            pipeline.second.should_resize_buffer = true;
+            pipeline.second.new_buffer_size = int((pipeline.second.visible_instances + instances_to_add) + 32) *
+                impl->transformations_buffer_layout->get_vertex_size();
+            pipeline.second.should_reload_transformations = true;
+        }
     }
 }
 
@@ -304,16 +321,20 @@ void renderer::render()
 
             if (pipeline.first.textures.size() != 0)
             {
-                auto sprite_sheet = dynamic_cast<assets::sprite_sheet*>(pipeline.first.textures.at(0).get());
-                glm::vec2 sprites_count;
+                glm::vec2 sprites_count = { 1, 1 };
 
-                if (sprite_sheet != nullptr)
-                    sprites_count = { 
-                        sprite_sheet->get_width() / sprite_sheet->sprite_width,
-                        sprite_sheet->get_height() / sprite_sheet->sprite_height
+                auto as_sprite_sheet = dynamic_cast<assets::sprite_sheet*>(pipeline.first.textures.at(0).get());
+                auto as_tileset = dynamic_cast<assets::tileset*>(pipeline.first.textures.at(0).get());
+                if (as_sprite_sheet != nullptr)
+                    sprites_count = {
+                        as_sprite_sheet->get_width()  / as_sprite_sheet->sprite_width,
+                        as_sprite_sheet->get_height() / as_sprite_sheet->sprite_height
                     };
-                else
-                    sprites_count = { 1, 1 };
+                else if (as_tileset != nullptr)
+                    sprites_count = {
+                        as_tileset->get_width()  / as_tileset->tile_width,
+                        as_tileset->get_height() / as_tileset->tile_height
+                    };
 
                 pipeline.first.material->_shader->set_uniform_value(
                     "itr_sprites", graphics_abstraction::data_type::vec2, glm::value_ptr(sprites_count));
@@ -407,4 +428,12 @@ entities::components::camera* renderer::get_active_camera()
 std::function<void(void)> renderer::get_resize_function()
 {
     return std::function<void(void)>{implementation::resize};
+}
+
+uint32_t renderer::get_new_uid()
+{
+    if (impl->current_uid == UINT32_MAX)
+        impl->current_uid = 0;
+    impl->current_uid++;
+    return impl->current_uid;
 }

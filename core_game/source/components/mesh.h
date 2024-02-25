@@ -58,6 +58,7 @@ namespace entities
 			const glm::vec2& get_scale() { return scale; }
 
 			virtual const rendering::render_config& get_render_config() = 0;
+			virtual uint32_t get_instances_amount() = 0;
 			virtual void on_attach() override;
 
 			mesh(uint32_t _id);

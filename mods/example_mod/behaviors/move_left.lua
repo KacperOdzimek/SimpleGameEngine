@@ -1,9 +1,18 @@
 function on_init(e)
-    _e_add_sprite(e, "sprite", "mod/textures/sprite_sheet", 1, "body")
-    _e_add_dynamics(e, "dynamics")
+    _e_add_sprite(e, "sprite", "mod/textures/cat_texture", 0, "body")
 end
 
 function on_update(e, dt)
-    _c_d_add_force(e, "dynamics", _i_axis("move_right") * 10, _i_axis("move_forward") * 10)
-    _c_d_sweep(e, "dynamics")
+    speed = 1
+
+    x_change = _i_axis("move_right") * dt * speed
+    y_change = _i_axis("move_forward") * dt * speed
+
+    x, y = _e_get_location(e)
+    _e_sweep(e, x + x_change, y + y_change)
+    io.write("\n")
+end
+
+function on_collide(e, oth)
+    io.write("COL\n")
 end
