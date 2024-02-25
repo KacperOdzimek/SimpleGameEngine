@@ -16,11 +16,14 @@ namespace rendering
 		std::shared_ptr<assets::mesh> mesh;
 		std::shared_ptr<assets::shader> material;
 		std::vector<std::shared_ptr<assets::texture>> textures;
+		//uid is used to request a unique transformation buffer from renderer
+		//it can reduce cost of heavy-data operations like destroying big tilemap
+		uint32_t uid = 0;
 
 		bool operator==(const render_config& other) const
 		{
 			return mesh.get() == other.mesh.get() && material.get() == other.material.get()
-				&& textures == other.textures;
+				&& textures == other.textures && uid == other.uid;
 		}
 	};
 }

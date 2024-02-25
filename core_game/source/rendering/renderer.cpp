@@ -48,6 +48,8 @@ struct renderer::implementation
 
     entities::components::camera* active_camera = nullptr;
 
+    uint32_t current_uid = 0;
+
     static void resize()
     {
         auto& impl = common::renderer->impl;
@@ -426,4 +428,12 @@ entities::components::camera* renderer::get_active_camera()
 std::function<void(void)> renderer::get_resize_function()
 {
     return std::function<void(void)>{implementation::resize};
+}
+
+uint32_t renderer::get_new_uid()
+{
+    if (impl->current_uid == UINT32_MAX)
+        impl->current_uid = 0;
+    impl->current_uid++;
+    return impl->current_uid;
 }

@@ -21,6 +21,7 @@ tilemap::tilemap(
 		common::assets_manager->get_asset(utilities::hash_string("core/square_mesh"))).lock();
 
 	_config.textures = { tileset_asset };
+	_config.uid = common::renderer->get_new_uid();
 }
 
 void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tbi)
