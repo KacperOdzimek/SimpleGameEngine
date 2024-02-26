@@ -34,13 +34,13 @@ namespace physics
 			checks wheter collider would hit another collider when moved to some location
 		*/
 		collision_event check_if_collider_collide_on_move(
-			entities::components::collider* moved_collider, glm::vec2 target_location, entities::components::collider* other);
+			entities::components::collider* moved_collider, const glm::vec2& velocity, entities::components::collider* other);
 		/*
 			sweep_move
 			simulate collider move to some point
 			returns structure containing all events that will occur
 		*/
 		sweep_move_event sweep_move(
-			entities::components::collider* collider, glm::vec2& end_point);
+			entities::components::collider* collider, const glm::vec2& end_point);
 	};
 }

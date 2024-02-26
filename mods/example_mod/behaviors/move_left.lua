@@ -3,7 +3,7 @@ function on_init(e)
 end
 
 function on_update(e, dt)
-    speed = 1
+    speed = 4
 
     x_change = _i_axis("move_right") * dt * speed
     y_change = _i_axis("move_forward") * dt * speed

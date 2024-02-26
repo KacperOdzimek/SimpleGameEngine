@@ -92,6 +92,11 @@ namespace physics
 			all overlap events before collide_event
 		*/
 		std::vector<collision_event> overlap_events;
+		/*
+			velocity
+			final velocity
+		*/
+		glm::vec2 velocity;
 	};
 
 	/*

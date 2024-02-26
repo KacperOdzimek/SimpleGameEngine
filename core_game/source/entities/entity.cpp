@@ -77,6 +77,8 @@ void entities::entity::teleport(glm::vec2 new_location)
 	};
 }
 
+#include <iostream>
+
 physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 {
 	if (new_location.x == location.x && new_location.y == location.y)
@@ -85,6 +87,7 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 	std::vector<physics::sweep_move_event> events;
 	int closest_event_id = -1;
 	components::collider* collider = nullptr;
+
 	for (auto& c : components)
 	{
 		auto c_ptr = dynamic_cast<components::collider*>(c);
@@ -97,7 +100,7 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 					|| events.back().collide_event.distance < events.at(closest_event_id).collide_event.distance
 				) 
 				&& events.back().collide_event.other != nullptr)
-				closest_event_id = events.size() - 1;	
+				closest_event_id = events.size() - 1;
 		}
 		auto m_ptr = dynamic_cast<components::mesh*>(c);
 		if (m_ptr != nullptr)
@@ -142,8 +145,7 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 			if (e->get() != this)
 				(*e)->call_on_overlap(overlaping_entities);
 
-		glm::vec2 velocity = new_location - location;
-		location += velocity * (glm::vec2(1, 1) - glm::vec2(std::abs(collide_event.normal.x), std::abs(collide_event.normal.y)));
+		location += events.at(closest_event_id).velocity;
 
 		call_on_collide(collide_event.other->get_owner_weak());
 		collide_event.other->get_owner_weak().lock()->call_on_collide(this->self);
