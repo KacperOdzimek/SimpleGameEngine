@@ -10,14 +10,14 @@ namespace entities
 	{
 	friend entity;
 	protected:
-		std::unique_ptr<scene>* active_scene;
+		scene* active_scene;
 		std::unique_ptr<scene> dynamic_scene;
 		std::list<std::unique_ptr<scene>> scenes;
 	public:
 		world() 
 		{ 
 			dynamic_scene = std::make_unique<scene>(); 
-			active_scene = &dynamic_scene;
+			active_scene = dynamic_scene.get();
 		}
 		void update();
 		/*
@@ -25,7 +25,7 @@ namespace entities
 			sets active_scene so the scene can be accesed from behaviors
 			pass nullptr to set it to dynamic_scene
 		*/
-		void set_active_scene(std::unique_ptr<scene>* scene);
-		std::unique_ptr<scene>* get_active_scene();
+		void set_active_scene(scene* scene);
+		scene* get_active_scene();
 	};
 }

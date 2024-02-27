@@ -14,7 +14,7 @@ namespace behaviors
 {
 	namespace lua_functions
 	{
-#define scene common::behaviors_manager->get_current_frame()->scene_context->get()
+#define scene common::behaviors_manager->get_current_frame()->scene_context
 		namespace entities
 		{
 			int _e_create(lua_State* L)

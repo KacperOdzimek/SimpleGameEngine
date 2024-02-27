@@ -1,6 +1,8 @@
 #pragma once
 #include "entity.h"
 
+#include "source/assets/scene_asset.h"
+
 #include <vector>
 #include <memory>
 
@@ -28,7 +30,10 @@ namespace entities
 			and triggers purge when it reaches value definied in .cpp file
 		*/
 		int frames_since_purged = 0;
+		std::shared_ptr<assets::scene> _scene;
 	public:
+		scene();
+		scene(std::weak_ptr<assets::scene> __scene);
 		void update();
 		~scene();
 	};

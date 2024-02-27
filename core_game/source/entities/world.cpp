@@ -9,15 +9,15 @@ namespace entities
 			scene->update();
 	}
 
-	void world::set_active_scene(std::unique_ptr<scene>* scene)
+	void world::set_active_scene(scene* scene)
 	{
 		if (scene == nullptr)
-			active_scene = &dynamic_scene;
+			active_scene = dynamic_scene.get();
 		else
 			active_scene = scene;
 	}
 
-	std::unique_ptr<scene>* world::get_active_scene()
+	scene* world::get_active_scene()
 	{
 		return active_scene;
 	}

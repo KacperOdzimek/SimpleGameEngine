@@ -55,7 +55,7 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	auto create_entity_with_bhv = [&](glm::vec2 pos, std::string beh_path)
+	/*auto create_entity_with_bhv = [&](glm::vec2 pos, std::string beh_path)
 	{
 		auto e = new entities::entity;
 		e->teleport(pos);
@@ -76,7 +76,7 @@ int main()
 
 	/*
 		Tilemap Entity
-	*/
+	*//*
 	auto tilemap_e = new entities::entity;
 	auto tilemap_c = new entities::components::tilemap{
 		utilities::hash_string("tilemap"),
@@ -84,7 +84,9 @@ int main()
 		assets::cast_asset<assets::tileset>(common::assets_manager->safe_get_asset("mod/textures/tileset")).lock()
 	};
 	tilemap_e->attach_component(tilemap_c);
-	tilemap_e->teleport({ 0.0f, 0.0f });
+	tilemap_e->teleport({ 0.0f, 0.0f }); */
+
+	common::assets_manager->load_asset("mod/scenes/scene1");
 
 	/*
 		Camera Entity
@@ -105,10 +107,8 @@ int main()
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
-		//Remove expired entities Pointers
-		common::world->update();
-
 		//Game Logic
+		common::world->update();
 		common::input_mananger->update_mappings_states();
 		common::behaviors_manager->call_update_functions();
 

@@ -129,7 +129,7 @@ void behaviors::behaviors_manager::call_update_functions()
         purge_registered_behaviors(impl->registered_behaviors);
 }
 
-std::string behaviors::behaviors_manager::create_behavior(const std::string& file_path)
+std::string behaviors::behaviors_manager::create_functions_table(const std::string& file_path)
 {
     auto& L = impl->L;
 
@@ -175,7 +175,7 @@ void behaviors::behaviors_manager::pass_float_arg(float arg)
     lua_pushnumber(impl->L, arg);
 }
 
-bool behaviors::behaviors_manager::prepare_call(behaviors::functions func, assets::behavior* bhv)
+bool behaviors::behaviors_manager::prepare_behavior_function_call(behaviors::functions func, assets::behavior* bhv)
 {
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
     switch (func)
@@ -199,12 +199,32 @@ bool behaviors::behaviors_manager::prepare_call(behaviors::functions func, asset
     return true;
 }
 
-bool behaviors::behaviors_manager::prepare_custom_call(const std::string& func_name, assets::behavior* bhv)
+bool behaviors::behaviors_manager::prepare_custom_behavior_function_call(const std::string& func_name, assets::behavior* bhv)
 {
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
     lua_getfield(impl->L, -1, func_name.c_str());
     lua_insert(impl->L, -lua_gettop(impl->L));
     lua_pop(impl->L, 1);
+    if (lua_isnil(impl->L, -1))
+    {
+        lua_pop(impl->L, -1);
+        return false;
+    }
+    return true;
+}
+
+bool behaviors::behaviors_manager::prepare_scene_function_call(behaviors::functions func, assets::scene* sc)
+{
+    lua_getfield(impl->L, LUA_REGISTRYINDEX, sc->name.c_str());
+    switch (func)
+    {
+    case behaviors::functions::init:
+        lua_getfield(impl->L, -1, "on_init"); break;
+    case behaviors::functions::update:
+        lua_getfield(impl->L, -1, "on_update"); break;
+    case behaviors::functions::destroy:
+        lua_getfield(impl->L, -1, "on_destroy"); break;
+    }
     if (lua_isnil(impl->L, -1))
     {
         lua_pop(impl->L, -1);
@@ -225,7 +245,7 @@ void behaviors::behaviors_manager::abort()
     luaL_dostring(impl->L, "do return end");
 }
 
-void behaviors::behaviors_manager::create_frame(std::shared_ptr<database> database, std::unique_ptr<entities::scene>* scene_context)
+void behaviors::behaviors_manager::create_frame(std::shared_ptr<database> database, entities::scene* scene_context)
 {
     impl->frames_stack.push_back({});
     impl->frames_stack.back().scene_context = scene_context;
