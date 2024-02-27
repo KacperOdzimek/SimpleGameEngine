@@ -13,6 +13,7 @@
 #include "source/components/collider.h"
 #include "source/components/static_mesh.h"
 #include "source/components/sprite.h"
+#include "source/components/tilemap.h"
 #include "source/components/dynamics.h"
 
 namespace behaviors
@@ -67,6 +68,31 @@ namespace behaviors
 				return 0;
 			}
 
+			int _e_add_collider(lua_State* L)
+			{
+				auto e = load_entity(L, 1, "[_e_add_collider]");
+				uint32_t id = load_id(L, 2, "[_e_add_collider]", "Component");
+				auto preset_name = lua_tostring(L, 3);
+
+				physics::collision_preset preset;
+				{
+					auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
+					preset = config.lock()->get_preset(utilities::hash_string(preset_name));
+				}
+
+				glm::vec2 extend;
+				extend.x = lua_tonumber(L, 4);
+				extend.y = lua_tonumber(L, 5);
+
+				e->attach_component(
+					new ::entities::components::collider{
+						id, preset, extend
+					}
+				);
+
+				return 0;
+			}
+
 			int _e_add_sprite(lua_State* L)
 			{
 				auto e = load_entity(L, 1, "[_e_add_sprite]");
@@ -93,26 +119,21 @@ namespace behaviors
 				return 0;
 			}
 
-			int _e_add_collider(lua_State* L)
+			int _e_add_tilemap(lua_State* L)
 			{
-				auto e = load_entity(L, 1, "[_e_add_collider]");
-				uint32_t id = load_id(L, 2, "[_e_add_collider]", "Component");
-				auto preset_name = lua_tostring(L, 3);
-
-				physics::collision_preset preset;
-				{
-					auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
-					preset = config.lock()->get_preset(utilities::hash_string(preset_name));
-				}
-
-				glm::vec2 extend;
-				extend.x = lua_tonumber(L, 4);
-				extend.y = lua_tonumber(L, 5);
-
+				auto e = load_entity(L, 1, "[_e_add_tilemap]");
+				uint32_t id = load_id(L, 2, "[_e_add_tilemap]", "Component");
+				auto tilemap = load_asset_path(L, 3, "[_e_add_tilemap]");
+				auto tileset = load_asset_path(L, 4, "[_e_add_tilemap]");
+				
 				e->attach_component(
-					new ::entities::components::collider{
-						id, preset, extend
-					}
+					new entities::components::tilemap(
+						id,
+						assets::cast_asset<::assets::tilemap>(
+							::common::assets_manager->safe_get_asset(tilemap)),
+						assets::cast_asset<::assets::tileset>(
+							::common::assets_manager->safe_get_asset(tileset))
+					)
 				);
 
 				return 0;
@@ -137,8 +158,9 @@ namespace behaviors
 				lua_register(L, "_e_add_behavior", _e_add_behavior);
 				lua_register(L, "_e_add_camera", _e_add_camera);
 				lua_register(L, "_e_add_static_mesh", _e_add_static_mesh);
-				lua_register(L, "_e_add_sprite", _e_add_sprite);
 				lua_register(L, "_e_add_collider", _e_add_collider);
+				lua_register(L, "_e_add_sprite", _e_add_sprite);
+				lua_register(L, "_e_add_tilemap", _e_add_tilemap);
 				lua_register(L, "_e_add_dynamics", _e_add_dynamics);
 			}
 		}
