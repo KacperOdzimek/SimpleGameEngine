@@ -87,6 +87,10 @@ int main()
 	tilemap_e->teleport({ 0.0f, 0.0f }); */
 
 	common::assets_manager->load_asset("mod/scenes/scene1");
+	common::world->create_scene(
+		assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset("mod/scenes/scene1")), 
+		{ 0,0 }
+	);
 
 	/*
 		Camera Entity
@@ -117,12 +121,13 @@ int main()
 		common::renderer->render();
 		common::window_manager->update();
 
-		//Remove dont used assets
+		//Remove not used assets
 		common::assets_manager->unload_unreferenced_assets();
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;
 	}
+	common::world->destroy();
 	common::world.reset();
 	common::assets_manager.reset();
 	common::renderer.reset();

@@ -249,6 +249,7 @@ void behaviors::behaviors_manager::create_frame(std::shared_ptr<database> databa
 {
     impl->frames_stack.push_back({});
     impl->frames_stack.back().scene_context = scene_context;
+    common::world->set_active_scene(scene_context);
     impl->frames_stack.back().target_object_database = database;
 }
 

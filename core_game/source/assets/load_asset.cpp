@@ -10,6 +10,7 @@
 #include "tilemap_asset.h"
 #include "sprite_sheet.h"
 #include "behavior_asset.h"
+#include "scene_asset.h"
 #include "mesh_asset.h"
 #include "input_config_asset.h"
 #include "collision_config_asset.h"
@@ -266,7 +267,7 @@ namespace assets
 					"Invalid/Missing scene script path");
 
 			std::string source_path = ld.package + std::string(header.at("path"));
-			scene_asset = std::make_shared<assets::behavior>(source_path);
+			scene_asset = std::make_shared<assets::scene>(source_path);
 
 			return scene_asset;
 		}

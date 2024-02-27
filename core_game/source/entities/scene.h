@@ -9,10 +9,12 @@
 namespace entities
 {
 	class entity;
+	class world;
 
 	class scene
 	{
 		friend entity;
+		friend world;
 	public:
 		/*
 			entities

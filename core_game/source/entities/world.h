@@ -19,6 +19,7 @@ namespace entities
 			dynamic_scene = std::make_unique<scene>(); 
 			active_scene = dynamic_scene.get();
 		}
+		void destroy();
 		void update();
 		/*
 			set_active_scene
@@ -26,6 +27,7 @@ namespace entities
 			pass nullptr to set it to dynamic_scene
 		*/
 		void set_active_scene(scene* scene);
+		void create_scene(std::weak_ptr<assets::scene> scene, glm::vec2 position);
 		scene* get_active_scene();
 	};
 }
