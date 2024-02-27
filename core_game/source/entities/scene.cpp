@@ -59,7 +59,7 @@ void scene::update()
 	}
 
     if (_scene.get() == nullptr ||
-        !common::behaviors_manager->prepare_scene_function_call(behaviors::functions::destroy, _scene.get()))
+        !common::behaviors_manager->prepare_scene_function_call(behaviors::functions::update, _scene.get()))
         return;
 
     common::behaviors_manager->create_frame(nullptr, this);

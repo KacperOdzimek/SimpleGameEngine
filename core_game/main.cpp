@@ -55,37 +55,6 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	/*auto create_entity_with_bhv = [&](glm::vec2 pos, std::string beh_path)
-	{
-		auto e = new entities::entity;
-		e->teleport(pos);
-
-		e->attach_component(
-			new entities::components::behavior
-			{
-				utilities::hash_string("bhv"),
-				assets::cast_asset<assets::behavior>(common::assets_manager->safe_get_asset(beh_path)).lock()
-			}
-		);
-		e->layer = 1;
-		return e;
-	};
-
-	auto b1 = create_entity_with_bhv({-1.0f, 0.0f}, "mod/behaviors/move_left");
-	//auto b2 = create_entity_with_bhv({1.0f, 0.0f}, "mod/behaviors/move_right");
-
-	/*
-		Tilemap Entity
-	*//*
-	auto tilemap_e = new entities::entity;
-	auto tilemap_c = new entities::components::tilemap{
-		utilities::hash_string("tilemap"),
-		assets::cast_asset<assets::tilemap>(common::assets_manager->safe_get_asset("mod/tilemaps/tilemap")).lock(),
-		assets::cast_asset<assets::tileset>(common::assets_manager->safe_get_asset("mod/textures/tileset")).lock()
-	};
-	tilemap_e->attach_component(tilemap_c);
-	tilemap_e->teleport({ 0.0f, 0.0f }); */
-
 	common::assets_manager->load_asset("mod/scenes/scene1");
 	common::world->create_scene(
 		assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset("mod/scenes/scene1")), 
