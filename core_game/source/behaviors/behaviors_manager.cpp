@@ -7,6 +7,8 @@ extern "C"
 #include "include/lua_5_4_2/include/lualib.h"
 }
 
+#include "source/entities/world.h"
+
 #include "source/common/common.h"
 #include "source/filesystem/filesystem.h"
 
@@ -17,6 +19,8 @@ extern "C"
 
 #include "source/common/crash.h"
 #include "register_functions.h"
+
+#include "frame.h"
 
 #include <unordered_map>
 #include <vector>
@@ -58,15 +62,13 @@ struct behaviors::behaviors_manager::implementation
         function {purge_registered_behaviors} is triggered
     */
     int dangling_pointers = 0;
+
     /*
-        databases_stack
-        locks databases until end of the script execution
-        -l-
-        when behaviors function is called behavior adds shared_ptr of its database to this stack
-        when function ends its execution top pointer is removed from the stack
-        this guarantee that needed databases wont be deleted during the execution
+        frames_stack
+        saves states of the program in certain points of time (function calls) so they can be restored
+        also holds used databases alive
     */
-    std::list<std::shared_ptr<database>> databases_stack;
+    std::list<frame> frames_stack;
 };
 
 /*
@@ -223,17 +225,30 @@ void behaviors::behaviors_manager::abort()
     luaL_dostring(impl->L, "do return end");
 }
 
-void behaviors::behaviors_manager::push_database(std::shared_ptr<database> database)
+void behaviors::behaviors_manager::create_frame(std::shared_ptr<database> database, std::unique_ptr<entities::scene>* scene_context)
 {
-    impl->databases_stack.push_back(database);
+    impl->frames_stack.push_back({});
+    impl->frames_stack.back().scene_context = scene_context;
+    impl->frames_stack.back().target_object_database = database;
 }
 
-void behaviors::behaviors_manager::pop_database()
+void behaviors::behaviors_manager::pop_frame()
 {
-    impl->databases_stack.pop_back();
+    impl->frames_stack.pop_back();
+    if (impl->frames_stack.size() != 0)
+    {
+        common::world->set_active_scene(impl->frames_stack.back().scene_context);
+    }
+    else
+    {
+        common::world->set_active_scene(nullptr);
+    }
 }
 
-std::weak_ptr<behaviors::database> behaviors::behaviors_manager::get_active_database()
+const behaviors::frame* behaviors::behaviors_manager::get_current_frame()
 {
-    return impl->databases_stack.back();
+    if (impl->frames_stack.size() == 0)
+        error_handling::crash(error_handling::error_source::core, "[get_active_database]",
+            "Tried to get active database when frames stack was empty");
+    return &impl->frames_stack.back();
 }

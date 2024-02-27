@@ -5,18 +5,22 @@
 #include "source/components/behavior.h"
 
 #include "source/common/common.h"
+#include "source/behaviors/behaviors_manager.h"
 #include "source/entities/world.h"
+
+#include "source/behaviors/frame.h"
 
 namespace behaviors
 {
 	namespace lua_functions
 	{
+#define scene common::behaviors_manager->get_current_frame()->scene_context->get()
 		namespace entities
 		{
 			int _e_create(lua_State* L)
 			{
 				auto e = new ::entities::entity;
-				lua_pushinteger(L, (uint64_t)&common::world->active_scene->entities.back());
+				lua_pushinteger(L, (uint64_t)&scene->entities.back());
 				return 1;
 			}
 
@@ -106,6 +110,7 @@ namespace behaviors
 				lua_register(L, "_e_get_layer", _e_get_layer);
 				lua_register(L, "_e_set_layer", _e_set_layer);
 			}
+#undef scene
 		}
 	}
 }

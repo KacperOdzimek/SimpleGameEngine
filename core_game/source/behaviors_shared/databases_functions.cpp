@@ -5,13 +5,15 @@
 #include "source/behaviors/behaviors_manager.h"
 #include "source/behaviors/behaviors_database.h"
 
+#include "source/behaviors/frame.h"
+
 namespace behaviors
 {
 	namespace lua_functions
 	{
 		namespace databases
 		{
-#define db common::behaviors_manager->get_active_database().lock()
+#define db common::behaviors_manager->get_current_frame()->target_object_database
 			int _d_set_f(lua_State* L)
 			{
 				auto id = load_id(L, 1, "[_d_set_f]", "Variable ");

@@ -10,10 +10,17 @@ namespace assets
 
 namespace entities
 {
+	class scene;
+
 	namespace components
 	{
 		struct behavior;
 	}
+}
+
+namespace behaviors
+{
+	struct frame;
 }
 
 class lua_State;
@@ -49,10 +56,10 @@ namespace behaviors
 		*/
 		void unregister_behavior_component(entities::components::behavior* comp);
 		/*
-			get_active_database
-			gets active_database
+			get_current_frame
+			returns current frame
 		*/
-		std::weak_ptr<database> get_active_database();
+		const behaviors::frame* get_current_frame();
 	private:
 		struct implementation;
 		implementation* impl;
@@ -113,18 +120,18 @@ namespace behaviors
 		*/
 		void pass_float_arg(float arg);
 		/*
-			push_database
-			makes database active
+			create_frame
+			creates frame that holds program state
 			-l-
-			required before prepare_call
+			required before call
 		*/
-		void push_database(std::shared_ptr<database> database);
+		void create_frame(std::shared_ptr<database> database, std::unique_ptr<entities::scene>* scene_context);
 		/*
-			pop_database
-			makes active database unactive
+			pop_frame
+			pops frame from the top of the stack
 			-l-
 			required after call
 		*/
-		void pop_database();
+		void pop_frame();
 	};
 }

@@ -55,8 +55,6 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	common::world->create_active_scene();
-
 	auto create_entity_with_bhv = [&](glm::vec2 pos, std::string beh_path)
 	{
 		auto e = new entities::entity;

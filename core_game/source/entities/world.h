@@ -1,5 +1,6 @@
 #pragma once
 #include "source/entities/scene.h"
+#include <list>
 
 namespace entities
 {
@@ -7,20 +8,24 @@ namespace entities
 
 	class world
 	{
+	friend entity;
+	protected:
+		std::unique_ptr<scene>* active_scene;
+		std::unique_ptr<scene> dynamic_scene;
+		std::list<std::unique_ptr<scene>> scenes;
 	public:
-		friend entity;
-		/*
-			persistent_scene
-			scene that dont get deleted
-		*/
-		std::unique_ptr<scene> persistent_scene;
-		/*
-			active_scene
-			scene that can be deleted due to game logic
-		*/
-		std::unique_ptr<scene> active_scene;
-
-		scene* create_active_scene();
+		world() 
+		{ 
+			dynamic_scene = std::make_unique<scene>(); 
+			active_scene = &dynamic_scene;
+		}
 		void update();
+		/*
+			set_active_scene
+			sets active_scene so the scene can be accesed from behaviors
+			pass nullptr to set it to dynamic_scene
+		*/
+		void set_active_scene(std::unique_ptr<scene>* scene);
+		std::unique_ptr<scene>* get_active_scene();
 	};
 }

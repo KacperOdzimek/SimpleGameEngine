@@ -2,7 +2,7 @@
 
 using namespace entities;
 
-constexpr int purge_triggering_dangling_pointers_amount = 20 * 60;  //Purge every 20 seconds
+constexpr int purge_triggering_dangling_pointers_amount = 30 * 60;  //Purge every 30 seconds
 
 scene::~scene()
 {
