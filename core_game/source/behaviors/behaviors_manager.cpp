@@ -249,21 +249,12 @@ void behaviors::behaviors_manager::create_frame(std::shared_ptr<database> databa
 {
     impl->frames_stack.push_back({});
     impl->frames_stack.back().scene_context = scene_context;
-    common::world->set_active_scene(scene_context);
     impl->frames_stack.back().target_object_database = database;
 }
 
 void behaviors::behaviors_manager::pop_frame()
 {
     impl->frames_stack.pop_back();
-    if (impl->frames_stack.size() != 0)
-    {
-        common::world->set_active_scene(impl->frames_stack.back().scene_context);
-    }
-    else
-    {
-        common::world->set_active_scene(nullptr);
-    }
 }
 
 const behaviors::frame* behaviors::behaviors_manager::get_current_frame()

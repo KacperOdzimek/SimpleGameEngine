@@ -14,7 +14,13 @@
 entities::entity::entity()
 {
 	self = std::shared_ptr<entity>{ this };
-	common::world->active_scene->entities.push_back(self);
+	common::world->get_dynamic_scene()->entities.push_back(self);
+}
+
+entities::entity::entity(scene* parent_scene)
+{
+	self = std::shared_ptr<entity>{ this };
+	parent_scene->entities.push_back(self);
 }
 
 void entities::entity::attach_component(component* comp)

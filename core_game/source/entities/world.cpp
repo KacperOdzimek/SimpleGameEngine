@@ -16,22 +16,14 @@ namespace entities
 			scene->update();
 	}
 
-	void world::set_active_scene(scene* scene)
-	{
-		if (scene == nullptr)
-			active_scene = dynamic_scene.get();
-		else
-			active_scene = scene;
-	}
-
 	void world::create_scene(std::weak_ptr<assets::scene> _scene, glm::vec2 position)
 	{
 		auto s = std::make_unique<scene>(_scene);
 		scenes.push_back(std::move(s));
 	}
 
-	scene* world::get_active_scene()
+	scene* world::get_dynamic_scene()
 	{
-		return active_scene;
+		return dynamic_scene.get();
 	}
 }

@@ -19,7 +19,7 @@ namespace behaviors
 		{
 			int _e_create(lua_State* L)
 			{
-				auto e = new ::entities::entity;
+				auto e = new ::entities::entity{scene};
 				lua_pushinteger(L, (uint64_t)&scene->entities.back());
 				return 1;
 			}

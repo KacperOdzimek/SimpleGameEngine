@@ -27,7 +27,7 @@ void entities::components::behavior::call_function(behaviors::functions func, st
 		return;
 
 	auto owner_weak_ptr = get_owner_weak();
-	common::behaviors_manager->create_frame(database, common::world->get_active_scene());
+	common::behaviors_manager->create_frame(database, common::world->get_dynamic_scene());
 
 	if (!owner_weak_ptr.expired() && behavior_asset)
 		switch (func)
@@ -66,7 +66,7 @@ void entities::components::behavior::call_function(behaviors::functions func, st
 void entities::components::behavior::call_custom_function(const std::string& name)
 {
 	auto owner_weak_ptr = get_owner_weak();
-	common::behaviors_manager->create_frame(database, common::world->get_active_scene());
+	common::behaviors_manager->create_frame(database, common::world->get_dynamic_scene());
 	common::behaviors_manager->prepare_custom_behavior_function_call(name, this->behavior_asset.get());
 	common::behaviors_manager->call(2);
 	common::behaviors_manager->pop_frame();
