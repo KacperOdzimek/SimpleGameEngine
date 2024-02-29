@@ -17,7 +17,7 @@ namespace entities
 			scene->update();
 	}
 
-	void world::create_scene(uint32_t name, std::weak_ptr<assets::scene> _scene, glm::vec2 position)
+	void world::create_scene(uint32_t name, std::weak_ptr<assets::scene> _scene)
 	{
 		for (auto& scene : scenes)
 			if (scene->name == name)

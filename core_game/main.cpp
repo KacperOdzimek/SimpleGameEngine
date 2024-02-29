@@ -57,8 +57,7 @@ int main()
 
 	common::world->create_scene(
 		1,
-		assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset("mod/scenes/scene1")), 
-		{ 0,0 }
+		assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset("mod/scenes/scene1"))
 	);
 
 	/*

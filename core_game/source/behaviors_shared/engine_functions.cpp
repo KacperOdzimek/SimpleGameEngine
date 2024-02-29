@@ -18,8 +18,7 @@ namespace behaviors
 
 				common::world->create_scene(
 					name,
-					assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset(scene_asset)),
-					{ 0,0 }
+					assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset(scene_asset))
 				);
 
 				return 0;
