@@ -55,8 +55,8 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	common::assets_manager->load_asset("mod/scenes/scene1");
 	common::world->create_scene(
+		1,
 		assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset("mod/scenes/scene1")), 
 		{ 0,0 }
 	);
@@ -95,6 +95,8 @@ int main()
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;
+
+		std::cout << 1 / common::delta_time << '\n';
 	}
 	common::world->destroy();
 	common::world.reset();

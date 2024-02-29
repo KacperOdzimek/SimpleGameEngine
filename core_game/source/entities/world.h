@@ -4,22 +4,20 @@
 
 namespace entities
 {
-	class entity;
-
 	class world
 	{
-	friend entity;
 	protected:
 		std::unique_ptr<scene> dynamic_scene;
 		std::list<std::unique_ptr<scene>> scenes;
 	public:
 		world() 
 		{ 
-			dynamic_scene = std::make_unique<scene>(); 
+			dynamic_scene = std::make_unique<scene>(0); 
 		}
 		void destroy();
 		void update();
-		void create_scene(std::weak_ptr<assets::scene> scene, glm::vec2 position);
+		void create_scene(uint32_t name, std::weak_ptr<assets::scene> scene, glm::vec2 position);
+		void remove_scene(uint32_t name);
 		scene* get_dynamic_scene();
 	};
 }

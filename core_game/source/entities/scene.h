@@ -23,6 +23,7 @@ namespace entities
 			may contain expired pointers
 		*/
 		std::vector<std::weak_ptr<entity>> entities;
+		const uint32_t name;
 	protected:
 		/*
 			frames_since_purged
@@ -34,8 +35,8 @@ namespace entities
 		int frames_since_purged = 0;
 		std::shared_ptr<assets::scene> _scene;
 	public:
-		scene();
-		scene(std::weak_ptr<assets::scene> __scene);
+		scene(uint32_t _name);
+		scene(uint32_t _name, std::weak_ptr<assets::scene> __scene);
 		void update();
 		~scene();
 	};
