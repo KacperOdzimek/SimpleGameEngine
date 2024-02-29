@@ -193,8 +193,7 @@ namespace behaviors
 			int _c_c_set_active(lua_State* L)
 			{
 				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_active]");
-				if (camera != nullptr)
-					common::renderer->set_active_camera(camera);
+				common::renderer->set_active_camera(camera);
 				return 0;
 			}
 
