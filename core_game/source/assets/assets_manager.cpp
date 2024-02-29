@@ -101,6 +101,9 @@ void assets_manager::load_asset(std::string path)
     case utilities::hash_string("behavior"):
         new_asset = loading::load_behavior(load_data);
         break;
+    case utilities::hash_string("scene"):
+        new_asset = loading::load_scene(load_data);
+        break;
     case utilities::hash_string("mesh"):
         new_asset = loading::load_mesh(load_data);
         break;

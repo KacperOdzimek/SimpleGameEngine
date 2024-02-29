@@ -8,12 +8,12 @@ namespace behaviors
 
 namespace assets
 {
-	struct behavior : public asset
+	struct scene : public asset
 	{
-	friend behaviors::behaviors_manager;
+		friend behaviors::behaviors_manager;
 	protected:
 		std::string name;
 	public:
-		behavior(std::string& lua_file_path);
+		scene(std::string& lua_file_path);
 	};
 }

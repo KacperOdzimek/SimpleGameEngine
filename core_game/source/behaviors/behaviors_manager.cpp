@@ -7,6 +7,8 @@ extern "C"
 #include "include/lua_5_4_2/include/lualib.h"
 }
 
+#include "source/entities/world.h"
+
 #include "source/common/common.h"
 #include "source/filesystem/filesystem.h"
 
@@ -17,6 +19,8 @@ extern "C"
 
 #include "source/common/crash.h"
 #include "register_functions.h"
+
+#include "frame.h"
 
 #include <unordered_map>
 #include <vector>
@@ -58,15 +62,13 @@ struct behaviors::behaviors_manager::implementation
         function {purge_registered_behaviors} is triggered
     */
     int dangling_pointers = 0;
+
     /*
-        databases_stack
-        locks databases until end of the script execution
-        -l-
-        when behaviors function is called behavior adds shared_ptr of its database to this stack
-        when function ends its execution top pointer is removed from the stack
-        this guarantee that needed databases wont be deleted during the execution
+        frames_stack
+        saves states of the program in certain points of time (function calls) so they can be restored
+        also holds used databases alive
     */
-    std::list<std::shared_ptr<database>> databases_stack;
+    std::list<frame> frames_stack;
 };
 
 /*
@@ -127,7 +129,7 @@ void behaviors::behaviors_manager::call_update_functions()
         purge_registered_behaviors(impl->registered_behaviors);
 }
 
-std::string behaviors::behaviors_manager::create_behavior(const std::string& file_path)
+std::string behaviors::behaviors_manager::create_functions_table(const std::string& file_path)
 {
     auto& L = impl->L;
 
@@ -173,7 +175,7 @@ void behaviors::behaviors_manager::pass_float_arg(float arg)
     lua_pushnumber(impl->L, arg);
 }
 
-bool behaviors::behaviors_manager::prepare_call(behaviors::functions func, assets::behavior* bhv)
+bool behaviors::behaviors_manager::prepare_behavior_function_call(behaviors::functions func, assets::behavior* bhv)
 {
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
     switch (func)
@@ -197,12 +199,32 @@ bool behaviors::behaviors_manager::prepare_call(behaviors::functions func, asset
     return true;
 }
 
-bool behaviors::behaviors_manager::prepare_custom_call(const std::string& func_name, assets::behavior* bhv)
+bool behaviors::behaviors_manager::prepare_custom_behavior_function_call(const std::string& func_name, assets::behavior* bhv)
 {
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
     lua_getfield(impl->L, -1, func_name.c_str());
     lua_insert(impl->L, -lua_gettop(impl->L));
     lua_pop(impl->L, 1);
+    if (lua_isnil(impl->L, -1))
+    {
+        lua_pop(impl->L, -1);
+        return false;
+    }
+    return true;
+}
+
+bool behaviors::behaviors_manager::prepare_scene_function_call(behaviors::functions func, assets::scene* sc)
+{
+    lua_getfield(impl->L, LUA_REGISTRYINDEX, sc->name.c_str());
+    switch (func)
+    {
+    case behaviors::functions::init:
+        lua_getfield(impl->L, -1, "on_init"); break;
+    case behaviors::functions::update:
+        lua_getfield(impl->L, -1, "on_update"); break;
+    case behaviors::functions::destroy:
+        lua_getfield(impl->L, -1, "on_destroy"); break;
+    }
     if (lua_isnil(impl->L, -1))
     {
         lua_pop(impl->L, -1);
@@ -223,17 +245,22 @@ void behaviors::behaviors_manager::abort()
     luaL_dostring(impl->L, "do return end");
 }
 
-void behaviors::behaviors_manager::push_database(std::shared_ptr<database> database)
+void behaviors::behaviors_manager::create_frame(std::shared_ptr<database> database, entities::scene* scene_context)
 {
-    impl->databases_stack.push_back(database);
+    impl->frames_stack.push_back({});
+    impl->frames_stack.back().scene_context = scene_context;
+    impl->frames_stack.back().target_object_database = database;
 }
 
-void behaviors::behaviors_manager::pop_database()
+void behaviors::behaviors_manager::pop_frame()
 {
-    impl->databases_stack.pop_back();
+    impl->frames_stack.pop_back();
 }
 
-std::weak_ptr<behaviors::database> behaviors::behaviors_manager::get_active_database()
+const behaviors::frame* behaviors::behaviors_manager::get_current_frame()
 {
-    return impl->databases_stack.back();
+    if (impl->frames_stack.size() == 0)
+        error_handling::crash(error_handling::error_source::core, "[get_active_database]",
+            "Tried to get active database when frames stack was empty");
+    return &impl->frames_stack.back();
 }

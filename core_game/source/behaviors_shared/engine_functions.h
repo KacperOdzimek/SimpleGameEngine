@@ -4,7 +4,7 @@ namespace behaviors
 {
 	namespace lua_functions
 	{
-		namespace input
+		namespace engine
 		{
 			void register_functions(lua_State* L);
 		}

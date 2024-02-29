@@ -10,6 +10,7 @@
 #include "tilemap_asset.h"
 #include "sprite_sheet.h"
 #include "behavior_asset.h"
+#include "scene_asset.h"
 #include "mesh_asset.h"
 #include "input_config_asset.h"
 #include "collision_config_asset.h"
@@ -253,6 +254,22 @@ namespace assets
 			behavior_asset = std::make_shared<assets::behavior>(source_path);
 			
 			return behavior_asset;
+		}
+
+		std::shared_ptr<asset> load_scene(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+
+			std::shared_ptr<asset> scene_asset;
+
+			if (!(header.contains("path") && header.at("path").is_string()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_scene]",
+					"Invalid/Missing scene script path");
+
+			std::string source_path = ld.package + std::string(header.at("path"));
+			scene_asset = std::make_shared<assets::scene>(source_path);
+
+			return scene_asset;
 		}
 
 		std::shared_ptr<asset> load_mesh(const load_data& ld)

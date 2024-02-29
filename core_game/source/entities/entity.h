@@ -25,8 +25,8 @@ namespace entities
 		void call_on_collide(std::weak_ptr<entities::entity> other);
 	public:
 		uint8_t layer = 0;
-
 		entity();
+		entity(scene* parent_scene);
 		/*
 			kill
 			destroys the entity and all of its components

@@ -1,14 +1,44 @@
 #include "scene.h"
+#include "source/common/common.h"
+#include "source/behaviors/behaviors_manager.h"
 
 using namespace entities;
 
-constexpr int purge_triggering_dangling_pointers_amount = 20 * 60;  //Purge every 20 seconds
+constexpr int purge_triggering_dangling_pointers_amount = 30 * 60;  //Purge every 30 seconds
+
+scene::scene(uint32_t _name) : name(_name)
+{
+}
+
+scene::scene(uint32_t _name, std::weak_ptr<assets::scene> __scene) : name(_name)
+{
+    _scene = __scene.lock();
+
+    if (_scene.get() == nullptr)
+        return;
+
+    if (!common::behaviors_manager->prepare_scene_function_call(behaviors::functions::init, _scene.get()))
+        return;
+
+    common::behaviors_manager->create_frame(nullptr, this);
+    common::behaviors_manager->call(0);
+    common::behaviors_manager->pop_frame();
+
+}
 
 scene::~scene()
 {
-	for (auto& e : entities)
-		if (!e.expired())
-			e.lock()->kill();
+    if (!(_scene.get() == nullptr ||
+        !common::behaviors_manager->prepare_scene_function_call(behaviors::functions::destroy, _scene.get())))
+    {
+        common::behaviors_manager->create_frame(nullptr, this);
+        common::behaviors_manager->call(0);
+        common::behaviors_manager->pop_frame();
+    }
+
+    for (auto& e : entities)
+        if (!e.expired())
+            e.lock()->kill();
 }
 
 void scene::update()
@@ -27,4 +57,13 @@ void scene::update()
             }
         }
 	}
+
+    if (_scene.get() == nullptr ||
+        !common::behaviors_manager->prepare_scene_function_call(behaviors::functions::update, _scene.get()))
+        return;
+
+    common::behaviors_manager->create_frame(nullptr, this);
+    common::behaviors_manager->pass_float_arg(common::delta_time);
+    common::behaviors_manager->call(1);
+    common::behaviors_manager->pop_frame();
 }

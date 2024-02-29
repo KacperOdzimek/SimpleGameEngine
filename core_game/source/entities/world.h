@@ -1,26 +1,23 @@
 #pragma once
 #include "source/entities/scene.h"
+#include <list>
 
 namespace entities
 {
-	class entity;
-
 	class world
 	{
+	protected:
+		std::unique_ptr<scene> dynamic_scene;
+		std::list<std::unique_ptr<scene>> scenes;
 	public:
-		friend entity;
-		/*
-			persistent_scene
-			scene that dont get deleted
-		*/
-		std::unique_ptr<scene> persistent_scene;
-		/*
-			active_scene
-			scene that can be deleted due to game logic
-		*/
-		std::unique_ptr<scene> active_scene;
-
-		scene* create_active_scene();
+		world() 
+		{ 
+			dynamic_scene = std::make_unique<scene>(0); 
+		}
+		void destroy();
 		void update();
+		void create_scene(uint32_t name, std::weak_ptr<assets::scene> scene);
+		void remove_scene(uint32_t name);
+		scene* get_dynamic_scene();
 	};
 }

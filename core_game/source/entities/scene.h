@@ -1,16 +1,20 @@
 #pragma once
 #include "entity.h"
 
+#include "source/assets/scene_asset.h"
+
 #include <vector>
 #include <memory>
 
 namespace entities
 {
 	class entity;
+	class world;
 
 	class scene
 	{
 		friend entity;
+		friend world;
 	public:
 		/*
 			entities
@@ -19,6 +23,7 @@ namespace entities
 			may contain expired pointers
 		*/
 		std::vector<std::weak_ptr<entity>> entities;
+		const uint32_t name;
 	protected:
 		/*
 			frames_since_purged
@@ -28,7 +33,10 @@ namespace entities
 			and triggers purge when it reaches value definied in .cpp file
 		*/
 		int frames_since_purged = 0;
+		std::shared_ptr<assets::scene> _scene;
 	public:
+		scene(uint32_t _name);
+		scene(uint32_t _name, std::weak_ptr<assets::scene> __scene);
 		void update();
 		~scene();
 	};

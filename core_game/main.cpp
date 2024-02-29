@@ -55,38 +55,10 @@ int main()
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
-	common::world->create_active_scene();
-
-	auto create_entity_with_bhv = [&](glm::vec2 pos, std::string beh_path)
-	{
-		auto e = new entities::entity;
-		e->teleport(pos);
-
-		e->attach_component(
-			new entities::components::behavior
-			{
-				utilities::hash_string("bhv"),
-				assets::cast_asset<assets::behavior>(common::assets_manager->safe_get_asset(beh_path)).lock()
-			}
-		);
-		e->layer = 1;
-		return e;
-	};
-
-	auto b1 = create_entity_with_bhv({-1.0f, 0.0f}, "mod/behaviors/move_left");
-	//auto b2 = create_entity_with_bhv({1.0f, 0.0f}, "mod/behaviors/move_right");
-
-	/*
-		Tilemap Entity
-	*/
-	auto tilemap_e = new entities::entity;
-	auto tilemap_c = new entities::components::tilemap{
-		utilities::hash_string("tilemap"),
-		assets::cast_asset<assets::tilemap>(common::assets_manager->safe_get_asset("mod/tilemaps/tilemap")).lock(),
-		assets::cast_asset<assets::tileset>(common::assets_manager->safe_get_asset("mod/textures/tileset")).lock()
-	};
-	tilemap_e->attach_component(tilemap_c);
-	tilemap_e->teleport({ 0.0f, 0.0f });
+	common::world->create_scene(
+		1,
+		assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset("mod/scenes/scene1"))
+	);
 
 	/*
 		Camera Entity
@@ -107,10 +79,8 @@ int main()
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
-		//Remove expired entities Pointers
-		common::world->update();
-
 		//Game Logic
+		common::world->update();
 		common::input_mananger->update_mappings_states();
 		common::behaviors_manager->call_update_functions();
 
@@ -119,12 +89,15 @@ int main()
 		common::renderer->render();
 		common::window_manager->update();
 
-		//Remove dont used assets
+		//Remove not used assets
 		common::assets_manager->unload_unreferenced_assets();
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;
+
+		std::cout << 1 / common::delta_time << '\n';
 	}
+	common::world->destroy();
 	common::world.reset();
 	common::assets_manager.reset();
 	common::renderer.reset();
