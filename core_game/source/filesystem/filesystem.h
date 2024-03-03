@@ -1,19 +1,25 @@
 #pragma once
 
 #include <fstream>
+#include <vector>
 
 namespace filesystem
 {
 	/*
-	set_mod_asset_path
+	set_mod_assets_directory
 	sets path that will be inserted in place of "mod/" path prefix
 	*/
-	void set_mod_asset_path(std::string path);
+	void set_mod_assets_directory(std::string path);
 	/*
-	set_core_asset_path
+	set_core_assets_directory
 	sets path that will be inserted in place of "core/" path prefix
 	*/
-	void set_core_asset_path(std::string path);
+	void set_core_assets_directory(std::string path);
+	/*
+	set_mods_directory
+	sets directory from which mods_manager will load mods
+	*/
+	void set_mods_directory(std::string path);
 	/*
 	get_package
 	returns first part of the path eg. 
@@ -30,6 +36,11 @@ namespace filesystem
 	loads file
 	*/
 	std::fstream load_file(std::string path_with_extension);
+	/*
+	get_all_subfolders
+	returns full paths of directory subfolders
+	*/
+	std::vector<std::string> get_all_subfolders(std::string dir);
 
 	struct image_file
 	{

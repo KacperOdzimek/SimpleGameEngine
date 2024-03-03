@@ -19,13 +19,13 @@
 
     uniform mat4 itr_projection;
     uniform vec4 itr_camera_location;
-    uniform int itr_deepest_layer;
-    uniform int itr_max_layer;
+    uniform int itr_lowest_layer;
+    uniform int itr_highest_layer;
     uniform vec2 itr_sprites;
 
     void main()
     {  
-        float depth = -1 * (aInstance.layer - itr_deepest_layer) / (itr_max_layer - itr_deepest_layer);
+        float depth = -1 * (aInstance.layer - itr_lowest_layer) / (itr_highest_layer - itr_lowest_layer);
 
         vec2 transformed_pos = (aPos * aInstance.scale) + aInstance.pos;
         vec4 projected_pos = (vec4(transformed_pos, 0, 1.0) - itr_camera_location) * itr_projection;

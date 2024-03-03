@@ -7,6 +7,7 @@
 #include "source/input/input_manager.h"
 #include "source/window/window_manager.h"
 #include "source/filesystem/filesystem.h"
+#include "source/mods/mods_manager.h"
 
 #include "source/utilities/hash_string.h"
 
@@ -19,29 +20,17 @@ int main()
 	common::renderer->initialize();
 	common::window_manager->set_resize_callback(common::renderer->get_resize_function());
 
-	filesystem::set_mod_asset_path("C:/Projekty/TopDownGame/mods/example_mod/");
-	filesystem::set_core_asset_path("C:/Projekty/TopDownGame/core_game/assets");
+	filesystem::set_mods_directory("C:/Projekty/TopDownGame/mods/");
+	filesystem::set_mod_assets_directory("C:/Projekty/TopDownGame/mods/example_mod/");
+	filesystem::set_core_assets_directory("C:/Projekty/TopDownGame/core_game/assets");
 
-	/*
-		Core Assets
-	*/
+	//Load required assets
 	common::assets_manager->load_asset("core/square_mesh");
 	common::assets_manager->lock_asset(utilities::hash_string("core/square_mesh"));
-
 	common::assets_manager->load_asset("core/sprite_shader");
 	common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
 
-	/*
-		Mod Configuration
-	*/
-	common::assets_manager->load_asset("mod/collision_config");
-	common::assets_manager->lock_asset(utilities::hash_string("mod/collision_config"));
-
-	common::assets_manager->load_asset("mod/input_config");
-	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
-	auto input_config = assets::cast_asset<assets::input_config>
-		(common::assets_manager->get_asset(utilities::hash_string("mod/input_config")));
-	common::input_mananger->load_config(input_config.lock());
+	common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/example_mod");
 
 	while (!common::window_manager->should_close())
 	{

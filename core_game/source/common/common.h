@@ -37,6 +37,11 @@ namespace physics
 	class collision_solver;
 }
 
+namespace mods
+{
+	class mods_manager;
+}
+
 namespace common
 {
 	/*
@@ -54,4 +59,5 @@ namespace common
 	extern std::unique_ptr<window::window_manager> window_manager;
 	extern std::unique_ptr<input::input_manager> input_mananger;
 	extern std::unique_ptr<physics::collision_solver> collision_solver;
+	extern std::unique_ptr<mods::mods_manager> mods_manager;
 }

@@ -303,8 +303,8 @@ void renderer::render()
     auto projection = impl->active_camera->get_projection();
     auto camera_view_center_v2 = impl->active_camera->get_view_center_location();
     glm::vec4 camera_view_center_v4 = { camera_view_center_v2.x, camera_view_center_v2.y , 0, 0 };
-    auto deepest_layer = impl->active_camera->get_deepest_rendered_layer();
-    int max_layer = impl->active_camera->rendered_layers;
+    int lowest_layer = impl->active_camera->lowest_layer;
+    int highest_layer = impl->active_camera->highest_layer;
 
     for (auto& pipeline : impl->pipelines)
     {
@@ -315,9 +315,9 @@ void renderer::render()
             pipeline.first.material->_shader->set_uniform_value(
                 "itr_camera_location", graphics_abstraction::data_type::vec4, glm::value_ptr(camera_view_center_v4));
             pipeline.first.material->_shader->set_uniform_value(
-                "itr_deepest_layer", graphics_abstraction::data_type::Int, &deepest_layer);
+                "itr_lowest_layer", graphics_abstraction::data_type::Int, &lowest_layer);
             pipeline.first.material->_shader->set_uniform_value(
-                "itr_max_layer", graphics_abstraction::data_type::Int, &max_layer);
+                "itr_highest_layer", graphics_abstraction::data_type::Int, &highest_layer);
 
             if (pipeline.first.textures.size() != 0)
             {

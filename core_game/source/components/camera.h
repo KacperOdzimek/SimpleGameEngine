@@ -19,14 +19,13 @@ namespace entities
 			*/
 			float ortho_width = 20;
 			/*
-				determines how many layers above the camera entity layer should be visible
+				lowest rendered layer
 			*/
-			int rendered_layers = 1;
+			int lowest_layer = 0;
 			/*
-				get_deepest_rendered_layer
-				returns the deepest layer that would be rendered
+				highest rendered layer
 			*/
-			int get_deepest_rendered_layer();
+			int highest_layer = 1;
 			/*
 				get_projection
 				returns 4d matrix that projects vertices from the world space to the screen space
