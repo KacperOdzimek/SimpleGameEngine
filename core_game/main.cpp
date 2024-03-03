@@ -30,7 +30,7 @@ int main()
 	common::assets_manager->load_asset("core/sprite_shader");
 	common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
 
-	common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/example_mod");
+	common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/game");
 
 	while (!common::window_manager->should_close())
 	{
