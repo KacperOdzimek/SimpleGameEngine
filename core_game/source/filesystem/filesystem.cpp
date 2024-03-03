@@ -1,18 +1,25 @@
 #include "filesystem.h"
 #include "source/common/crash.h"
 #include "include/stb/stb_image.h"
+#include "include/dirent.h"
 
 static std::string mod_assets_path;
 static std::string core_assets_path;
+static std::string mods_path;
 
-void filesystem::set_mod_asset_path(std::string path)
+void filesystem::set_mod_assets_directory(std::string path)
 {
 	mod_assets_path = path;
 }
 
-void filesystem::set_core_asset_path(std::string path)
+void filesystem::set_core_assets_directory(std::string path)
 {
 	core_assets_path = path;
+}
+
+void filesystem::set_mods_directory(std::string path)
+{
+	mods_path = path;
 }
 
 std::string filesystem::get_package(std::string path)
@@ -45,6 +52,27 @@ std::fstream filesystem::load_file(std::string path)
 			"No such file: \n" + path + "\n" + global_path);
 
 	return file;
+}
+
+std::vector<std::string> filesystem::get_all_subfolders(std::string folder)
+{
+	std::vector<std::string> result;
+
+	DIR* dir = opendir(folder.c_str());
+
+	struct dirent* entry = readdir(dir);
+
+	while (entry != NULL)
+	{
+		if (entry->d_type == DT_DIR)
+			result.push_back(entry->d_name);
+
+		entry = readdir(dir);
+	}
+
+	closedir(dir);
+
+	return result;
 }
 
 filesystem::image_file::~image_file()

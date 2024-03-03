@@ -169,17 +169,31 @@ namespace behaviors
 				return 0;
 			}
 
-			int _c_c_get_rendered_layers(lua_State* L)
+			int _c_c_get_lowest_layer(lua_State* L)
 			{
 				auto camera = load_component<::entities::components::camera>(L, "[_c_c_get_rendered_layers]");
-				lua_pushinteger(L, camera->rendered_layers);
+				lua_pushinteger(L, camera->lowest_layer);
 				return 1;
 			}
 
-			int _c_c_set_rendered_layers(lua_State* L)
+			int _c_c_set_lowest_layer(lua_State* L)
 			{
 				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_rendered_layers]");
-				camera->rendered_layers = lua_tonumber(L, 3);
+				camera->lowest_layer = lua_tonumber(L, 3);
+				return 0;
+			}
+
+			int _c_c_get_highest_layer(lua_State* L)
+			{
+				auto camera = load_component<::entities::components::camera>(L, "[_c_c_get_rendered_layers]");
+				lua_pushinteger(L, camera->highest_layer);
+				return 1;
+			}
+
+			int _c_c_set_highest_layer(lua_State* L)
+			{
+				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_rendered_layers]");
+				camera->highest_layer = lua_tonumber(L, 3);
 				return 0;
 			}
 
@@ -193,8 +207,7 @@ namespace behaviors
 			int _c_c_set_active(lua_State* L)
 			{
 				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_active]");
-				if (camera != nullptr)
-					common::renderer->set_active_camera(camera);
+				common::renderer->set_active_camera(camera);
 				return 0;
 			}
 
@@ -339,8 +352,10 @@ namespace behaviors
 
 				lua_register(L, "_c_c_get_ortho_width", _c_c_get_ortho_width);
 				lua_register(L, "_c_c_set_ortho_width", _c_c_set_ortho_width);
-				lua_register(L, "_c_c_get_rendered_layers", _c_c_get_rendered_layers);
-				lua_register(L, "_c_c_set_rendered_layers", _c_c_set_rendered_layers);
+				lua_register(L, "_c_c_get_lowest_layer", _c_c_get_lowest_layer);
+				lua_register(L, "_c_c_set_lowest_layer", _c_c_set_lowest_layer);
+				lua_register(L, "_c_c_get_highest_layer", _c_c_get_highest_layer);
+				lua_register(L, "_c_c_set_highest_layer", _c_c_set_highest_layer);
 				lua_register(L, "_c_c_get_active", _c_c_get_active);
 				lua_register(L, "_c_c_set_active", _c_c_set_active);
 

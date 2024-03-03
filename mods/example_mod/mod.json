@@ -1,5 +1,0 @@
-{
-    "name" : "example mod",
-    "campain_file_path" : "/campain.json",
-    "collision_config" : "/collision_config.json"
-}
