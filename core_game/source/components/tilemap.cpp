@@ -31,9 +31,6 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 	float tile_x_size = (tileset_asset->tile_width / common::pixels_per_world_unit);
 	float tile_y_size = (tileset_asset->tile_width / common::pixels_per_world_unit);
 
-	int id_offset = 
-		tileset_asset->get_width() / tileset_asset->tile_width * (tileset_asset->get_height() / tileset_asset->tile_width - 1) - 1;
-
 	for (auto& layer : tilemap_asset->layers)
 	{
 		float y_mod = -1 * (float(tilemap_asset->height) / 2) * tile_y_size;
@@ -57,7 +54,7 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 				tbi.put(tile_y_size);
 
 				tbi.put(owner->layer + layer_counter);
-				tbi.put(tile + id_offset);
+				tbi.put(tile - 1);
 
 				x_mod += tile_x_size;
 			}
