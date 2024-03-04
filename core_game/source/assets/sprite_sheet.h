@@ -1,11 +1,6 @@
 #pragma once
 #include "texture_asset.h"
 
-namespace filesystem
-{
-	struct image_file;
-}
-
 namespace assets
 {
 	struct sprite_sheet : public texture
