@@ -25,6 +25,8 @@ namespace assets
 		tb->height = data->height;
 		tb->source_data_type = graphics_abstraction::input_data_type::unsigned_byte;
 		tb->source_texture = data->image_source_pointer;
+		tb->mag_filter = graphics_abstraction::texture_filtering::nearest;
+		tb->min_filter = graphics_abstraction::texture_filtering::nearest;
 		_texture = reinterpret_cast<graphics_abstraction::texture*>(api->build(tb));
 	}
 
