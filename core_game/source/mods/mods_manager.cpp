@@ -25,6 +25,12 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 
 	std::string start_scene = manifest.at("start_scene");
 
+	if (!(manifest.contains("pixels_per_unit") && manifest.at("pixels_per_unit").is_number()))
+		error_handling::crash(error_handling::error_source::core, "[mods_manager::load_mod]",
+			"Invalid mod manifest: missing pixels_per_unit / pixels_per_unit isn't number");
+
+	common::pixels_per_world_unit = manifest.at("pixels_per_unit");
+
 	common::assets_manager->load_asset("mod/collision_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/collision_config"));
 

@@ -7,5 +7,6 @@ namespace mods
 	{
 		std::string display_name;
 		std::string default_scene;
+		float pixels_per_unit;
 	};
 }
