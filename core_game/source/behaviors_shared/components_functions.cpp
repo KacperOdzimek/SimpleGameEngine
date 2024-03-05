@@ -273,6 +273,22 @@ namespace behaviors
 					ptr->behavior_asset = ::assets::cast_asset<::assets::behavior>(::common::assets_manager->safe_get_asset(asset)).lock();
 				return 0;
 			}
+			
+			int _c_b_call(lua_State* L)
+			{
+				auto ptr = load_component<::entities::components::behavior>(L, "[_c_b_call]");
+				const char* name = lua_tostring(L, 3);
+
+				lua_remove(L, 2);	//Remove component id
+				lua_remove(L, 2);	//Remove event name
+
+				std::string event_name = "event_";
+				event_name += name;
+
+				ptr->call_custom_function(event_name);
+
+				return 0;
+			}
 
 			/*
 				Collider
@@ -399,9 +415,10 @@ namespace behaviors
 				lua_register(L, "_c_c_set_highest_layer", _c_c_set_highest_layer);
 				lua_register(L, "_c_c_get_active", _c_c_get_active);
 				lua_register(L, "_c_c_set_active", _c_c_set_active);
-
+				
 				lua_register(L, "_c_b_get_behavior", _c_b_get_behavior);
 				lua_register(L, "_c_b_set_behavior", _c_b_set_behavior);
+				lua_register(L, "_c_b_call", _c_b_call);
 
 				lua_register(L, "_c_cl_get_collision_preset", _c_cl_get_collision_preset);
 				lua_register(L, "_c_cl_set_collision_preset", _c_cl_set_collision_preset);

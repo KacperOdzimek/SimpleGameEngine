@@ -127,6 +127,8 @@ void behaviors::behaviors_manager::call_update_functions()
             behavior.first->call_function(functions::update);
     if (impl->dangling_pointers > purge_triggering_dangling_pointers_amount)
         purge_registered_behaviors(impl->registered_behaviors);
+
+    lua_settop(impl->L, 0);
 }
 
 std::string behaviors::behaviors_manager::create_functions_table(const std::string& file_path)
