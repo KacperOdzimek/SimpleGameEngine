@@ -383,6 +383,85 @@ namespace behaviors
 				return 0;
 			}
 
+			int _c_d_add_movement_input(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_add_movement_force]");
+
+				float dir_x = lua_tonumber(L, 3);
+				float dir_y = lua_tonumber(L, 4);
+				float speed = lua_tonumber(L, 5);
+
+				glm::vec2 vec = { dir_x, dir_y };
+
+				if (glm::length(vec) == 0.0f)
+					return 0;
+
+				vec = glm::normalize(vec) * speed;
+				d->add_force(vec);
+
+				return 0;
+			}
+
+			int _c_d_get_drag(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_get_drag]");
+				lua_pushnumber(L, d->drag);
+				return 1;
+			}
+
+			int _c_d_set_drag(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_drag]");
+				auto drag = lua_tonumber(L, 3);
+				d->drag = drag;
+				return 0;
+			}
+
+			int _c_d_get_mass(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_get_mass]");
+				lua_pushnumber(L, d->mass);
+				return 1;
+			}
+
+			int _c_d_set_mass(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_mass]");
+				auto mass = lua_tonumber(L, 3);
+				d->mass = mass;
+				return 0;
+			}
+
+			int _c_d_get_use_max_vel(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_get_use_max_vel]");
+				lua_pushboolean(L, d->use_maximum_velocity);
+				return 1;
+			}
+
+			int _c_d_set_use_max_vel(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_use_max_vel]");
+				auto use = lua_toboolean(L, 3);
+				d->use_maximum_velocity = use;
+				return 0;
+			}
+
+			int _c_d_get_max_vel(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_get_max_vel]");
+				lua_pushnumber(L, d->maximum_velocity);
+				return 1;
+			}
+
+			int _c_d_set_max_vel(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_max_vel]");
+				auto vel = lua_tonumber(L, 3);
+				d->maximum_velocity = vel;
+				return 0;
+			}
+
 			/*
 				Register
 			*/
@@ -430,6 +509,15 @@ namespace behaviors
 				lua_register(L, "_c_cl_set_layer_offset", _c_cl_set_layer_offset);
 
 				lua_register(L, "_c_d_add_force", _c_d_add_force);
+				lua_register(L, "_c_d_add_movement_input", _c_d_add_movement_input);
+				lua_register(L, "_c_d_get_drag", _c_d_get_drag);
+				lua_register(L, "_c_d_set_drag", _c_d_set_drag);
+				lua_register(L, "_c_d_get_mass", _c_d_get_mass);
+				lua_register(L, "_c_d_set_mass", _c_d_set_mass);
+				lua_register(L, "_c_d_get_use_max_vel", _c_d_get_use_max_vel);
+				lua_register(L, "_c_d_set_use_max_vel", _c_d_set_use_max_vel);
+				lua_register(L, "_c_d_get_max_vel", _c_d_get_max_vel);
+				lua_register(L, "_c_d_set_max_vel", _c_d_set_max_vel);
 			}
 		}
 	}

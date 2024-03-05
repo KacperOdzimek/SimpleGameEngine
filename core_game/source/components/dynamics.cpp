@@ -24,17 +24,19 @@ void dynamics::apply_forces()
 	if (velocity.length() > maximum_velocity && use_maximum_velocity)
 		velocity = glm::normalize(velocity) * maximum_velocity;
 
-	//Accelerating
-	if (!(frame_force.x == 0 && frame_force.y == 0))
+	velocity -= velocity * float(drag * common::delta_time);
+
+	if (glm::length(frame_force) == 0)
 	{
-		velocity += (frame_force / mass) * float(common::delta_time);
-		frame_force = { 0, 0 };
+		if (std::abs(velocity.x) < 0.3f)
+			velocity.x = 0;
+
+		if (std::abs(velocity.y) < 0.3f)
+			velocity.y = 0;
 	}
-	//Breaking
-	else
-	{
-		velocity -= velocity * friction_factor;
-	}
+
+	velocity += (frame_force / mass) * float(common::delta_time);
+	frame_force = { 0, 0 };
 }
 
 void dynamics::sweep()

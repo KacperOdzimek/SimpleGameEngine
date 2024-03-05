@@ -11,18 +11,17 @@ namespace entities
 		/*
 			dynamics
 			component that automates forces, for quicker development
-			TODO
 		*/
 		class dynamics : virtual public component
 		{
 		private:
 			glm::vec2 velocity{};
-			bool use_maximum_velocity = true;
-			float maximum_velocity = 2;
 			glm::vec2 frame_force{};
 			void apply_forces();
 		public:
-			float friction_factor = 0.1;
+			bool use_maximum_velocity = false;
+			float maximum_velocity = 0;
+			float drag = 0.7;
 			float mass = 1;
 
 			dynamics(uint32_t _id);
