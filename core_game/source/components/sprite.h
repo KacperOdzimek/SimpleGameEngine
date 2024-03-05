@@ -8,7 +8,7 @@ namespace entities
 	{
 		class sprite : virtual public mesh, virtual public collider
 		{
-		private:
+		protected:
 			rendering::render_config rc;
 			glm::vec2 sprite_extend;
 			int sprite_id = 0;

@@ -3,6 +3,7 @@
 #include "source/assets/assets_manager.h"
 #include "source/entities/world.h"
 #include "source/rendering/renderer.h"
+#include "source/rendering/flipbooks_manager.h"
 #include "source/behaviors/behaviors_manager.h"
 #include "source/input/input_manager.h"
 #include "source/window/window_manager.h"
@@ -35,6 +36,9 @@ int main()
 	while (!common::window_manager->should_close())
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
+
+		//Update flipbooks playbacks positions
+		common::flipbooks_manager->update();
 
 		//Game Logic
 		common::world->update();

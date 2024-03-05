@@ -15,6 +15,7 @@
 #include "source/components/sprite.h"
 #include "source/components/tilemap.h"
 #include "source/components/dynamics.h"
+#include "source/components/flipbook.h"
 
 namespace behaviors
 {
@@ -119,6 +120,31 @@ namespace behaviors
 				return 0;
 			}
 
+			int _e_add_flipbook(lua_State* L)
+			{
+				auto e = load_entity(L, 1, "[_e_add_flipbook]");
+				uint32_t id = load_id(L, 2, "[_e_add_flipbook]", "Component");
+				auto texture = load_asset_path(L, 3, "[_e_add_flipbook]");
+				uint32_t animation = load_id(L, 4, "[_e_add_flipbook]", "Animation");
+				auto preset_name = lua_tostring(L, 5);
+
+				physics::collision_preset preset;
+				{
+					auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
+					preset = config.lock()->get_preset(utilities::hash_string(preset_name));
+				}
+
+				auto flipbook = new ::entities::components::flipbook{
+						id,
+						::assets::cast_asset<::assets::flipbook>(::common::assets_manager->safe_get_asset(texture)),
+						preset, animation
+				};
+
+				e->attach_component(flipbook);
+
+				return 0;
+			}
+
 			int _e_add_tilemap(lua_State* L)
 			{
 				auto e = load_entity(L, 1, "[_e_add_tilemap]");
@@ -160,6 +186,7 @@ namespace behaviors
 				lua_register(L, "_e_add_static_mesh", _e_add_static_mesh);
 				lua_register(L, "_e_add_collider", _e_add_collider);
 				lua_register(L, "_e_add_sprite", _e_add_sprite);
+				lua_register(L, "_e_add_flipbook", _e_add_flipbook);
 				lua_register(L, "_e_add_tilemap", _e_add_tilemap);
 				lua_register(L, "_e_add_dynamics", _e_add_dynamics);
 			}

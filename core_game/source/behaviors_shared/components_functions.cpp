@@ -19,6 +19,7 @@
 #include "source/components/collider.h"
 #include "source/components/static_mesh.h"
 #include "source/components/sprite.h"
+#include "source/components/flipbook.h"
 #include "source/components/dynamics.h"
 
 namespace behaviors
@@ -142,6 +143,48 @@ namespace behaviors
 				int sprite_id = lua_tointeger(L, 3);
 
 				sprite->set_sprite_id(sprite_id);
+
+				return 0;
+			}
+
+			/*
+				Flipbook
+			*/
+
+			int _c_f_get_animation(lua_State* L)
+			{
+				auto flipbook = load_component<::entities::components::flipbook>(L, "[_c_f_get_animation]");
+
+				lua_pushinteger(L, flipbook->get_animation());
+
+				return 0;
+			}
+
+			int _c_f_set_animation(lua_State* L)
+			{
+				auto flipbook = load_component<::entities::components::flipbook>(L, "[_c_f_set_animation]");
+				uint32_t animation = load_id(L, 2, "[_c_f_set_animation]", "Animation");
+
+				flipbook->set_animation(animation);
+
+				return 0;
+			}
+
+			int _c_f_get_looping(lua_State* L)
+			{
+				auto flipbook = load_component<::entities::components::flipbook>(L, "[_c_f_get_animation]");
+
+				lua_pushboolean(L, flipbook->looping);
+
+				return 0;
+			}
+
+			int _c_f_set_looping(lua_State* L)
+			{
+				auto flipbook = load_component<::entities::components::flipbook>(L, "[_c_f_set_animation]");
+				bool looping = lua_toboolean(L, 3);
+
+				flipbook->looping = looping;
 
 				return 0;
 			}
@@ -349,6 +392,11 @@ namespace behaviors
 
 				lua_register(L, "_c_s_get_sprite", _c_s_get_sprite);
 				lua_register(L, "_c_s_set_sprite", _c_s_set_sprite);
+
+				lua_register(L, "_c_f_get_animation", _c_f_get_animation);
+				lua_register(L, "_c_f_set_animation", _c_f_set_animation);
+				lua_register(L, "_c_f_get_looping", _c_f_get_looping);
+				lua_register(L, "_c_f_set_looping", _c_f_set_looping);
 
 				lua_register(L, "_c_c_get_ortho_width", _c_c_get_ortho_width);
 				lua_register(L, "_c_c_set_ortho_width", _c_c_set_ortho_width);

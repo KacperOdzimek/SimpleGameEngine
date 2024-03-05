@@ -89,6 +89,9 @@ void assets_manager::load_asset(std::string path)
     case utilities::hash_string("sprite_sheet"):
         new_asset = loading::load_sprite_sheet(load_data);
         break;
+    case utilities::hash_string("flipbook"):
+        new_asset = loading::load_flipbook(load_data);
+        break;
     case utilities::hash_string("tileset"):
         new_asset = loading::load_tileset(load_data);
         break;

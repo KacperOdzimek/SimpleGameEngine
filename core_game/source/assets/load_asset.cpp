@@ -6,9 +6,10 @@
 
 #include "shader_asset.h"
 #include "texture_asset.h"
+#include "sprite_sheet.h"
+#include "flipbook_asset.h"
 #include "tileset_asset.h"
 #include "tilemap_asset.h"
-#include "sprite_sheet.h"
 #include "behavior_asset.h"
 #include "scene_asset.h"
 #include "mesh_asset.h"
@@ -43,7 +44,7 @@ namespace assets
 		{
 			auto& header = *ld.header_data;
 
-			std::shared_ptr<asset> texture_asset;
+			std::shared_ptr<asset> sprite_sheet_asset;
 
 			if (!(header.contains("path") && header.at("path").is_string()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_sprite_sheet]",
@@ -64,9 +65,68 @@ namespace assets
 
 			unsigned int sprite_height = header.at("sprite_height");
 
-			texture_asset = std::make_shared<assets::sprite_sheet>(image.get(), sprite_width, sprite_height);
+			sprite_sheet_asset = std::make_shared<assets::sprite_sheet>(image.get(), sprite_width, sprite_height);
 
-			return texture_asset;
+			return sprite_sheet_asset;
+		}
+
+		std::shared_ptr<asset> load_flipbook(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+
+			std::shared_ptr<asset> flipbook_asset;
+
+			if (!(header.contains("path") && header.at("path").is_string()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_flipbook]",
+					"Invalid/Missing image path");
+
+			std::string source_path = ld.package + std::string(header.at("path"));
+			auto image = filesystem::load_image(source_path);
+
+			if (!(header.contains("sprite_width") && header.at("sprite_width").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_flipbook]",
+					"Invalid/Missing sprite_width");
+
+			unsigned int sprite_width = header.at("sprite_width");
+
+			if (!(header.contains("sprite_height") && header.at("sprite_height").is_number_integer()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_flipbook]",
+					"Invalid/Missing sprite_height");
+
+			unsigned int sprite_height = header.at("sprite_height");
+
+			std::map<uint32_t, flipbook::animation> animations;
+
+			if (!(header.contains("animations") && header.at("animations").is_object()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_flipbook]",
+					"Invalid/Missing animations");
+
+			for (auto animation = header.at("animations").begin(); animation != header.at("animations").end(); ++animation)
+			{
+				std::string name = animation.key();
+				if (!(animation.value().is_object() && 
+					animation.value().contains("fps") && animation.value().at("fps").is_number() &&
+					animation.value().contains("frames") && animation.value().at("frames").is_array()
+				))
+					error_handling::crash(error_handling::error_source::core, "[loading::load_flipbook]",
+						"Each animation should be an object containg fps (number) and frames (array of ints)");
+
+				flipbook::animation anim;
+				anim.frames_per_second = animation.value().at("fps");
+
+				for (auto& frame : animation.value().at("frames"))
+					if (!frame.is_number_integer())
+						error_handling::crash(error_handling::error_source::core, "[loading::load_flipbook]",
+							"Each animation frame should be an int");
+					else
+						anim.frames.push_back(frame);
+
+				animations.insert({utilities::hash_string(name), std::move(anim)});
+			}
+
+			flipbook_asset = std::make_shared<assets::flipbook>(image.get(), sprite_width, sprite_height, animations);
+
+			return flipbook_asset;
 		}
 
 		std::shared_ptr<asset> load_tileset(const load_data& ld)
