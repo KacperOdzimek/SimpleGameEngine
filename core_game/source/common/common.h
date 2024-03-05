@@ -5,6 +5,7 @@
 namespace rendering
 {
 	class renderer;
+	class flipbooks_manager;
 }
 
 namespace assets
@@ -52,6 +53,7 @@ namespace common
 		texture pixels per world unit
 	*/
 	extern double pixels_per_world_unit;
+	extern std::unique_ptr<rendering::flipbooks_manager> flipbooks_manager;
 	extern std::unique_ptr<rendering::renderer> renderer;
 	extern std::unique_ptr<assets::assets_manager> assets_manager;
 	extern std::unique_ptr<entities::world> world;

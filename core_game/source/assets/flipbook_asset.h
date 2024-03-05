@@ -16,7 +16,7 @@ namespace assets
 
 		flipbook(filesystem::image_file* data, unsigned int _sprite_width, 
 			unsigned int _sprite_height, std::map<uint32_t, animation> _animations);
-		~flipbook();
+		virtual ~flipbook();
 
 		/*
 			get_sprite_id_at_position
