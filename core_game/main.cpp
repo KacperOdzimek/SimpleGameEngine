@@ -9,6 +9,7 @@
 #include "source/window/window_manager.h"
 #include "source/filesystem/filesystem.h"
 #include "source/mods/mods_manager.h"
+#include "source/physics/dynamics_manager.h"
 
 #include "source/utilities/hash_string.h"
 
@@ -44,6 +45,9 @@ int main()
 		common::world->update();
 		common::input_mananger->update_mappings_states();
 		common::behaviors_manager->call_update_functions();
+
+		//Apply physics
+		common::dynamics_manager->update();
 
 		//Rendering
 		common::renderer->update_transformations();

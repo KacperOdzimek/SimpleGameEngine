@@ -367,13 +367,6 @@ namespace behaviors
 				return 0;
 			}
 
-			int _c_d_sweep(lua_State* L)
-			{
-				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_sweep]");
-				d->sweep();
-				return 0;
-			}
-
 			/*
 				Register
 			*/
@@ -420,7 +413,6 @@ namespace behaviors
 				lua_register(L, "_c_cl_set_layer_offset", _c_cl_set_layer_offset);
 
 				lua_register(L, "_c_d_add_force", _c_d_add_force);
-				lua_register(L, "_c_d_sweep", _c_d_sweep);
 			}
 		}
 	}

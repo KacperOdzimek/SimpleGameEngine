@@ -7,6 +7,7 @@
 #include "source/input/input_manager.h"
 #include "source/window/window_manager.h"
 #include "source/physics/collision_solver.h"
+#include "source/physics/dynamics_manager.h"
 #include "source/mods/mods_manager.h"
 
 namespace common
@@ -21,5 +22,6 @@ namespace common
 	std::unique_ptr<input::input_manager> input_mananger = std::make_unique<input::input_manager>();
 	std::unique_ptr<window::window_manager> window_manager = std::make_unique<window::window_manager>();
 	std::unique_ptr<physics::collision_solver> collision_solver = std::make_unique<physics::collision_solver>();
+	std::unique_ptr<physics::dynamics_manager> dynamics_manager = std::make_unique<physics::dynamics_manager>();
 	std::unique_ptr<mods::mods_manager> mods_manager = std::make_unique<mods::mods_manager>();
 }
