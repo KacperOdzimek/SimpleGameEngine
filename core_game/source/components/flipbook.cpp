@@ -15,6 +15,7 @@ flipbook::flipbook(uint32_t _id, std::weak_ptr<assets::flipbook> _flipbook,
 	: sprite(_id, _flipbook, preset), component(_id), mesh(_id), collider(_id, preset, sprite_extend / 2.0f),
 	current_flipbook_animation(_flipbook_animation)
 {
+	extend = sprite_extend / 2.0f;
 	common::flipbooks_manager->register_flipbook(this);
 }
 

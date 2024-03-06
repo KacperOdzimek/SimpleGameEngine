@@ -100,6 +100,9 @@ namespace physics
 	sweep_move_event collision_solver::sweep_move(
 		entities::components::collider* collider, const glm::vec2& end_point)
 	{
+		if (collider->preset == 0.0f)
+			return {};
+
 		glm::vec2 velocity = end_point - collider->get_world_pos();
 
 		collision_event collide_event;

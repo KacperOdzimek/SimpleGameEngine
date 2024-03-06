@@ -21,7 +21,7 @@ namespace entities
 			std::shared_ptr<assets::tilemap> tilemap_asset;
 			std::shared_ptr<assets::tileset> tileset_asset;
 			rendering::render_config _config;
-			physics::collision_preset preset = 2;
+			physics::collision_preset preset = 0;
 			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
 			void build_colliders();
 		public:
@@ -31,7 +31,8 @@ namespace entities
 			tilemap(
 				uint32_t _id,
 				std::weak_ptr<assets::tilemap> _tilemap,
-				std::weak_ptr<assets::tileset> _tileset
+				std::weak_ptr<assets::tileset> _tileset,
+				physics::collision_preset _preset
 			);
 			~tilemap();
 		};

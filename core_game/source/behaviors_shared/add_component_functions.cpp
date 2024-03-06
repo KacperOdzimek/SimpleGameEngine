@@ -151,6 +151,13 @@ namespace behaviors
 				uint32_t id = load_id(L, 2, "[_e_add_tilemap]", "Component");
 				auto tilemap = load_asset_path(L, 3, "[_e_add_tilemap]");
 				auto tileset = load_asset_path(L, 4, "[_e_add_tilemap]");
+				auto preset_name = lua_tostring(L, 5);
+
+				physics::collision_preset preset;
+				{
+					auto config = ::assets::cast_asset<::assets::collision_config>(::common::assets_manager->get_asset(utilities::hash_string("mod/collision_config")));
+					preset = config.lock()->get_preset(utilities::hash_string(preset_name));
+				}
 				
 				e->attach_component(
 					new entities::components::tilemap(
@@ -158,7 +165,8 @@ namespace behaviors
 						assets::cast_asset<::assets::tilemap>(
 							::common::assets_manager->safe_get_asset(tilemap)),
 						assets::cast_asset<::assets::tileset>(
-							::common::assets_manager->safe_get_asset(tileset))
+							::common::assets_manager->safe_get_asset(tileset)),
+						preset
 					)
 				);
 

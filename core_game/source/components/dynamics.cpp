@@ -21,7 +21,7 @@ dynamics::~dynamics()
 void dynamics::apply_forces()
 {
 	//Constrain Velocity
-	if (velocity.length() > maximum_velocity && use_maximum_velocity)
+	if (glm::length(velocity) > maximum_velocity && use_maximum_velocity)
 		velocity = glm::normalize(velocity) * maximum_velocity;
 
 	velocity -= velocity * float(drag * common::delta_time);

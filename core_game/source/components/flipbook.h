@@ -6,7 +6,7 @@ namespace entities
 {
 	namespace components
 	{
-		class flipbook : public sprite
+		class flipbook : virtual public sprite
 		{
 			uint32_t current_flipbook_animation;
 		public:

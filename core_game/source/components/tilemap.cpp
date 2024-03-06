@@ -11,8 +11,10 @@ using namespace components;
 tilemap::tilemap(
 	uint32_t _id,
 	std::weak_ptr<assets::tilemap> _tilemap,
-	std::weak_ptr<assets::tileset> _tileset
-) : component(_id), mesh(_id),  tilemap_asset(_tilemap), tileset_asset(_tileset)
+	std::weak_ptr<assets::tileset> _tileset,
+	physics::collision_preset _preset
+) 
+	: component(_id), mesh(_id),  tilemap_asset(_tilemap), tileset_asset(_tileset), preset(_preset)
 {
 	_config.material = assets::cast_asset<assets::shader>(
 		common::assets_manager->get_asset(utilities::hash_string("core/sprite_shader"))).lock();
@@ -36,7 +38,7 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 		float y_mod = -1 * (float(tilemap_asset->height) / 2) * tile_y_size;
 		auto row = layer.end() - 1;
 
-		while (row != layer.begin())
+		while (true)
 		{
 			float x_mod = -1 * (float(tilemap_asset->width) / 2) * tile_x_size;
 			for (auto& tile : *row)
@@ -58,7 +60,10 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 
 				x_mod += tile_x_size;
 			}
+
 			y_mod += tile_y_size;
+			if (row == layer.begin())
+				break;
 			row--;
 		}	
 	}
