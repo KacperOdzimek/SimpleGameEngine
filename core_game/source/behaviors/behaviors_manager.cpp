@@ -26,31 +26,6 @@ extern "C"
 #include <vector>
 #include <list>
 
-static void dumpstack(lua_State* L) {
-    int top = lua_gettop(L);
-    for (int i = 1; i <= top; i++) {
-        printf("%d\t%s\t", i, luaL_typename(L, i));
-        switch (lua_type(L, i)) {
-        case LUA_TNUMBER:
-            printf("%g\n", lua_tonumber(L, i));
-            break;
-        case LUA_TSTRING:
-            printf("%s\n", lua_tostring(L, i));
-            break;
-        case LUA_TBOOLEAN:
-            printf("%s\n", (lua_toboolean(L, i) ? "true" : "false"));
-            break;
-        case LUA_TNIL:
-            printf("%s\n", "nil");
-            break;
-        default:
-            printf("%p\n", lua_topointer(L, i));
-            break;
-        }
-    }
-    printf("%s\n", "");
-}
-
 constexpr int purge_triggering_dangling_pointers_amount = 20;
 
 struct behaviors::behaviors_manager::implementation
@@ -137,9 +112,7 @@ behaviors::behaviors_manager::~behaviors_manager()
 int behaviors::behaviors_manager::create_database()
 {
     lua_createtable(impl->L, 0, 0);
-    dumpstack(impl->L);
     int id = luaL_ref(impl->L, LUA_REGISTRYINDEX);
-    dumpstack(impl->L);
     return id;
 }
 
@@ -166,8 +139,6 @@ void behaviors::behaviors_manager::call_update_functions()
             behavior.first->call_function(functions::update);
     if (impl->dangling_pointers > purge_triggering_dangling_pointers_amount)
         purge_registered_behaviors(impl->registered_behaviors);
-
-    lua_settop(impl->L, 0);
 }
 
 std::string behaviors::behaviors_manager::create_functions_table(const std::string& file_path)
@@ -233,6 +204,7 @@ bool behaviors::behaviors_manager::prepare_behavior_function_call(behaviors::fun
     case behaviors::functions::on_overlap:
         lua_getfield(impl->L, -1, "on_overlap"); break;
     }
+    lua_remove(impl->L, -2);
     if (lua_isnil(impl->L, -1))
     {
         lua_pop(impl->L, -1);
@@ -267,6 +239,7 @@ bool behaviors::behaviors_manager::prepare_scene_function_call(behaviors::functi
     case behaviors::functions::destroy:
         lua_getfield(impl->L, -1, "on_destroy"); break;
     }
+    lua_remove(impl->L, -2);
     if (lua_isnil(impl->L, -1))
     {
         lua_pop(impl->L, -1);
@@ -287,6 +260,7 @@ void behaviors::behaviors_manager::call(int args_amount)
         lua_rawgeti(impl->L, LUA_REGISTRYINDEX, impl->frames_stack.back().target_object_database->table_ref);
         lua_setglobal(impl->L, "self");
     }
+
     auto err = lua_pcall(impl->L, args_amount, 0, 0);
     if (err != LUA_OK)
         error_handling::crash(error_handling::error_source::core, "[behaviors_manager::call]", lua_tostring(impl->L, -1));
