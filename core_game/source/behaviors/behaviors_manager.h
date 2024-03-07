@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 #include "behavior_functions.h"
 #include "behaviors_database.h"
 
@@ -38,6 +39,7 @@ namespace behaviors
 	friend assets::scene;
 	friend entities::scene;
 	friend entities::components::behavior;
+	friend database;
 	public:
 		behaviors_manager();
 		~behaviors_manager();
@@ -66,6 +68,18 @@ namespace behaviors
 	private:
 		struct implementation;
 		implementation* impl;
+		/*
+			create_database
+			creates new database in lua environement
+			called by behaviors::database constructor
+		*/
+		int create_database();
+		/*
+			destroy_database
+			removes all database data from lua environement
+			called by behaviors::database destrutor
+		*/
+		void destroy_database(int id);
 		/*
 			create_functions_table
 			loads behavior into lua virtual machine so it can be invoked

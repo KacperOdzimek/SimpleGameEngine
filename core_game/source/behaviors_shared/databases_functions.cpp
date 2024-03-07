@@ -7,7 +7,7 @@
 
 #include "source/behaviors/frame.h"
 
-namespace behaviors
+/*namespace behaviors
 {
 	namespace lua_functions
 	{
@@ -93,4 +93,4 @@ namespace behaviors
 #undef db
 		}
 	}
-}
+}*/

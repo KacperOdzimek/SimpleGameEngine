@@ -26,6 +26,31 @@ extern "C"
 #include <vector>
 #include <list>
 
+static void dumpstack(lua_State* L) {
+    int top = lua_gettop(L);
+    for (int i = 1; i <= top; i++) {
+        printf("%d\t%s\t", i, luaL_typename(L, i));
+        switch (lua_type(L, i)) {
+        case LUA_TNUMBER:
+            printf("%g\n", lua_tonumber(L, i));
+            break;
+        case LUA_TSTRING:
+            printf("%s\n", lua_tostring(L, i));
+            break;
+        case LUA_TBOOLEAN:
+            printf("%s\n", (lua_toboolean(L, i) ? "true" : "false"));
+            break;
+        case LUA_TNIL:
+            printf("%s\n", "nil");
+            break;
+        default:
+            printf("%p\n", lua_topointer(L, i));
+            break;
+        }
+    }
+    printf("%s\n", "");
+}
+
 constexpr int purge_triggering_dangling_pointers_amount = 20;
 
 struct behaviors::behaviors_manager::implementation
@@ -109,6 +134,20 @@ behaviors::behaviors_manager::~behaviors_manager()
     delete impl;
 }
 
+int behaviors::behaviors_manager::create_database()
+{
+    lua_createtable(impl->L, 0, 0);
+    dumpstack(impl->L);
+    int id = luaL_ref(impl->L, LUA_REGISTRYINDEX);
+    dumpstack(impl->L);
+    return id;
+}
+
+void behaviors::behaviors_manager::destroy_database(int id)
+{
+    luaL_unref(impl->L, LUA_REGISTRYINDEX, id);
+}
+
 void behaviors::behaviors_manager::register_behavior_component(entities::components::behavior* comp)
 {
     impl->registered_behaviors.insert({ comp, true });
@@ -165,6 +204,7 @@ std::string behaviors::behaviors_manager::create_functions_table(const std::stri
 void behaviors::behaviors_manager::pass_pointer_arg(void* arg)
 {
     lua_pushinteger(impl->L, (uint64_t)arg);
+    luaL_ref(impl->L, LUA_REGISTRYINDEX);
 }
 
 void behaviors::behaviors_manager::pass_int_arg(uint64_t arg)
@@ -237,6 +277,16 @@ bool behaviors::behaviors_manager::prepare_scene_function_call(behaviors::functi
 
 void behaviors::behaviors_manager::call(int args_amount)
 {
+    if (impl->frames_stack.back().target_object_database.get() == nullptr)
+    {
+        lua_pushnil(impl->L);
+        lua_setglobal(impl->L, "self");
+    }
+    else
+    {
+        lua_rawgeti(impl->L, LUA_REGISTRYINDEX, impl->frames_stack.back().target_object_database->table_ref);
+        lua_setglobal(impl->L, "self");
+    }
     auto err = lua_pcall(impl->L, args_amount, 0, 0);
     if (err != LUA_OK)
         error_handling::crash(error_handling::error_source::core, "[behaviors_manager::call]", lua_tostring(impl->L, -1));

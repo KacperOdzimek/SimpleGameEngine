@@ -13,7 +13,7 @@
 void behaviors::register_functions(lua_State* L)
 {
 	lua_functions::engine::register_functions(L);
-	lua_functions::databases::register_functions(L);
+	//lua_functions::databases::register_functions(L);
 	lua_functions::entities::register_functions(L);
 	lua_functions::add_component::register_functions(L);
 	lua_functions::components::register_functions(L);

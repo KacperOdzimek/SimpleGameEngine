@@ -23,7 +23,6 @@ scene::scene(uint32_t _name, std::weak_ptr<assets::scene> __scene) : name(_name)
     common::behaviors_manager->create_frame(nullptr, this);
     common::behaviors_manager->call(0);
     common::behaviors_manager->pop_frame();
-
 }
 
 scene::~scene()
