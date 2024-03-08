@@ -33,26 +33,26 @@ void entities::components::behavior::call_function(behaviors::functions func, st
 		switch (func)
 		{
 		case behaviors::functions::init:
-			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
+			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
 			common::behaviors_manager->call(1);
 			break;
 		case behaviors::functions::update:
-			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
+			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
 			common::behaviors_manager->pass_float_arg(common::delta_time);
 			common::behaviors_manager->call(2);
 			break;
 		case behaviors::functions::destroy:
-			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
+			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
 			common::behaviors_manager->call(1);
 			break;
 		case behaviors::functions::on_overlap:
-			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
-			common::behaviors_manager->pass_int_arg((uint64_t)&other);
+			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
+			common::behaviors_manager->pass_entity_arg(&other);
 			common::behaviors_manager->call(2);
 			break;
 		case behaviors::functions::on_collide:
-			common::behaviors_manager->pass_int_arg((uint64_t)&owner_weak_ptr);
-			common::behaviors_manager->pass_int_arg((uint64_t)&other);
+			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
+			common::behaviors_manager->pass_entity_arg(&other);
 			common::behaviors_manager->call(2);
 			break;
 		}

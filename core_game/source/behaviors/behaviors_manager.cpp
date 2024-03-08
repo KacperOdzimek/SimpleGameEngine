@@ -178,9 +178,12 @@ void behaviors::behaviors_manager::pass_pointer_arg(void* arg)
     luaL_ref(impl->L, LUA_REGISTRYINDEX);
 }
 
-void behaviors::behaviors_manager::pass_int_arg(uint64_t arg)
+void behaviors::behaviors_manager::pass_entity_arg(std::weak_ptr<entities::entity>* entity)
 {
-    lua_pushinteger(impl->L, arg);
+    auto* data = (std::weak_ptr<::entities::entity>*)(lua_newuserdata(impl->L, sizeof(entity)));
+    new(data) std::weak_ptr<::entities::entity>(*entity);
+    luaL_getmetatable(impl->L, "entity");
+    lua_setmetatable(impl->L, -2);
 }
 
 void behaviors::behaviors_manager::pass_float_arg(float arg)

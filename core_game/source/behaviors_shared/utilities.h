@@ -23,12 +23,23 @@ extern "C"
 
 #include "source/rendering/render_config.h"
 
+inline void push_entity(lua_State* L, std::weak_ptr<::entities::entity>& entity)
+{
+	auto* data = (std::weak_ptr<::entities::entity>*)(lua_newuserdata(L, sizeof(entity)));
+	new(data) std::weak_ptr<::entities::entity>(entity);
+	luaL_getmetatable(L, "entity");
+	lua_setmetatable(L, -2);
+}
+
 inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id, const std::string parent_function)
 {
-	if (!lua_isinteger(L, arg_id))
+	if (!lua_isuserdata(L, arg_id))
 		error_handling::crash(error_handling::error_source::mod, parent_function,
-			"Entity reference should be an int pointer");
-	auto ptr = reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, arg_id));
+			"Entity reference should be std::weak_ptr<::entities::entity>* userdata");
+
+	auto* ptr = reinterpret_cast<std::weak_ptr<::entities::entity>*>(luaL_checkudata(L, arg_id, "entity"));
+	luaL_argcheck(L, ptr != NULL, arg_id, "Entity reference expected");
+
 	if (ptr->expired())
 		error_handling::crash(error_handling::error_source::mod, parent_function, "Trying to perform operations on dead entity.");
 	return ptr->lock();

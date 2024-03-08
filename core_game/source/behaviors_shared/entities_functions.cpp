@@ -20,7 +20,7 @@ namespace behaviors
 			int _e_create(lua_State* L)
 			{
 				auto e = new ::entities::entity{scene};
-				lua_pushinteger(L, (uint64_t)&scene->entities.back());
+				push_entity(L, scene->entities.back());
 				return 1;
 			}
 
@@ -33,8 +33,15 @@ namespace behaviors
 
 			int _e_is_alive(lua_State* L)
 			{
-				auto e = reinterpret_cast<std::weak_ptr<::entities::entity>*>(lua_tointeger(L, 1));
+				if (!lua_isuserdata(L, 1))
+					error_handling::crash(error_handling::error_source::mod, "[_e_is_alive]",
+						"Entity reference should be std::weak_ptr<::entities::entity>* userdata");
+
+				auto* e = reinterpret_cast<std::weak_ptr<::entities::entity>*>(luaL_checkudata(L, 1, "entity"));
+				luaL_argcheck(L, e != NULL, 1, "Entity reference expected");
+
 				lua_pushboolean(L, !e->expired());
+					
 				return 1;
 			}
 
@@ -97,8 +104,30 @@ namespace behaviors
 				return 0;
 			}
 
+			int entity_reference_destructor(lua_State* L)
+			{
+				std::weak_ptr<::entities::entity>* e 
+					= reinterpret_cast<std::weak_ptr<::entities::entity>*>(luaL_checkudata(L, -1, "entity"));
+				e->reset();
+				return 0;
+			}
+
+			static const luaL_Reg entity_ref_metamehods[] = {
+				  {"__gc", entity_reference_destructor},
+				  {NULL, NULL}
+			};
+
 			void register_functions(lua_State* L)
 			{
+				luaL_newmetatable(L, "entity");
+				lua_pushstring(L, "__index");
+				lua_pushvalue(L, -2);
+				lua_settable(L, -3);
+
+				luaL_setfuncs(L, entity_ref_metamehods, 0);
+
+				lua_remove(L, -1);
+
 				lua_register(L, "_e_create", _e_create);
 				lua_register(L, "_e_kill", _e_kill);
 				lua_register(L, "_e_is_alive", _e_is_alive);

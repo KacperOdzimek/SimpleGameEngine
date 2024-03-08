@@ -83,8 +83,6 @@ void entities::entity::teleport(glm::vec2 new_location)
 	};
 }
 
-#include <iostream>
-
 physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 {
 	if (new_location.x == location.x && new_location.y == location.y)

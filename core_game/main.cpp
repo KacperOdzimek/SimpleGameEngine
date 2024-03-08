@@ -34,6 +34,8 @@ int main()
 
 	common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/game");
 
+	std::cout << "Starting Main Loop\n";
+
 	while (!common::window_manager->should_close())
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;

@@ -13,6 +13,7 @@ namespace assets
 namespace entities
 {
 	class scene;
+	class entity;
 
 	namespace components
 	{
@@ -137,10 +138,10 @@ namespace behaviors
 		*/
 		void pass_pointer_arg(void* arg);
 		/*
-			pass_x_arg
+			pass_entity_arg
 			passes an arg to the behavior function in the following {call} call
 		*/
-		void pass_int_arg(uint64_t arg);
+		void pass_entity_arg(std::weak_ptr<entities::entity>* entity);
 		/*
 			pass_x_arg
 			passes an arg to the behavior function in the following {call} call
