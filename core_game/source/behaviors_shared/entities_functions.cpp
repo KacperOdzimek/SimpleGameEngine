@@ -12,7 +12,7 @@
 
 namespace behaviors
 {
-	namespace lua_functions
+	namespace lua_shared
 	{
 #define scene common::behaviors_manager->get_current_frame()->scene_context
 		namespace entities
@@ -104,30 +104,8 @@ namespace behaviors
 				return 0;
 			}
 
-			int entity_reference_destructor(lua_State* L)
+			void register_shared(lua_State* L)
 			{
-				std::weak_ptr<::entities::entity>* e 
-					= reinterpret_cast<std::weak_ptr<::entities::entity>*>(luaL_checkudata(L, -1, "entity"));
-				e->reset();
-				return 0;
-			}
-
-			static const luaL_Reg entity_ref_metamehods[] = {
-				  {"__gc", entity_reference_destructor},
-				  {NULL, NULL}
-			};
-
-			void register_functions(lua_State* L)
-			{
-				luaL_newmetatable(L, "entity");
-				lua_pushstring(L, "__index");
-				lua_pushvalue(L, -2);
-				lua_settable(L, -3);
-
-				luaL_setfuncs(L, entity_ref_metamehods, 0);
-
-				lua_remove(L, -1);
-
 				lua_register(L, "_e_create", _e_create);
 				lua_register(L, "_e_kill", _e_kill);
 				lua_register(L, "_e_is_alive", _e_is_alive);

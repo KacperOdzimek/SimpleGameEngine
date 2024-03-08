@@ -18,7 +18,7 @@ extern "C"
 #include "source/components/behavior.h"
 
 #include "source/common/crash.h"
-#include "register_functions.h"
+#include "register_shared.h"
 
 #include "frame.h"
 
@@ -96,7 +96,7 @@ behaviors::behaviors_manager::behaviors_manager()
     impl = new implementation;
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
-    behaviors::register_functions(L);
+    behaviors::register_shared(L);
     impl->L = L;
 }
 

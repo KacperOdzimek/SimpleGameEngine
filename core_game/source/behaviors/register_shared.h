@@ -3,5 +3,5 @@ class lua_State;
 
 namespace behaviors
 {
-	void register_functions(lua_State* L);
+	void register_shared(lua_State* L);
 }

@@ -31,7 +31,7 @@ inline void push_entity(lua_State* L, std::weak_ptr<::entities::entity>& entity)
 	lua_setmetatable(L, -2);
 }
 
-inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id, const std::string parent_function)
+inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id, const std::string parent_function) noexcept
 {
 	if (!lua_isuserdata(L, arg_id))
 		error_handling::crash(error_handling::error_source::mod, parent_function,
@@ -45,7 +45,7 @@ inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id,
 	return ptr->lock();
 }
 
-inline uint32_t load_id(lua_State* L, int arg_id, std::string parent_function, const std::string id_of_what)
+inline uint32_t load_id(lua_State* L, int arg_id, std::string parent_function, const std::string id_of_what) noexcept
 {
 	if (lua_isnumber(L, arg_id) || lua_isinteger(L, arg_id))
 		return lua_tointeger(L, arg_id);
@@ -54,7 +54,7 @@ inline uint32_t load_id(lua_State* L, int arg_id, std::string parent_function, c
 	error_handling::crash(error_handling::error_source::mod, parent_function, id_of_what + " id should be integer or string");
 }
 
-inline std::string load_asset_path(lua_State* L, int arg_id, std::string parent_function)
+inline std::string load_asset_path(lua_State* L, int arg_id, std::string parent_function) noexcept
 {
 	if (lua_isstring(L, arg_id))
 		return lua_tostring(L, arg_id);
@@ -62,7 +62,7 @@ inline std::string load_asset_path(lua_State* L, int arg_id, std::string parent_
 }
 
 template<class comp_class>
-inline comp_class* load_component(lua_State* L, const std::string parent_function, int entity_ptr_pos = 1, int component_id_pos = 2)
+inline comp_class* load_component(lua_State* L, const std::string parent_function, int entity_ptr_pos = 1, int component_id_pos = 2) noexcept
 {
 	auto e = load_entity(L, entity_ptr_pos, parent_function);
 	uint32_t comp = load_id(L, component_id_pos, parent_function, "Component");
@@ -77,7 +77,7 @@ inline comp_class* load_component(lua_State* L, const std::string parent_functio
 	return casted;
 }
 
-inline rendering::render_config load_render_config(lua_State* L, int arg_id, const std::string parent_function)
+inline rendering::render_config load_render_config(lua_State* L, int arg_id, const std::string parent_function) noexcept
 {
 	rendering::render_config rc{};
 

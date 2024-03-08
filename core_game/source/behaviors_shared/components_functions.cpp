@@ -24,7 +24,7 @@
 
 namespace behaviors
 {
-	namespace lua_functions
+	namespace lua_shared
 	{
 		namespace components
 		{
@@ -466,7 +466,7 @@ namespace behaviors
 				Register
 			*/
 
-			void register_functions(lua_State* L)
+			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_c_m_get_visible", _c_m_get_visible);
 				lua_register(L, "_c_m_set_visible", _c_m_set_visible);

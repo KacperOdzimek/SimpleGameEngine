@@ -7,7 +7,7 @@
 
 namespace behaviors
 {
-	namespace lua_functions
+	namespace lua_shared
 	{
 		namespace input
 		{
@@ -43,7 +43,7 @@ namespace behaviors
 				return 1;
 			}
 
-			void register_functions(lua_State* L)
+			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_i_action", _i_action);
 				lua_register(L, "_i_action_just_pressed", _i_action_just_pressed);
