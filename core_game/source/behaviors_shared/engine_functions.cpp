@@ -7,7 +7,7 @@
 
 namespace behaviors
 {
-	namespace lua_functions
+	namespace lua_shared
 	{
 		namespace engine
 		{
@@ -33,7 +33,7 @@ namespace behaviors
 				return 0;
 			}
 
-			void register_functions(lua_State* L)
+			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_en_load_scene", _en_load_scene);
 				lua_register(L, "_en_unload_scene", _en_unload_scene);

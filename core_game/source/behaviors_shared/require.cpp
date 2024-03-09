@@ -5,7 +5,7 @@
 #include "source/filesystem/filesystem.h"
 
 using namespace behaviors;
-using namespace lua_functions;
+using namespace lua_shared;
 
 int require_func(lua_State* L)
 {
@@ -18,7 +18,7 @@ int require_func(lua_State* L)
 	return 1;
 }
 
-void require::register_functions(lua_State* L)
+void require::register_shared(lua_State* L)
 {
     //change native require function name so we can provide our own
     lua_getglobal(L, "require");

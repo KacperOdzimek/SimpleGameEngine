@@ -2,11 +2,11 @@ class lua_State;
 
 namespace behaviors
 {
-	namespace lua_functions
+	namespace lua_shared
 	{
 		namespace require
 		{
-			void register_functions(lua_State* L);
+			void register_shared(lua_State* L);
 		}
 	}
 }

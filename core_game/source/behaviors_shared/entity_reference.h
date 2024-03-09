@@ -4,7 +4,7 @@ namespace behaviors
 {
 	namespace lua_shared
 	{
-		namespace input
+		namespace entity_reference
 		{
 			void register_shared(lua_State* L);
 		}

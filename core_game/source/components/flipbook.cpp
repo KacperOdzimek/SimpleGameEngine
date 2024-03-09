@@ -27,8 +27,14 @@ flipbook::~flipbook()
 void flipbook::set_animation(uint32_t new_animation)
 {
 	auto asset = reinterpret_cast<assets::flipbook*>(rc.textures.at(0).get());
+
 	if (asset->animations.find(new_animation) == asset->animations.end())
-		error_handling::crash(error_handling::error_source::core, "[flipbook::set_animation]", "Trying to use non-existent animation.");
+		error_handling::crash(error_handling::error_source::core, 
+			"[flipbook::set_animation]", "Trying to use non-existent animation.");
+
+	if (new_animation != current_flipbook_animation)
+		playback_position = 0.0f;
+
 	current_flipbook_animation = new_animation;
 
 	mark_pipeline_dirty();
@@ -47,7 +53,8 @@ void flipbook::pass_transformation(rendering::transformations_buffer_iterator& t
 		tbi.put(sprite_extend.y);
 
 		tbi.put(owner->layer);
-		tbi.put(reinterpret_cast<assets::flipbook*>(rc.textures.at(0).get())->get_sprite_id_at_position(current_flipbook_animation, playback_position));
+		tbi.put(reinterpret_cast<assets::flipbook*>(rc.textures.at(0).get())
+			->get_sprite_id_at_position(current_flipbook_animation, playback_position));
 	}
 }
 

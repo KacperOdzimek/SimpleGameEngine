@@ -19,7 +19,7 @@
 
 namespace behaviors
 {
-	namespace lua_functions
+	namespace lua_shared
 	{
 		namespace add_component
 		{
@@ -187,7 +187,7 @@ namespace behaviors
 				return 0;
 			}
 
-			void register_functions(lua_State* L)
+			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_e_add_behavior", _e_add_behavior);
 				lua_register(L, "_e_add_camera", _e_add_camera);

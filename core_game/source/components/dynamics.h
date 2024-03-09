@@ -2,8 +2,6 @@
 #include "source/entities/component.h"
 #include "include/glm/vec2.hpp"
 
-#include <iostream>
-
 namespace entities
 {
 	namespace components
