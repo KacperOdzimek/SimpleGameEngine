@@ -61,8 +61,6 @@ int main()
 
 		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 		common::delta_time = frame_end - frame_start;
-
-		std::cout << 1 / common::delta_time << '\n';
 	}
 
 	common::world->destroy();

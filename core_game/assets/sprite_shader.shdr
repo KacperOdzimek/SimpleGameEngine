@@ -29,6 +29,7 @@
 
         vec2 transformed_pos = (aPos * aInstance.scale) + aInstance.pos;
         vec4 projected_pos = (vec4(transformed_pos, 0, 1.0) - itr_camera_location) * itr_projection;
+        
         projected_pos.z = depth;
         gl_Position = projected_pos;
 

@@ -163,7 +163,7 @@ namespace behaviors
 			int _c_f_set_animation(lua_State* L)
 			{
 				auto flipbook = load_component<::entities::components::flipbook>(L, "[_c_f_set_animation]");
-				uint32_t animation = load_id(L, 2, "[_c_f_set_animation]", "Animation");
+				uint32_t animation = load_id(L, 3, "[_c_f_set_animation]", "Animation");
 
 				flipbook->set_animation(animation);
 

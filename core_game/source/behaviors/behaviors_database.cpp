@@ -11,6 +11,6 @@ namespace behaviors
 
 	database::~database() 
 	{ 
-		
+		common::behaviors_manager->destroy_database(table_ref);
 	}
 }
