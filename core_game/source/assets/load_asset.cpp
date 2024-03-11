@@ -13,6 +13,7 @@
 #include "behavior_asset.h"
 #include "scene_asset.h"
 #include "mesh_asset.h"
+#include "rendering_config_asset.h"
 #include "input_config_asset.h"
 #include "collision_config_asset.h"
 
@@ -26,8 +27,6 @@ namespace assets
 		{
 			auto& header = *ld.header_data;
 
-			std::shared_ptr<asset> texture_asset;
-
 			if (!(header.contains("path") && header.at("path").is_string()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_texture]",
 					"Invalid/Missing image path");
@@ -35,8 +34,7 @@ namespace assets
 			std::string source_path = ld.package + std::string(header.at("path"));
 			auto image = filesystem::load_image(source_path);
 
-			texture_asset = std::make_shared<assets::texture>(image.get());
-
+			auto texture_asset = std::make_shared<assets::texture>(image.get());
 			return texture_asset;
 		}
 
@@ -73,8 +71,6 @@ namespace assets
 		std::shared_ptr<asset> load_flipbook(const load_data& ld)
 		{
 			auto& header = *ld.header_data;
-
-			std::shared_ptr<asset> flipbook_asset;
 
 			if (!(header.contains("path") && header.at("path").is_string()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_flipbook]",
@@ -124,16 +120,13 @@ namespace assets
 				animations.insert({utilities::hash_string(name), std::move(anim)});
 			}
 
-			flipbook_asset = std::make_shared<assets::flipbook>(image.get(), sprite_width, sprite_height, animations);
-
+			auto flipbook_asset = std::make_shared<assets::flipbook>(image.get(), sprite_width, sprite_height, animations);
 			return flipbook_asset;
 		}
 
 		std::shared_ptr<asset> load_tileset(const load_data& ld)
 		{
 			auto& header = *ld.header_data;
-
-			std::shared_ptr<asset> tileset_asset;
 
 			if (!(header.contains("path") && header.at("path").is_string()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
@@ -163,8 +156,7 @@ namespace assets
 				layers.push_back(tile_id);
 			}
 
-			tileset_asset = std::make_shared<assets::tileset>(image.get(), tile_width, tile_height, layers);
-
+			auto tileset_asset = std::make_shared<assets::tileset>(image.get(), tile_width, tile_height, layers);
 			return tileset_asset;
 		}
 
@@ -304,15 +296,13 @@ namespace assets
 		{
 			auto& header = *ld.header_data;
 
-			std::shared_ptr<asset> behavior_asset;
-
 			if (!(header.contains("path") && header.at("path").is_string()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_behavior]",
 					"Invalid/Missing behavior path");
 
 			std::string source_path = ld.package + std::string(header.at("path"));
-			behavior_asset = std::make_shared<assets::behavior>(source_path);
-			
+
+			auto behavior_asset = std::make_shared<assets::behavior>(source_path);	
 			return behavior_asset;
 		}
 
@@ -320,23 +310,19 @@ namespace assets
 		{
 			auto& header = *ld.header_data;
 
-			std::shared_ptr<asset> scene_asset;
-
 			if (!(header.contains("path") && header.at("path").is_string()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_scene]",
 					"Invalid/Missing scene script path");
 
 			std::string source_path = ld.package + std::string(header.at("path"));
-			scene_asset = std::make_shared<assets::scene>(source_path);
 
+			auto scene_asset = std::make_shared<assets::scene>(source_path);
 			return scene_asset;
 		}
 
 		std::shared_ptr<asset> load_mesh(const load_data& ld)
 		{
 			auto& header = *ld.header_data;
-
-			std::shared_ptr<asset> mesh_asset;
 
 			if (!(header.contains("path") && header.at("path").is_string()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_mesh]",
@@ -405,10 +391,29 @@ namespace assets
 			return std::make_shared<assets::mesh>(vertices, indicies);
 		}
 
+		std::shared_ptr<asset> load_rendering_config(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+
+			std::string default_shader;
+			if (header.contains("default_sprite_shader_override"))
+			{
+				if (!header.at("default_sprite_shader_override").is_string())
+					error_handling::crash(error_handling::error_source::core, "[loading::load_rendering_config]",
+						"default_sprite_shader_override should be a string");
+
+				default_shader = header.at("default_sprite_shader_override");
+			}
+			else
+				default_shader = "core/sprite_shader";
+
+			auto rendering_config_asset = std::make_shared<assets::rendering_config>(default_shader);
+			return rendering_config_asset;
+		}
+
 		std::shared_ptr<asset> load_input_config(const load_data& ld)
 		{
 			auto& header = *ld.header_data;
-			std::shared_ptr<asset> input_config_asset;
 
 			//actions mappings
 			if (!header.contains("action_mappings"))
@@ -469,15 +474,13 @@ namespace assets
 				axis_map.insert({axis.key(), am});
 			}
 
-			input_config_asset = std::make_shared<assets::input_config>(std::move(actions_map), std::move(axis_map));
+			auto input_config_asset = std::make_shared<assets::input_config>(std::move(actions_map), std::move(axis_map));
 			return input_config_asset;
 		}
 
 		std::shared_ptr<asset> load_collision_config(const load_data& ld)
 		{
 			auto& header = *ld.header_data;
-
-			std::shared_ptr<asset> collision_config_asset;
 
 			//load body_types
 			std::map<uint32_t, uint8_t> body_types_loaded;
@@ -564,7 +567,8 @@ namespace assets
 				}
 			}
 
-			collision_config_asset = std::make_shared<assets::collision_config>(body_types_loaded, collision_presets_loaded, collision_presets_names);
+			auto collision_config_asset = std::make_shared<assets::collision_config>
+				(body_types_loaded, collision_presets_loaded, collision_presets_names);
 			return collision_config_asset;
 		}
 	}

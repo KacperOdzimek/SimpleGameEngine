@@ -8,6 +8,7 @@
 #include "source/rendering/renderer.h"
 
 #include "source/assets/sprite_sheet.h"
+#include "source/assets/rendering_config_asset.h"
 
 #include "source/utilities/hash_string.h"
 
@@ -37,8 +38,11 @@ sprite::sprite(uint32_t _id, std::weak_ptr<assets::texture> _texture, physics::c
 		_id, preset, get_extend_from_texture(_texture) / 2.0f
 	)
 {
+	auto rendering_config = assets::cast_asset<assets::rendering_config>(
+		common::assets_manager->get_asset(utilities::hash_string("mod/rendering_config"))).lock();
+
 	rc.material = assets::cast_asset<assets::shader>(
-		common::assets_manager->get_asset(utilities::hash_string("core/sprite_shader"))).lock();
+		common::assets_manager->safe_get_asset(rendering_config->default_sprite_shader)).lock();
 
 	rc.mesh = assets::cast_asset<assets::mesh>(
 		common::assets_manager->get_asset(utilities::hash_string("core/square_mesh"))).lock();

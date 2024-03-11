@@ -37,6 +37,9 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 	common::assets_manager->load_asset("mod/input_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/input_config"));
 
+	common::assets_manager->load_asset("mod/rendering_config");
+	common::assets_manager->lock_asset(utilities::hash_string("mod/rendering_config"));
+
 	auto input_config = assets::cast_asset<assets::input_config>
 		(common::assets_manager->get_asset(utilities::hash_string("mod/input_config")));
 	common::input_mananger->load_config(input_config.lock());
@@ -51,6 +54,7 @@ void mods::mods_manager::unload_mod()
 {
 	common::assets_manager->unlock_asset(utilities::hash_string("mod/input_config"));
 	common::assets_manager->unlock_asset(utilities::hash_string("mod/collision_config"));
+	common::assets_manager->unlock_asset(utilities::hash_string("mod/rendering_config"));
 }
 
 std::vector<mods::mod_manifest> mods::mods_manager::get_all_mods_manifests()

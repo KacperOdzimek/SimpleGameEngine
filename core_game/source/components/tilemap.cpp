@@ -1,7 +1,10 @@
 #include "tilemap.h"
 #include "source/entities/entity.h"
 #include "source/common/common.h"
+
 #include "source/assets/assets_manager.h"
+#include "source/assets/rendering_config_asset.h"
+
 #include "source/rendering/renderer.h"
 #include "source/utilities/hash_string.h"
 
@@ -16,8 +19,11 @@ tilemap::tilemap(
 ) 
 	: component(_id), mesh(_id),  tilemap_asset(_tilemap), tileset_asset(_tileset), preset(_preset)
 {
+	auto rendering_config = assets::cast_asset<assets::rendering_config>(
+		common::assets_manager->get_asset(utilities::hash_string("mod/rendering_config"))).lock();
+
 	_config.material = assets::cast_asset<assets::shader>(
-		common::assets_manager->get_asset(utilities::hash_string("core/sprite_shader"))).lock();
+		common::assets_manager->safe_get_asset(rendering_config->default_sprite_shader)).lock();
 
 	_config.mesh = assets::cast_asset<assets::mesh>(
 		common::assets_manager->get_asset(utilities::hash_string("core/square_mesh"))).lock();
