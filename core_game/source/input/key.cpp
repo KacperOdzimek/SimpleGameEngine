@@ -24,6 +24,8 @@ input::key input::get_key_from_key_name(const std::string& str)
 		char a = std::toupper(str.at(0));
 		k.id = a;
 	}
+	else if (str == "Space")
+		k.id = GLFW_KEY_SPACE;
 	else if (str == "Enter")
 		k.id = GLFW_KEY_ENTER;
 	else if (str == "LShift")

@@ -284,6 +284,16 @@ void behaviors::behaviors_manager::create_frame(std::shared_ptr<database> databa
 void behaviors::behaviors_manager::pop_frame()
 {
     impl->frames_stack.pop_back();
+    if (impl->frames_stack.size() == 0 || impl->frames_stack.back().target_object_database == nullptr)
+    {
+        lua_pushnil(impl->L);
+        lua_setglobal(impl->L, "self");
+    }
+    else
+    {
+        lua_rawgeti(impl->L, LUA_REGISTRYINDEX, impl->frames_stack.back().target_object_database->table_ref);
+        lua_setglobal(impl->L, "self");
+    }
 }
 
 const behaviors::frame* behaviors::behaviors_manager::get_current_frame()

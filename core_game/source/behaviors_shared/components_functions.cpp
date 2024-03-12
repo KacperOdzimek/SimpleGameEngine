@@ -462,6 +462,15 @@ namespace behaviors
 				return 0;
 			}
 
+			int _c_d_get_vel(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_max_vel]");
+				auto vel = d->get_velocity();
+				lua_pushnumber(L, vel.x);
+				lua_pushnumber(L, vel.y);
+				return 2;
+			}
+
 			/*
 				Register
 			*/
@@ -518,6 +527,7 @@ namespace behaviors
 				lua_register(L, "_c_d_set_use_max_vel", _c_d_set_use_max_vel);
 				lua_register(L, "_c_d_get_max_vel", _c_d_get_max_vel);
 				lua_register(L, "_c_d_set_max_vel", _c_d_set_max_vel);
+				lua_register(L, "_c_d_get_vel", _c_d_get_vel);
 			}
 		}
 	}
