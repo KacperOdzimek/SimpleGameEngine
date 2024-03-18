@@ -25,7 +25,7 @@ namespace entities
 			/*
 				highest rendered layer
 			*/
-			int highest_layer = 1;
+			int highest_layer = 10;
 			/*
 				get_projection
 				returns 4d matrix that projects vertices from the world space to the screen space
