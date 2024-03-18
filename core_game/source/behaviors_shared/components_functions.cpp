@@ -455,14 +455,6 @@ namespace behaviors
 				return 1;
 			}
 
-			int _c_d_set_max_vel(lua_State* L)
-			{
-				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_max_vel]");
-				auto vel = lua_tonumber(L, 3);
-				d->maximum_velocity = vel;
-				return 0;
-			}
-
 			int _c_d_get_vel(lua_State* L)
 			{
 				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_max_vel]");
@@ -472,13 +464,34 @@ namespace behaviors
 				return 2;
 			}
 
+			int _c_d_set_max_vel(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_max_vel]");
+				auto vel = lua_tonumber(L, 3);
+				d->maximum_velocity = vel;
+				return 0;
+			}
+
 			/*
 				Tilemap
 			*/
 			
+			int _c_t_get_layers_stride(lua_State* L)
+			{
+				auto t = load_component<::entities::components::tilemap>(L, "[_c_t_set_layers_stride]");
+				lua_pushnumber(L, t->get_layers_stride());
+				return 1;
+			}
+
 			int _c_t_set_layers_stride(lua_State* L)
 			{
-
+				auto t = load_component<::entities::components::tilemap>(L, "[_c_t_set_layers_stride]");
+				int new_stide = lua_tonumber(L, 3);
+				if (new_stide <= 0)
+					error_handling::crash(error_handling::error_source::core, "[_c_t_set_layers_stride]",
+						"Layers stride must be greater than 0");
+				t->set_layers_stride(new_stide);
+				return 0;
 			}
 
 			/*
@@ -538,6 +551,9 @@ namespace behaviors
 				lua_register(L, "_c_d_get_max_vel", _c_d_get_max_vel);
 				lua_register(L, "_c_d_set_max_vel", _c_d_set_max_vel);
 				lua_register(L, "_c_d_get_vel", _c_d_get_vel);
+
+				lua_register(L, "_c_t_get_layers_stride", _c_t_get_layers_stride);
+				lua_register(L, "_c_t_set_layers_stride", _c_t_set_layers_stride);
 			}
 		}
 	}
