@@ -21,6 +21,7 @@
 #include "source/components/sprite.h"
 #include "source/components/flipbook.h"
 #include "source/components/dynamics.h"
+#include "source/components/tilemap.h"
 
 namespace behaviors
 {
@@ -469,6 +470,15 @@ namespace behaviors
 				lua_pushnumber(L, vel.x);
 				lua_pushnumber(L, vel.y);
 				return 2;
+			}
+
+			/*
+				Tilemap
+			*/
+			
+			int _c_t_set_layers_stride(lua_State* L)
+			{
+
 			}
 
 			/*

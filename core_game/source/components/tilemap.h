@@ -22,9 +22,12 @@ namespace entities
 			std::shared_ptr<assets::tileset> tileset_asset;
 			rendering::render_config _config;
 			physics::collision_preset preset = 0;
+			unsigned int layers_stride = 2;
 			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
 			void build_colliders();
 		public:
+			unsigned int get_layers_stride() { return layers_stride; };
+			void set_layers_stride(unsigned int new_stride) { layers_stride = new_stride; mark_pipeline_dirty(); };
 			virtual void on_attach() override;
 			virtual const rendering::render_config& get_render_config() override;
 			virtual uint32_t get_instances_amount() override;

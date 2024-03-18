@@ -72,6 +72,8 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 				break;
 			row--;
 		}	
+
+		layer_counter += 1 * layers_stride;
 	}
 }
 
