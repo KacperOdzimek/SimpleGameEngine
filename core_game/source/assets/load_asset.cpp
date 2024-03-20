@@ -171,7 +171,7 @@ namespace assets
 			std::string file_path = ld.package + std::string(header.at("path"));
 			auto file = filesystem::load_file(file_path);
 			if (file.fail())
-				error_handling::crash(error_handling::error_source::core, "[asset_manager::load_tilemap]", 
+				error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]", 
 					"Missing .tmj tilemap: " + header.at("path"));
 			nlohmann::json source = nlohmann::json::parse(file);
 			file.close();
@@ -194,13 +194,13 @@ namespace assets
 			int layers_iterator = 0;
 			for (auto& layer : source.at("layers"))
 			{
-				layers.push_back({});
-
 				if (!layer.is_object()) 
 					error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]","Invalid layer");
 
 				if (!(layer.contains("data") && layer.at("data").is_array()))
-					error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]", "Invalid layer");
+					continue; //Ignore object layers
+
+				layers.push_back({});
 
 				tilemap::row current_row;
 				for (auto& tile : layer.at("data"))

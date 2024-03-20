@@ -9,7 +9,7 @@ namespace assets
 		auto itr = collision_presets.find(hashed_name);
 		if (itr == collision_presets.end())
 			error_handling::crash(error_handling::error_source::core, "[collision_config::get_preset]",
-				"Trying to get non-existent collision preset: " + hashed_name);
+				"Trying to get non-existent collision preset: " + std::to_string(hashed_name));
 		return itr->second;
 	};
 }

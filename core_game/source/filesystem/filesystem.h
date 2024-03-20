@@ -35,7 +35,7 @@ namespace filesystem
 	load_file
 	loads file
 	*/
-	std::fstream load_file(std::string path_with_extension);
+	std::fstream load_file(std::string relative_path_with_extension);
 	/*
 	get_all_subfolders
 	returns full paths of directory subfolders
