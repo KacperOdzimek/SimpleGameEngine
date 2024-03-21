@@ -69,6 +69,7 @@ struct audio_manager::implementation
     };
 
     float desired_volume = 1;
+    float rolloff;
 
     entities::components::listener* active_listener = nullptr;
 
@@ -103,6 +104,11 @@ audio_manager::~audio_manager()
     ma_engine_uninit(&impl->engine);
 
     delete impl;
+}
+
+void audio_manager::set_audio_rolloff(float rolloff)
+{
+    impl->rolloff = rolloff;
 }
 
 void audio_manager::update()
@@ -231,6 +237,7 @@ void audio_manager::set_position_at_channel(uint32_t channel, glm::vec3 position
 {
     channel_playback& c = impl->get_channel(channel);
     ma_sound_set_position(&c.sound, position.x, position.y, position.z);
+    ma_sound_set_rolloff(&c.sound, impl->rolloff);
     ma_sound_set_spatialization_enabled(&c.sound, true);
 }
 
@@ -268,8 +275,18 @@ void audio_manager::emit_sound(sound_emitter* emitter, std::weak_ptr<assets::sou
             "Cannot play file: " + sound.lock()->file_path + " Error code: " + std::to_string(result));
     }
 
-    ma_sound_start(ptr);
+    auto owner = emitter->get_owner_weak().lock();
+
+    ma_sound_set_position(
+        ptr,
+        owner->get_location().x,
+        owner->get_location().y,
+        owner->layer
+    );
+
+    ma_sound_set_rolloff(ptr, impl->rolloff);
     ma_sound_set_volume(ptr, volume_precent);
+    ma_sound_start(ptr);
 
     impl->emitters.at(emitter).sounds.push_back(ptr);
 }

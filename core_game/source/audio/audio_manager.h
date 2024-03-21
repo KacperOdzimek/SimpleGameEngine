@@ -24,6 +24,8 @@ namespace audio
 
 		void update();
 
+		void set_audio_rolloff(float rolloff);
+
 		bool is_active_listner(entities::components::listener* listener);
 		void set_active_listener(entities::components::listener* active_listener);
 

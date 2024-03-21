@@ -9,6 +9,7 @@
 #include "source/assets/assets_manager.h"
 #include "source/entities/world.h"
 #include "source/input/input_manager.h"
+#include "source/audio/audio_manager.h"
 
 #include "source/utilities/hash_string.h"
 
@@ -30,6 +31,12 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 			"Invalid mod manifest: missing pixels_per_unit / pixels_per_unit isn't number");
 
 	common::pixels_per_world_unit = manifest.at("pixels_per_unit");
+
+	if (!(manifest.contains("audio_rolloff") && manifest.at("audio_rolloff").is_number()))
+		error_handling::crash(error_handling::error_source::core, "[mods_manager::load_mod]",
+			"Invalid mod manifest: missing audio_rolloff / audio_rolloff isn't number");
+
+	common::audio_manager->set_audio_rolloff(manifest.at("audio_rolloff"));
 
 	common::assets_manager->load_asset("mod/collision_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/collision_config"));
