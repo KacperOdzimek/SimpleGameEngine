@@ -10,6 +10,7 @@
 #include "source/filesystem/filesystem.h"
 #include "source/mods/mods_manager.h"
 #include "source/physics/dynamics_manager.h"
+#include "source/audio/audio_manager.h"
 
 #include "source/utilities/hash_string.h"
 
@@ -39,6 +40,9 @@ int main()
 
 		//Update flipbooks channels positions
 		common::flipbooks_manager->update();
+
+		//Audio
+		common::audio_manager->update();
 
 		//Game Logic
 		common::world->update();
