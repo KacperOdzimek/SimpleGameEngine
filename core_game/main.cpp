@@ -37,7 +37,7 @@ int main()
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
-		//Update flipbooks playbacks positions
+		//Update flipbooks channels positions
 		common::flipbooks_manager->update();
 
 		//Game Logic

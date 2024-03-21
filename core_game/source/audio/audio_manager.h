@@ -13,5 +13,11 @@ namespace audio
 		~audio_manager();
 
 		void play_sound(std::weak_ptr<assets::sound> sound);
+		void set_volume(float volume_precent);
+
+		void play_sound_at_channel(uint32_t channel, std::weak_ptr<assets::sound> sound, bool looping);
+		void set_volume_at_channel(uint32_t channel, float volume_precent);
+		void resume_sound_at_channel(uint32_t channel);
+		void stop_sound_at_channel(uint32_t channel);
 	};
 }
