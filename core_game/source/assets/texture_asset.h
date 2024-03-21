@@ -25,7 +25,6 @@ namespace assets
 	protected:
 		graphics_abstraction::texture* _texture;
 	public:
-		//data is required to be filesystem::image_file*
 		texture(filesystem::image_file* data);
 		~texture();
 		unsigned int get_width();

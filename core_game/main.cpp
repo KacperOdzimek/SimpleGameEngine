@@ -14,7 +14,6 @@
 #include "source/utilities/hash_string.h"
 
 #include <time.h>
-#include <iostream>
 
 int main()
 {
@@ -33,8 +32,6 @@ int main()
 	common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
 
 	common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/game");
-
-	std::cout << "Starting Main Loop\n";
 
 	while (!common::window_manager->should_close())
 	{

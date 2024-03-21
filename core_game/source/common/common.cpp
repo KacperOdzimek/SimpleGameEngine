@@ -1,6 +1,7 @@
 #include "common.h"
 #include "source/rendering/renderer.h"
 #include "source/rendering/flipbooks_manager.h"
+#include "source/audio/audio_manager.h"
 #include "source/assets/assets_manager.h"
 #include "source/entities/world.h"
 #include "source/behaviors/behaviors_manager.h"
@@ -15,7 +16,8 @@ namespace common
 	double delta_time = 0.0;
 	double pixels_per_world_unit = 32;
 	std::unique_ptr<rendering::renderer> renderer = std::make_unique<rendering::renderer>();
-	std::unique_ptr<rendering::flipbooks_manager> flipbooks_manager = std::make_unique<rendering::flipbooks_manager>();;
+	std::unique_ptr<rendering::flipbooks_manager> flipbooks_manager = std::make_unique<rendering::flipbooks_manager>();
+	std::unique_ptr<audio::audio_manager> audio_manager = std::make_unique<audio::audio_manager>();;
 	std::unique_ptr<assets::assets_manager> assets_manager = std::make_unique<assets::assets_manager>();
 	std::unique_ptr<entities::world> world = std::make_unique<entities::world>();
 	std::unique_ptr<behaviors::behaviors_manager> behaviors_manager = std::make_unique<behaviors::behaviors_manager>();

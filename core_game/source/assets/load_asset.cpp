@@ -10,6 +10,7 @@
 #include "flipbook_asset.h"
 #include "tileset_asset.h"
 #include "tilemap_asset.h"
+#include "sound_asset.h"
 #include "behavior_asset.h"
 #include "scene_asset.h"
 #include "mesh_asset.h"
@@ -290,6 +291,17 @@ namespace assets
 				hashed_layout.push_back(utilities::hash_string(element));
 
 			return std::make_shared<shader>(vertex_code, fragment_code, hashed_layout);
+		}
+
+		std::shared_ptr<asset> load_sound(const load_data& ld)
+		{
+			auto& header = *ld.header_data;
+
+			if (!(header.contains("path") && header.at("path").is_string()))
+				error_handling::crash(error_handling::error_source::core, "[loading::load_sound]",
+					"Invalid/Missing sound path");
+
+			return std::make_shared<sound>(ld.package + std::string(header.at("path")));
 		}
 
 		std::shared_ptr<asset> load_behavior(const load_data& ld)
