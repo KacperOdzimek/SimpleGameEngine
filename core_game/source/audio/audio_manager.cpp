@@ -69,12 +69,24 @@ void audio_manager::set_volume(float volume_precent)
 
 void audio_manager::play_sound_at_channel(uint32_t channel, std::weak_ptr<assets::sound> sound, bool looping)
 {
-    impl->channels.insert({ channel, {} });
+    if (impl->channels.find(channel) != impl->channels.end())
+        ma_sound_uninit(&impl->channels.at(channel).sound);
+    else
+        impl->channels.insert({ channel, {} });
+
     channel_playback& c = impl->get_channel(channel);
 
     ma_result result;
 
-    result = ma_sound_init_from_file(&impl->engine, sound.lock()->file_path.c_str(), 0, &impl->group, NULL, &c.sound);
+    result = ma_sound_init_from_file(
+        &impl->engine, 
+        sound.lock()->file_path.c_str(), 
+        MA_SOUND_FLAG_ASYNC, 
+        &impl->group, 
+        NULL, 
+        &c.sound
+    );
+
     if (result != MA_SUCCESS) {
         error_handling::crash(error_handling::error_source::core, "[audio_manager::play_sound_at_channel]",
             "Cannot play file: " + sound.lock()->file_path + " Error code: " + std::to_string(result));
@@ -109,6 +121,10 @@ void audio_manager::stop_sound_at_channel(uint32_t channel)
 
 audio_manager::~audio_manager()
 {
+    for (auto& channel : impl->channels)
+        ma_sound_uninit(&channel.second.sound);
+
     ma_engine_uninit(&impl->engine);
+
     delete impl;
 }
