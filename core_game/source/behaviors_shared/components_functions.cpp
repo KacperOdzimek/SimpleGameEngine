@@ -7,6 +7,7 @@
 
 #include "source/assets/assets_manager.h"
 #include "source/rendering/renderer.h"
+#include "source/audio/audio_manager.h"
 
 #include "source/components/behavior.h"
 
@@ -22,6 +23,8 @@
 #include "source/components/flipbook.h"
 #include "source/components/dynamics.h"
 #include "source/components/tilemap.h"
+#include "source/components/listener.h"
+#include "source/components/sound_emitter.h"
 
 namespace behaviors
 {
@@ -495,6 +498,37 @@ namespace behaviors
 			}
 
 			/*
+				Listener
+			*/
+
+			int _c_l_get_active(lua_State* L)
+			{
+				auto listener = load_component<::entities::components::listener>(L, "[_c_l_get_active]");
+				lua_pushboolean(L, common::audio_manager->is_active_listner(listener));
+				return 1;
+			}
+
+			int _c_l_set_active(lua_State* L)
+			{
+				auto listener = load_component<::entities::components::listener>(L, "[_c_l_set_active]");
+				common::audio_manager->set_active_listener(listener);
+				return 0;
+			}
+
+			/*
+				Emitter
+			*/
+			int _c_se_emit_sound(lua_State* L)
+			{
+				auto emitter = load_component<::entities::components::sound_emitter>(L, "[_c_se_emit_sound]");
+				auto sound_path = load_asset_path(L, 3, "[_a_play_sound_at_channel]");
+				auto sound = assets::cast_asset<assets::sound>(common::assets_manager->safe_get_asset(sound_path));
+				float volume_precent = lua_tonumber(L, 4);
+				emitter->emit_sound(sound, volume_precent);
+				return 0;
+			}
+
+			/*
 				Register
 			*/
 
@@ -554,6 +588,11 @@ namespace behaviors
 
 				lua_register(L, "_c_t_get_layers_stride", _c_t_get_layers_stride);
 				lua_register(L, "_c_t_set_layers_stride", _c_t_set_layers_stride);
+
+				lua_register(L, "_c_l_get_active", _c_l_get_active);
+				lua_register(L, "_c_l_set_active", _c_l_set_active);
+
+				lua_register(L, "_c_se_emit_sound", _c_se_emit_sound);
 			}
 		}
 	}

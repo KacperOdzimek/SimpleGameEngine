@@ -10,11 +10,11 @@
 #include "source/filesystem/filesystem.h"
 #include "source/mods/mods_manager.h"
 #include "source/physics/dynamics_manager.h"
+#include "source/audio/audio_manager.h"
 
 #include "source/utilities/hash_string.h"
 
 #include <time.h>
-#include <iostream>
 
 int main()
 {
@@ -34,14 +34,15 @@ int main()
 
 	common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/game");
 
-	std::cout << "Starting Main Loop\n";
-
 	while (!common::window_manager->should_close())
 	{
 		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
-		//Update flipbooks playbacks positions
+		//Update flipbooks channels positions
 		common::flipbooks_manager->update();
+
+		//Audio
+		common::audio_manager->update();
 
 		//Game Logic
 		common::world->update();

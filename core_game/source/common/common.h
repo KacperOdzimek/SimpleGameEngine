@@ -8,6 +8,11 @@ namespace rendering
 	class flipbooks_manager;
 }
 
+namespace audio
+{
+	class audio_manager;
+}
+
 namespace assets
 {
 	class assets_manager;
@@ -56,6 +61,7 @@ namespace common
 	extern double pixels_per_world_unit;
 	extern std::unique_ptr<rendering::flipbooks_manager> flipbooks_manager;
 	extern std::unique_ptr<rendering::renderer> renderer;
+	extern std::unique_ptr<audio::audio_manager> audio_manager;
 	extern std::unique_ptr<assets::assets_manager> assets_manager;
 	extern std::unique_ptr<entities::world> world;
 	extern std::unique_ptr<behaviors::behaviors_manager> behaviors_manager;

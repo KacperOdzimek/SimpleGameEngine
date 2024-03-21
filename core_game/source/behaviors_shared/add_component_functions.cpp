@@ -16,6 +16,8 @@
 #include "source/components/tilemap.h"
 #include "source/components/dynamics.h"
 #include "source/components/flipbook.h"
+#include "source/components/listener.h"
+#include "source/components/sound_emitter.h"
 
 namespace behaviors
 {
@@ -187,6 +189,34 @@ namespace behaviors
 				return 0;
 			}
 
+			int _e_add_listener(lua_State* L)
+			{
+				auto e = load_entity(L, 1, "[_e_add_dynamics]");
+				uint32_t id = load_id(L, 2, "[_e_add_dynamics]", "Component");
+
+				e->attach_component(
+					new ::entities::components::listener{
+						id
+					}
+				);
+
+				return 0;
+			}
+
+			int _e_add_sound_emitter(lua_State* L)
+			{
+				auto e = load_entity(L, 1, "[_e_add_sound_emitter]");
+				uint32_t id = load_id(L, 2, "[_e_add_sound_emitter]", "Component");
+
+				e->attach_component(
+					new ::entities::components::sound_emitter{
+						id
+					}
+				);
+
+				return 0;
+			}
+
 			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_e_add_behavior", _e_add_behavior);
@@ -197,6 +227,8 @@ namespace behaviors
 				lua_register(L, "_e_add_flipbook", _e_add_flipbook);
 				lua_register(L, "_e_add_tilemap", _e_add_tilemap);
 				lua_register(L, "_e_add_dynamics", _e_add_dynamics);
+				lua_register(L, "_e_add_listener", _e_add_listener);
+				lua_register(L, "_e_add_sound_emitter", _e_add_sound_emitter);
 			}
 		}
 	}

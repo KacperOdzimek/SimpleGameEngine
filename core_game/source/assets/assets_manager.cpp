@@ -98,6 +98,9 @@ void assets_manager::load_asset(std::string path)
     case utilities::hash_string("tilemap"):
         new_asset = loading::load_tilemap(load_data);
         break;
+    case utilities::hash_string("sound"):
+        new_asset = loading::load_sound(load_data);
+        break;
     case utilities::hash_string("shader"):
         new_asset = loading::load_shader(load_data);
         break;
@@ -128,18 +131,16 @@ void assets_manager::load_asset(std::string path)
         error_handling::crash(error_handling::error_source::core,
             "[asset_manager::load_asset]", "Failed to load asset: " + path);
 
-    impl->assets.insert(
-        { 
-            utilities::hash_string(path),
-            new_asset 
-        }
-    );
-
-    impl->new_assets.push_back(
-        new_asset
-    );
-
     new_asset->package_name = path;
+
+    uint32_t hash = utilities::hash_string(path);
+
+    if (impl->assets.find(hash) == impl->assets.end())
+        impl->assets.insert({ hash, new_asset });
+    else
+        impl->assets.at(hash) = new_asset;
+
+    impl->new_assets.push_back(new_asset);
 }
 
 void assets_manager::unload_unreferenced_assets()
