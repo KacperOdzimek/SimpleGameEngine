@@ -6,10 +6,11 @@
 
 #include "source/entities/entity.h"
 #include "source/components/listener.h"
+#include "source/components/sound_emitter.h"
 
 #include "include/miniaudio/miniaudio.h"
 
-#include <vector>
+#include <list>
 #include <unordered_map>
 
 using namespace audio;
@@ -22,7 +23,7 @@ struct channel_playback
 
 struct emitter_sounds
 {
-    std::vector<ma_sound> sounds{};
+    std::list<ma_sound*> sounds{};
 };
 
 using sound_emitter = entities::components::sound_emitter;
@@ -123,6 +124,29 @@ void audio_manager::update()
         e->get_location().y,
         e->layer
     );
+
+    for (auto& emitter : impl->emitters)
+    {
+        auto owner = emitter.first->get_owner_weak().lock();
+
+        auto& sounds = emitter.second.sounds;
+
+        auto i = sounds.begin();
+        while (i != sounds.end())
+        {
+            ma_sound_set_position(
+                *i,
+                owner->get_location().x, 
+                owner->get_location().y,
+                owner->layer
+            );
+
+            if (ma_sound_at_end(*i))
+                sounds.erase(i++);
+            else
+                i++;
+        }
+    }       
 }
 
 bool audio_manager::is_active_listner(entities::components::listener* listener)
@@ -220,7 +244,32 @@ void audio_manager::unregister_emitter(sound_emitter* emitter)
     auto itr = std::find(impl->emitters.begin(), impl->emitters.end(), emitter);
 
     for (auto& sound : itr->second.sounds)
-        ma_sound_uninit(&sound);
+        ma_sound_uninit(sound);
 
     impl->emitters.erase(itr);
+}
+
+void audio_manager::emit_sound(sound_emitter* emitter, std::weak_ptr<assets::sound> sound, float volume_precent)
+{
+    ma_result result;
+    auto ptr = new ma_sound;
+
+    result = ma_sound_init_from_file(
+        &impl->engine,
+        sound.lock()->file_path.c_str(),
+        MA_SOUND_FLAG_ASYNC,
+        &impl->group,
+        NULL,
+        ptr
+    );
+
+    if (result != MA_SUCCESS) {
+        error_handling::crash(error_handling::error_source::core, "[audio_manager::emit_sound]",
+            "Cannot play file: " + sound.lock()->file_path + " Error code: " + std::to_string(result));
+    }
+
+    ma_sound_start(ptr);
+    ma_sound_set_volume(ptr, volume_precent);
+
+    impl->emitters.at(emitter).sounds.push_back(ptr);
 }

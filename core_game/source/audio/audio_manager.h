@@ -38,5 +38,6 @@ namespace audio
 
 		void register_emitter(entities::components::sound_emitter* emitter);
 		void unregister_emitter(entities::components::sound_emitter* emitter);
+		void emit_sound(entities::components::sound_emitter* emitter, std::weak_ptr<assets::sound> sound, float volume_precent);
 	};
 }

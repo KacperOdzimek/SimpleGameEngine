@@ -19,9 +19,9 @@ namespace entities
 			common::audio_manager->unregister_emitter(this);
 		}
 
-		void sound_emitter::emit_sound(std::weak_ptr<assets::sound> sound)
+		void sound_emitter::emit_sound(std::weak_ptr<assets::sound> sound, float volume_precent)
 		{
-
+			common::audio_manager->emit_sound(this, sound, volume_precent);
 		}
 	}
 }
