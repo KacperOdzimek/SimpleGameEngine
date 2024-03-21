@@ -12,9 +12,9 @@
 #include "source/physics/dynamics_manager.h"
 #include "source/audio/audio_manager.h"
 
-#include "source/utilities/hash_string.h"
+#include "source/common/crash.h"
 
-#include <time.h>
+#include "source/utilities/hash_string.h"
 
 int main()
 {
@@ -36,32 +36,40 @@ int main()
 
 	while (!common::window_manager->should_close())
 	{
-		double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
+		try
+		{
+			double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
-		//Update flipbooks channels positions
-		common::flipbooks_manager->update();
+			//Update flipbooks channels positions
+			common::flipbooks_manager->update();
 
-		//Audio
-		common::audio_manager->update();
+			//Audio
+			common::audio_manager->update();
 
-		//Game Logic
-		common::world->update();
-		common::input_mananger->update_mappings_states();
-		common::behaviors_manager->call_update_functions();
+			//Game Logic
+			common::world->update();
+			common::input_mananger->update_mappings_states();
+			common::behaviors_manager->call_update_functions();
 
-		//Apply physics
-		common::dynamics_manager->update();
+			//Apply physics
+			common::dynamics_manager->update();
 
-		//Rendering
-		common::renderer->update_transformations();
-		common::renderer->render();
-		common::window_manager->update();
+			//Rendering
+			common::renderer->update_transformations();
+			common::renderer->render();
+			common::window_manager->update();
 
-		//Remove not used assets
-		common::assets_manager->unload_unreferenced_assets();
+			//Remove not used assets
+			common::assets_manager->unload_unreferenced_assets();
 
-		double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
-		common::delta_time = frame_end - frame_start;
+			double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
+			common::delta_time = frame_end - frame_start;
+		}
+		catch (const std::exception& a)
+		{
+			error_handling::crash(error_handling::error_source::core, "[main]", 
+				"Unhandled exception: " + std::string(a.what()));
+		}
 	}
 
 	common::world->destroy();
