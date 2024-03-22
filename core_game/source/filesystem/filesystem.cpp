@@ -5,6 +5,8 @@
 
 static std::string mod_assets_path;
 static std::string core_assets_path;
+static std::string active_path;
+static bool acitve_path_enabled = false;
 static std::string mods_path;
 
 void filesystem::set_mod_assets_directory(std::string path)
@@ -15,6 +17,16 @@ void filesystem::set_mod_assets_directory(std::string path)
 void filesystem::set_core_assets_directory(std::string path)
 {
 	core_assets_path = path;
+}
+
+void filesystem::set_active_assets_directory(std::string path)
+{
+	active_path = path;
+}
+
+void filesystem::set_active_assets_directory_enabled(bool enabled)
+{
+	acitve_path_enabled = enabled;
 }
 
 void filesystem::set_mods_directory(std::string path)
@@ -29,6 +41,13 @@ std::string filesystem::get_package(std::string path)
 	return package;
 }
 
+std::string filesystem::get_owning_folder(std::string path)
+{
+	int split_index = path.find_last_of('/');
+	std::string owning_folder = path.substr(0, split_index);
+	return owning_folder;
+}
+
 std::string filesystem::get_global_path(std::string path)
 {
 	int split_index = path.find('/');
@@ -37,6 +56,8 @@ std::string filesystem::get_global_path(std::string path)
 		return  mod_assets_path + path.substr(split_index, path.size());
 	else if (package == "core")
 		return core_assets_path + path.substr(split_index, path.size());
+	else if (package == "$" && acitve_path_enabled)
+		return  get_global_path(active_path + path.substr(split_index, path.size()));
 }
 
 std::fstream filesystem::load_file(std::string path)

@@ -20,6 +20,13 @@
 
 #include <fstream>
 
+std::string create_path(const std::string& path, const std::string& package)
+{
+	if (path.at(0) == '$')
+		return path;
+	return package + path;
+}
+
 namespace assets
 {
 	namespace loading
@@ -32,7 +39,7 @@ namespace assets
 				error_handling::crash(error_handling::error_source::core, "[loading::load_texture]",
 					"Invalid/Missing image path");
 
-			std::string source_path = ld.package + std::string(header.at("path"));
+			std::string source_path = create_path(header.at("path"), ld.package);
 			auto image = filesystem::load_image(source_path);
 
 			auto texture_asset = std::make_shared<assets::texture>(image.get());
@@ -49,7 +56,7 @@ namespace assets
 				error_handling::crash(error_handling::error_source::core, "[loading::load_sprite_sheet]",
 					"Invalid/Missing image path");
 
-			std::string source_path = ld.package + std::string(header.at("path"));
+			std::string source_path = create_path(header.at("path"), ld.package);
 			auto image = filesystem::load_image(source_path);
 
 			if (!(header.contains("sprite_width") && header.at("sprite_width").is_number_integer()))
@@ -77,7 +84,7 @@ namespace assets
 				error_handling::crash(error_handling::error_source::core, "[loading::load_flipbook]",
 					"Invalid/Missing image path");
 
-			std::string source_path = ld.package + std::string(header.at("path"));
+			std::string source_path = create_path(header.at("path"), ld.package);
 			auto image = filesystem::load_image(source_path);
 
 			if (!(header.contains("sprite_width") && header.at("sprite_width").is_number_integer()))
@@ -132,7 +139,7 @@ namespace assets
 			if (!(header.contains("path") && header.at("path").is_string()))
 				error_handling::crash(error_handling::error_source::core, "[loading::load_tileset]",
 					"Invalid/Missing image path");
-			std::string source_path = ld.package + std::string(header.at("path"));
+			std::string source_path = create_path(header.at("path"), ld.package);
 			auto image = filesystem::load_image(source_path);
 
 			if (!(header.contains("tile_width") && header.at("tile_width").is_number_integer()))
@@ -234,7 +241,7 @@ namespace assets
 				error_handling::crash(error_handling::error_source::core, "[loading::load_shader]",
 					"Invalid/Missing shader path");
 
-			std::string source_path = ld.package + std::string(header.at("path"));
+			std::string source_path = create_path(header.at("path"), ld.package);
 			auto source_file = filesystem::load_file(source_path);
 
 			source_file.seekg(0, std::ios::end);
@@ -301,7 +308,7 @@ namespace assets
 				error_handling::crash(error_handling::error_source::core, "[loading::load_sound]",
 					"Invalid/Missing sound path");
 
-			return std::make_shared<sound>(ld.package + std::string(header.at("path")));
+			return std::make_shared<sound>(create_path(header.at("path"), ld.package));
 		}
 
 		std::shared_ptr<asset> load_behavior(const load_data& ld)
@@ -312,7 +319,7 @@ namespace assets
 				error_handling::crash(error_handling::error_source::core, "[loading::load_behavior]",
 					"Invalid/Missing behavior path");
 
-			std::string source_path = ld.package + std::string(header.at("path"));
+			std::string source_path = create_path(header.at("path"), ld.package);
 
 			auto behavior_asset = std::make_shared<assets::behavior>(source_path);	
 			return behavior_asset;
@@ -326,7 +333,7 @@ namespace assets
 				error_handling::crash(error_handling::error_source::core, "[loading::load_scene]",
 					"Invalid/Missing scene script path");
 
-			std::string source_path = ld.package + std::string(header.at("path"));
+			std::string source_path = create_path(header.at("path"), ld.package);
 
 			auto scene_asset = std::make_shared<assets::scene>(source_path);
 			return scene_asset;
@@ -340,7 +347,7 @@ namespace assets
 				error_handling::crash(error_handling::error_source::core, "[loading::load_mesh]",
 					"Invalid/Missing mesh path");
 
-			std::string source_path = ld.package + std::string(header.at("path"));
+			std::string source_path = create_path(header.at("path"), ld.package);
 			std::fstream source_file = filesystem::load_file(source_path);
 
 			source_file.seekg(0, std::ios::end);

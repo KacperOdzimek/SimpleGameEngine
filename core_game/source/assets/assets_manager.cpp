@@ -80,6 +80,9 @@ void assets_manager::load_asset(std::string path)
     load_data.header_data = &data;
     load_data.package = filesystem::get_package(path);
 
+    filesystem::set_active_assets_directory(filesystem::get_owning_folder(path));
+    filesystem::set_active_assets_directory_enabled(true);
+
     std::shared_ptr<asset> new_asset = nullptr;
     switch (hashed_asset_type)
     {
@@ -126,6 +129,8 @@ void assets_manager::load_asset(std::string path)
         error_handling::crash(error_handling::error_source::core,
             "[asset_manager::load_asset]", "Invalid asset: " + path + " invalid asset_type");
     }
+
+    filesystem::set_active_assets_directory_enabled(false);
 
     if (new_asset == nullptr)
         error_handling::crash(error_handling::error_source::core,

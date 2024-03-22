@@ -16,6 +16,16 @@ namespace filesystem
 	*/
 	void set_core_assets_directory(std::string path);
 	/*
+	set_active_assets_directory
+	sets path that will be inserted in place of "$/" path prefix
+	*/
+	void set_active_assets_directory(std::string path);
+	/*
+	set_active_assets_directory_enabled
+	sets if user can use "$/" path prefix
+	*/
+	void set_active_assets_directory_enabled(bool enabled);
+	/*
 	set_mods_directory
 	sets directory from which mods_manager will load mods
 	*/
@@ -26,6 +36,12 @@ namespace filesystem
 	get_package("mod/behaviors/...") == "mod/"
 	*/
 	std::string get_package(std::string path);
+	/*
+	get_owning_folder
+	returns file owning folder path eg.
+	mod/folder1/file.txt -> mod/folder1/
+	*/
+	std::string get_owning_folder(std::string path);
 	/*
 	get_global_path
 	returns on-drive path version of the given path

@@ -11,6 +11,7 @@ namespace assets
 		{
 			const nlohmann::json* header_data;
 			std::string package;
+			std::string header_folder;
 		};
 
 		std::shared_ptr<asset> load_texture(const load_data& data);
