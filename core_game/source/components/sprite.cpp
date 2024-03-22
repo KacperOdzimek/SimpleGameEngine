@@ -67,6 +67,13 @@ void sprite::set_sprite_id(int new_sprite_id)
 	}
 }
 
+void sprite::set_shader(std::weak_ptr<assets::shader> new_shader)
+{
+	common::renderer->unregister_mesh_component(this);
+	rc.material = assets::cast_asset<assets::shader>(new_shader).lock();
+	common::renderer->register_mesh_component(this);
+}
+
 void sprite::pass_transformation(rendering::transformations_buffer_iterator& tbi)
 {
 	if (visible)

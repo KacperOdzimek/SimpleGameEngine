@@ -19,6 +19,7 @@ namespace entities
 			int get_sprite_id() { return sprite_id; };
 			void set_sprite_id(int sprite_id);
 
+			void set_shader(std::weak_ptr<assets::shader> new_shader);
 			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
 			virtual void on_attach() override;
 			virtual const rendering::render_config& get_render_config() override;

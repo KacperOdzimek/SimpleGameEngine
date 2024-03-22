@@ -151,6 +151,17 @@ namespace behaviors
 				return 0;
 			}
 
+			int _c_s_set_shader(lua_State* L)
+			{
+				auto sprite = load_component<::entities::components::sprite>(L, "[_c_s_set_sprite]");
+				auto shader_path = load_asset_path(L, 3, "[_c_s_set_sprite]");
+				auto shader = ::assets::cast_asset<::assets::shader>(::common::assets_manager->safe_get_asset(shader_path)).lock();
+
+				sprite->set_shader(shader);
+
+				return 0;
+			}
+
 			/*
 				Flipbook
 			*/
@@ -546,7 +557,8 @@ namespace behaviors
 
 				lua_register(L, "_c_s_get_sprite", _c_s_get_sprite);
 				lua_register(L, "_c_s_set_sprite", _c_s_set_sprite);
-
+				lua_register(L, "_c_s_set_shader", _c_s_set_shader);
+				
 				lua_register(L, "_c_f_get_animation", _c_f_get_animation);
 				lua_register(L, "_c_f_set_animation", _c_f_set_animation);
 				lua_register(L, "_c_f_get_looping", _c_f_get_looping);
