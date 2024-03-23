@@ -41,12 +41,12 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 
 	for (auto& layer : tilemap_asset->layers)
 	{
-		float y_mod = -1 * (float(tilemap_asset->height) / 2) * tile_y_size;
+		float y_mod = -1 * (float(tilemap_asset->height) / 2 - 0.5) * tile_y_size;
 		auto row = layer.end() - 1;
 
 		while (true)
 		{
-			float x_mod = -1 * (float(tilemap_asset->width) / 2) * tile_x_size;
+			float x_mod = -1 * (float(tilemap_asset->width) / 2 - 0.5) * tile_x_size;
 			for (auto& tile : *row)
 			{
 				if (tile == 0)
