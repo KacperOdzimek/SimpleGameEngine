@@ -2,10 +2,6 @@
 #include "source/entities/component.h"
 #include "source/assets/sound_asset.h"
 
-#include "glm/glm.hpp"
-
-#include <vector>
-
 namespace entities
 {
 	namespace components

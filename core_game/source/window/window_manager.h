@@ -1,5 +1,4 @@
 #pragma once 
-#include "source/assets/input_config_asset.h"
 #include "source/input/key.h"
 
 #include <functional>

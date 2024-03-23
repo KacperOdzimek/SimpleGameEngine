@@ -12,6 +12,9 @@
 
 #include "source/utilities/hash_string.h"
 
+#include "source/assets/shader_asset.h"
+#include "source/assets/mesh_asset.h"
+
 using namespace entities;
 using namespace components;
 
@@ -70,7 +73,7 @@ void sprite::set_sprite_id(int new_sprite_id)
 void sprite::set_shader(std::weak_ptr<assets::shader> new_shader)
 {
 	common::renderer->unregister_mesh_component(this);
-	rc.material = assets::cast_asset<assets::shader>(new_shader).lock();
+	rc.material = new_shader.lock();
 	common::renderer->register_mesh_component(this);
 }
 

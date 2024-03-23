@@ -8,6 +8,9 @@
 #include "source/rendering/renderer.h"
 #include "source/utilities/hash_string.h"
 
+#include "source/assets/shader_asset.h"
+#include "source/assets/mesh_asset.h"
+
 using namespace entities;
 using namespace components;
 

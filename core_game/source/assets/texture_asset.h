@@ -1,6 +1,5 @@
 #pragma once
 #include "asset.h"
-#include <vector>
 
 namespace rendering
 {

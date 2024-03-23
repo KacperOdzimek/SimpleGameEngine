@@ -5,6 +5,8 @@
 #include "source/common/common.h"
 #include "source/physics/dynamics_manager.h"
 
+#include "include/glm/glm.hpp"
+
 using namespace entities;
 using namespace components;
 

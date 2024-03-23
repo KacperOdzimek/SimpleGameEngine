@@ -1,6 +1,6 @@
 #pragma once
 #include "texture_asset.h"
-#include <array>
+#include <vector>
 
 namespace assets
 {

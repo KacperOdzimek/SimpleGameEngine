@@ -1,19 +1,16 @@
 #pragma once
 #include "source/entities/scene.h"
-#include <list>
 
 namespace entities
 {
 	class world
 	{
-	protected:
-		std::unique_ptr<scene> dynamic_scene;
-		std::list<std::unique_ptr<scene>> scenes;
+	private:
+		struct implementation;
+		implementation* impl;
 	public:
-		world() 
-		{ 
-			dynamic_scene = std::make_unique<scene>(0); 
-		}
+		world();
+		~world();
 		void destroy();
 		void update();
 		void create_scene(uint32_t name, std::weak_ptr<assets::scene> scene);

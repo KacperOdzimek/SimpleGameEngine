@@ -1,9 +1,10 @@
 #pragma once
-#include "source/common/common.h"
 #include "source/entities/component.h"
 
 #include "source/behaviors/behavior_functions.h"
 #include "source/behaviors/behaviors_database.h"
+
+#include <string>
 
 namespace assets
 {

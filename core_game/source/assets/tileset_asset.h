@@ -1,6 +1,6 @@
 #pragma once
 #include "texture_asset.h"
-#include "source/physics/collision.h"
+#include <vector>
 
 namespace filesystem
 {

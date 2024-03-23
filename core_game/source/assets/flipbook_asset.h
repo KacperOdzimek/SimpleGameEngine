@@ -1,5 +1,7 @@
 #pragma once
 #include "sprite_sheet.h"
+#include <vector>
+#include <map>
 
 namespace assets
 {

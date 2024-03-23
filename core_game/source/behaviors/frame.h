@@ -1,7 +1,5 @@
 #pragma once
-#include "source/entities/scene.h"
 #include "behaviors_database.h"
-
 #include <memory>
 
 namespace behaviors

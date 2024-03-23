@@ -1,6 +1,5 @@
 #pragma once
 #include "source/entities/component.h"
-#include "glm/glm.hpp"
 
 namespace entities
 {

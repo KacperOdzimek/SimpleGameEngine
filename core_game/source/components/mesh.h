@@ -1,9 +1,6 @@
 #pragma once
 #include "source/entities/component.h"
 
-#include "source/assets/mesh_asset.h"
-#include "source/assets/shader_asset.h"
-
 #include "source/rendering/transformations_buffer_iterator.h"
 #include "source/rendering/render_config.h"
 

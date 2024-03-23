@@ -1,6 +1,8 @@
 #include "collision_solver.h"
 #include "source/entities/entity.h"
 
+#include "include/glm/glm.hpp"
+
 #include <list>
 #include <unordered_map>
 #include <set>
