@@ -1,6 +1,6 @@
 #pragma once
 #include "source/components/mesh.h"
-#include "glm/vec2.hpp"
+#include "include/glm/vec2.hpp"
 
 namespace entities
 {

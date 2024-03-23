@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <array>
 #include <vector>
-#include "glm/vec2.hpp"
+#include "include/glm/vec2.hpp"
 
 namespace entities
 {
