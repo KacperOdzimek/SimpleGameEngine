@@ -1,5 +1,6 @@
 #include "shader_asset.h"
 #include "source/common/common.h"
+#include "source/common/crash.h"
 #include "source/rendering/renderer.h"
 #include "graphics_abstraction/graphics_abstraction.h"
 #include "source/utilities/hash_string.h"
@@ -38,6 +39,18 @@ namespace assets
 		}
 		vl->vertex_components = layout;
 		vertex_layout = reinterpret_cast<graphics_abstraction::vertex_layout*>(api->build(vl));
+
+		auto& errors = api->get_errors();
+		if (errors.size() != 0)
+		{
+			auto& info_vec = errors.at(0).additional_info;
+			std::string info{info_vec.begin(), info_vec.end()};
+
+			error_handling::crash(error_handling::error_source::core, "[shader::shader]",
+				"Shader compiling error: "
+				+ std::to_string(errors.at(0).code) + " "
+				+ info);
+		}
 	}
 
 	shader::~shader()

@@ -58,6 +58,9 @@ std::string filesystem::get_global_path(std::string path)
 		return core_assets_path + path.substr(split_index, path.size());
 	else if (package == "$" && acitve_path_enabled)
 		return  get_global_path(active_path + path.substr(split_index, path.size()));
+	error_handling::crash(error_handling::error_source::core, "[filesystem::get_global_path]",
+		"Unknown/Unavaible package: " + package);
+	return "";
 }
 
 std::fstream filesystem::load_file(std::string path)

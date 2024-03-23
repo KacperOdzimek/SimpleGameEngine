@@ -176,7 +176,7 @@ namespace assets
 				error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]",
 					"Invalid/Missing path");
 
-			std::string file_path = ld.package + std::string(header.at("path"));
+			std::string file_path = create_path(header.at("path"), ld.package);
 			auto file = filesystem::load_file(file_path);
 			if (file.fail())
 				error_handling::crash(error_handling::error_source::core, "[loading::load_tilemap]", 
@@ -426,7 +426,15 @@ namespace assets
 			else
 				default_shader = "core/sprite_shader";
 
-			auto rendering_config_asset = std::make_shared<assets::rendering_config>(default_shader);
+			if (!header.contains("use_pixel_aligned_camera") || !header.at("use_pixel_aligned_camera").is_boolean())
+				error_handling::crash(error_handling::error_source::core, "[loading::load_rendering_config]",
+					"missing/invalid use_pixel_aligned_camera");
+
+			bool use_pixel_aligned_camera = header.at("use_pixel_aligned_camera");
+
+			auto rendering_config_asset = std::make_shared<assets::rendering_config>(
+				use_pixel_aligned_camera, default_shader
+			);
 			return rendering_config_asset;
 		}
 

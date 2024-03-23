@@ -10,9 +10,11 @@
 namespace assets
 {
 	rendering_config::rendering_config(
+		bool _pixel_aligned_camera,
 		std::string _default_sprite_shader
 	)
-		: default_sprite_shader(_default_sprite_shader)
+		: default_sprite_shader(_default_sprite_shader),
+		pixel_aligned_camera(_pixel_aligned_camera)
 	{
 	}
 

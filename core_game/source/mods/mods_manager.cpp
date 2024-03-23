@@ -10,6 +10,7 @@
 #include "source/entities/world.h"
 #include "source/input/input_manager.h"
 #include "source/audio/audio_manager.h"
+#include "source/rendering/renderer.h"
 
 #include "source/utilities/hash_string.h"
 
@@ -46,6 +47,7 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 
 	common::assets_manager->load_asset("mod/rendering_config");
 	common::assets_manager->lock_asset(utilities::hash_string("mod/rendering_config"));
+	common::renderer->load_config();
 
 	auto input_config = assets::cast_asset<assets::input_config>
 		(common::assets_manager->get_asset(utilities::hash_string("mod/input_config")));

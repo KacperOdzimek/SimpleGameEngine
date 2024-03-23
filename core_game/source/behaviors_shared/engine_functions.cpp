@@ -3,8 +3,12 @@
 #include "source/behaviors_shared/utilities.h"
 
 #include "source/common/common.h"
+#include "source/rendering/renderer.h"
+
 #include "source/entities/world.h"
 #include "source/entities/entity.h"
+
+#include "source/components/camera.h"
 
 #include "source/filesystem/filesystem.h"
 
@@ -52,12 +56,23 @@ namespace behaviors
 				lua_settable(L, -3);
 			}
 
+			std::string create_path(const std::string& path, const std::string& package)
+			{
+				if (path.at(0) == '$')
+					return path;
+				return package + path;
+			}
+
 			int _en_create_entities_from_tilemap(lua_State* L)
 			{
 				auto tilemap_asset = load_asset_path(L, 1, "[_en_create_entities_from_tilemap]");
 
 				int creator_function_ref = luaL_ref(L, LUA_REGISTRYINDEX);	//Save creator function in registry
 																			//so we can use it multiple times
+
+				filesystem::set_active_assets_directory(filesystem::get_owning_folder(tilemap_asset));
+				filesystem::set_active_assets_directory_enabled(true);
+
 				auto header_file = filesystem::load_file(tilemap_asset + ".json");
 				auto header = nlohmann::json::parse(header_file);
 				header_file.close();
@@ -66,11 +81,13 @@ namespace behaviors
 					error_handling::crash(error_handling::error_source::core, "[_en_create_entities_from_tilemap]",
 						"Missing tilemap path / tilemap path isnt string");
 
-				auto tilemap_file_path = filesystem::get_package(tilemap_asset) + std::string(header.at("path"));
+				auto tilemap_file_path = create_path(std::string(header.at("path")), filesystem::get_package(tilemap_asset));
 				
 				auto tilemap_file = filesystem::load_file(tilemap_file_path);
 				auto tilemap = nlohmann::json::parse(tilemap_file);
 				tilemap_file.close();
+
+				filesystem::set_active_assets_directory_enabled(false);
 
 				if (!(tilemap.contains("layers") && tilemap.at("layers").is_array()))
 					error_handling::crash(error_handling::error_source::core, "[_en_create_entities_from_tilemap]",
@@ -170,11 +187,31 @@ namespace behaviors
 				return 0;
 			}
 
+			int _en_viewport_to_world(lua_State* L)
+			{
+				float x = lua_tonumber(L, 1);
+				float y = lua_tonumber(L, 2);
+
+				auto cam = common::renderer->get_active_camera();
+				auto cam_loc = cam->get_owner_weak().lock()->get_location();
+
+				float wx, wy;
+
+				wx = cam_loc.x + (x * cam->ortho_width / 2);
+				wy = cam_loc.y + (y * (cam->ortho_width * (9.0f / 16.0f) / 2));
+
+				lua_pushnumber(L, wx);
+				lua_pushnumber(L, wy);
+
+				return 2;
+			}
+
 			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_en_load_scene", _en_load_scene);
 				lua_register(L, "_en_unload_scene", _en_unload_scene);
 				lua_register(L, "_en_create_entities_from_tilemap", _en_create_entities_from_tilemap);
+				lua_register(L, "_en_viewport_to_world", _en_viewport_to_world);
 			}
 		}
 	}

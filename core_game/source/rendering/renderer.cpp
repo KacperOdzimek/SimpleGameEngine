@@ -6,6 +6,7 @@
 
 #include "source/common/common.h"
 #include "source/window/window_manager.h"
+#include "source/assets/assets_manager.h"
 
 #include "source/entities/component.h"
 #include "source/components/camera.h"
@@ -16,6 +17,7 @@
 #include "source/assets/mesh_asset.h"
 #include "source/assets/sprite_sheet.h"
 #include "source/assets/tileset_asset.h"
+#include "source/assets/rendering_config_asset.h"
 
 #include "graphics_abstraction/graphics_abstraction.h"
 #include "opengl_3_3_api/opengl_3.3_api.h"
@@ -47,6 +49,8 @@ struct renderer::implementation
     std::unordered_map<render_config, geometry> pipelines;
 
     entities::components::camera* active_camera = nullptr;
+
+    std::shared_ptr<assets::rendering_config> config = nullptr;
 
     uint32_t current_uid = 0;
 
@@ -190,6 +194,11 @@ void renderer::initialize()
     impl->postprocess_shader = reinterpret_cast<graphics_abstraction::shader*>(impl->api->build(sb));
 }
 
+void renderer::load_config()
+{
+    impl->config = assets::cast_asset<assets::rendering_config>(common::assets_manager->safe_get_asset("mod/rendering_config")).lock();
+}
+
 void renderer::mark_pipeline_dirty(const render_config& pipeline)
 {
     impl->pipelines.at(pipeline).should_reload_transformations = true;
@@ -305,6 +314,16 @@ void renderer::render()
     glm::vec4 camera_view_center_v4 = { camera_view_center_v2.x, camera_view_center_v2.y , 0, 0 };
     int lowest_layer = impl->active_camera->lowest_layer;
     int highest_layer = impl->active_camera->highest_layer;
+
+    if (impl->config->pixel_aligned_camera)
+    {
+        camera_view_center_v4 = 
+        { 
+            std::floor(camera_view_center_v4.x * common::pixels_per_world_unit) / common::pixels_per_world_unit, 
+            std::floor(camera_view_center_v4.y * common::pixels_per_world_unit) / common::pixels_per_world_unit,
+            0, 0 
+        };
+    }
 
     for (auto& pipeline : impl->pipelines)
     {

@@ -36,6 +36,8 @@ namespace rendering
 			Rendering
 		*/
 
+		void load_config();
+
 		void mark_pipeline_dirty(const render_config& pipeline);
 		void register_mesh_component(entities::components::mesh* mesh);
 		void unregister_mesh_component(entities::components::mesh* mesh);
