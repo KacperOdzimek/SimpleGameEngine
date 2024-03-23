@@ -16,6 +16,12 @@
 
 #include "source/utilities/hash_string.h"
 
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+constexpr double frame_time_ms = (1000 / 60);
+
 int main()
 {
 	common::window_manager->create_window("Top Down Game", 16 * 80, 9 * 80, false);
@@ -62,7 +68,20 @@ int main()
 			//Remove not used assets
 			common::assets_manager->unload_unreferenced_assets();
 
+
 			double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
+
+			double delta_time = frame_end - frame_start;
+
+			if (delta_time < frame_time_ms)
+			{
+				std::this_thread::sleep_for(
+					std::chrono::milliseconds(int(frame_time_ms - delta_time))
+				);
+
+				frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
+			}
+			
 			common::delta_time = frame_end - frame_start;
 		}
 		catch (const std::exception& a)

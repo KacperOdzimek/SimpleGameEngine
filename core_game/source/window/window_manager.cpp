@@ -66,7 +66,6 @@ void window_manager::create_window(std::string title, int width, int height, boo
     glfwMakeContextCurrent(impl->window);
     glfwSetFramebufferSizeCallback(impl->window, &implementation::glfw_window_resize_callback);
     glfwSetWindowAspectRatio(impl->window, 16, 9);
-    glfwSwapInterval(1);
 }
 
 GLFWmonitor* get_current_monitor(GLFWwindow* window);
@@ -90,7 +89,6 @@ void window_manager::update()
             const GLFWvidmode* mode = glfwGetVideoMode(monitor);
             glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
             glfwSetWindowMonitor(impl->window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-            glfwSwapInterval(1);    //GLFW disables vsync when going into fullscreen, so we have to enable it again
         }
         else
         {
