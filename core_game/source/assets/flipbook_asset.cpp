@@ -15,6 +15,8 @@ namespace assets
 	int flipbook::get_sprite_id_at_position(uint32_t animation_id, float playback_position)
 	{
 		auto& animation = animations.at(animation_id);
-		return animation.frames.at(floorf(playback_position / (1 / animation.frames_per_second)));
+		return animation.frames.at(
+			static_cast<int>(floorf(playback_position / (1 / animation.frames_per_second)))
+		);
 	}
 }

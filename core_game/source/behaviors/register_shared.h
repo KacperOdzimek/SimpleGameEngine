@@ -1,5 +1,5 @@
 #pragma once
-class lua_State;
+struct lua_State;
 
 namespace behaviors
 {

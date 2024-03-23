@@ -70,7 +70,9 @@ void flipbook::move_playback(float time)
 		if (looping)
 			playback_position = 0;
 		else
-			playback_position = (anim.frames.size() / anim.frames_per_second) - (0.5 / anim.frames_per_second);
+			playback_position = static_cast<float>(
+				(anim.frames.size() / anim.frames_per_second) - (0.5 / anim.frames_per_second)
+			);
 
 	set_sprite_id(reinterpret_cast<assets::flipbook*>(rc.textures.at(0).get())->get_sprite_id_at_position(
 		current_flipbook_animation, playback_position));

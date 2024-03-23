@@ -17,7 +17,7 @@ namespace entities
 
 	namespace components
 	{
-		struct behavior;
+		class behavior;
 	}
 }
 
@@ -26,7 +26,7 @@ namespace behaviors
 	struct frame;
 }
 
-class lua_State;
+struct lua_State;
 
 namespace behaviors
 {

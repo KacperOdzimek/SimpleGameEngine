@@ -1,7 +1,7 @@
 #include "collision.h"
 
-#define set_bit(source, distance_from_end, value) (source |= value << distance_from_end)
-#define get_bit(source, distance_from_end) ((source >> distance_from_end) & 1)
+#define set_bit(source, distance_from_end, value) ((source) |= ((value) << (distance_from_end)))
+#define get_bit(source, distance_from_end) (((source) >> (distance_from_end)) & 1)
 
 namespace physics
 {
@@ -11,8 +11,8 @@ namespace physics
 		flag = flag << (sizeof(collision_preset) * 8 - collision_preset_body_type_size);
 		for (int i = 0; i < 14; i++)
 		{
-			set_bit(flag, i * 2, get_bit(uint8_t(responses[i]), 0));
-			set_bit(flag, i * 2 + 1, get_bit(uint8_t(responses[i]), 1));
+			set_bit(flag, (i * 2),		get_bit(uint8_t(responses[i]), 0));
+			set_bit(flag, (i * 2 + 1),	get_bit(uint8_t(responses[i]), 1));
 		}
 
 		return flag;

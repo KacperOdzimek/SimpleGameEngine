@@ -47,8 +47,8 @@ namespace behaviors
 			int _c_m_set_scale(lua_State* L)
 			{
 				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_scale]");
-				float x = lua_tonumber(L, 3);
-				float y = lua_tonumber(L, 4);
+				float x = static_cast<float>(lua_tonumber(L, 3));
+				float y = static_cast<float>(lua_tonumber(L, 4));
 				mesh->set_scale({ x, y });
 				return 0;
 			}
@@ -64,8 +64,8 @@ namespace behaviors
 			int _c_m_set_offset(lua_State* L)
 			{
 				auto mesh = load_component<::entities::components::mesh>(L, "[_c_m_set_offset]");
-				float x = lua_tonumber(L, 3);
-				float y = lua_tonumber(L, 4);
+				float x = static_cast<float>(lua_tonumber(L, 3));
+				float y = static_cast<float>(lua_tonumber(L, 4));
 				mesh->set_offset({ x, y });
 				return 0;
 			}
@@ -144,7 +144,7 @@ namespace behaviors
 			int _c_s_set_sprite(lua_State* L)
 			{
 				auto sprite = load_component<::entities::components::sprite>(L, "[_c_s_set_sprite]");
-				int sprite_id = lua_tointeger(L, 3);
+				int sprite_id = static_cast<int>(lua_tointeger(L, 3));
 
 				sprite->set_sprite_id(sprite_id);
 
@@ -221,7 +221,7 @@ namespace behaviors
 			int _c_c_set_ortho_width(lua_State* L)
 			{
 				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_ortho_width]");
-				float width = lua_tonumber(L, 3);
+				float width = static_cast<float>(lua_tonumber(L, 3));
 				if (camera != nullptr)
 					camera->ortho_width = width;
 				return 0;
@@ -237,7 +237,7 @@ namespace behaviors
 			int _c_c_set_lowest_layer(lua_State* L)
 			{
 				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_rendered_layers]");
-				camera->lowest_layer = lua_tonumber(L, 3);
+				camera->lowest_layer = static_cast<int>(lua_tointeger(L, 3));
 				return 0;
 			}
 
@@ -251,7 +251,7 @@ namespace behaviors
 			int _c_c_set_highest_layer(lua_State* L)
 			{
 				auto camera = load_component<::entities::components::camera>(L, "[_c_c_set_rendered_layers]");
-				camera->highest_layer = lua_tonumber(L, 3);
+				camera->highest_layer = static_cast<int>(lua_tointeger(L, 3));
 				return 0;
 			}
 
@@ -350,8 +350,8 @@ namespace behaviors
 			int _c_cl_set_offset(lua_State* L)
 			{
 				auto cl = load_component<::entities::components::collider>(L, "[_c_cl_set_offset]");
-				cl->entity_offset.x = lua_tonumber(L, 3);
-				cl->entity_offset.y = lua_tonumber(L, 4);
+				cl->entity_offset.x = static_cast<float>(lua_tonumber(L, 3));
+				cl->entity_offset.y = static_cast<float>(lua_tonumber(L, 4));
 				return 0;
 			}
 
@@ -366,8 +366,8 @@ namespace behaviors
 			int _c_cl_set_extend(lua_State* L)
 			{
 				auto cl = load_component<::entities::components::collider>(L, "[_c_cl_set_extend]");
-				cl->extend.x = lua_tonumber(L, 3);
-				cl->extend.y = lua_tonumber(L, 4);
+				cl->extend.x = static_cast<float>(lua_tonumber(L, 3));
+				cl->extend.y = static_cast<float>(lua_tonumber(L, 4));
 				return 0;
 			}
 
@@ -381,7 +381,7 @@ namespace behaviors
 			int _c_cl_set_layer_offset(lua_State* L)
 			{
 				auto cl = load_component<::entities::components::collider>(L, "[_c_cl_set_layer_offset]");
-				cl->layer_offset = lua_tointeger(L, 3);
+				cl->layer_offset = static_cast<int>(lua_tointeger(L, 3));
 				return 0;
 			}
 
@@ -392,8 +392,8 @@ namespace behaviors
 			int _c_d_add_force(lua_State* L)
 			{
 				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_add_force]");
-				float x = lua_tonumber(L, 3);
-				float y = lua_tonumber(L, 4);
+				float x = static_cast<float>(lua_tonumber(L, 3));
+				float y = static_cast<float>(lua_tonumber(L, 4));
 				d->add_force({ x, y });
 				return 0;
 			}
@@ -402,9 +402,9 @@ namespace behaviors
 			{
 				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_add_movement_force]");
 
-				float dir_x = lua_tonumber(L, 3);
-				float dir_y = lua_tonumber(L, 4);
-				float speed = lua_tonumber(L, 5);
+				float dir_x = static_cast<float>(lua_tonumber(L, 3));
+				float dir_y = static_cast<float>(lua_tonumber(L, 4));
+				float speed = static_cast<float>(lua_tonumber(L, 5));
 
 				glm::vec2 vec = { dir_x, dir_y };
 
@@ -427,7 +427,7 @@ namespace behaviors
 			int _c_d_set_drag(lua_State* L)
 			{
 				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_drag]");
-				auto drag = lua_tonumber(L, 3);
+				auto drag = static_cast<float>(lua_tonumber(L, 3));
 				d->drag = drag;
 				return 0;
 			}
@@ -442,7 +442,7 @@ namespace behaviors
 			int _c_d_set_mass(lua_State* L)
 			{
 				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_mass]");
-				auto mass = lua_tonumber(L, 3);
+				auto mass = static_cast<float>(lua_tonumber(L, 3));
 				d->mass = mass;
 				return 0;
 			}
@@ -481,7 +481,7 @@ namespace behaviors
 			int _c_d_set_max_vel(lua_State* L)
 			{
 				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_max_vel]");
-				auto vel = lua_tonumber(L, 3);
+				auto vel = static_cast<float>(lua_tonumber(L, 3));
 				d->maximum_velocity = vel;
 				return 0;
 			}
@@ -500,7 +500,7 @@ namespace behaviors
 			int _c_t_set_layers_stride(lua_State* L)
 			{
 				auto t = load_component<::entities::components::tilemap>(L, "[_c_t_set_layers_stride]");
-				int new_stide = lua_tonumber(L, 3);
+				int new_stide = static_cast<int>(lua_tointeger(L, 3));
 				if (new_stide <= 0)
 					error_handling::crash(error_handling::error_source::core, "[_c_t_set_layers_stride]",
 						"Layers stride must be greater than 0");
@@ -534,7 +534,7 @@ namespace behaviors
 				auto emitter = load_component<::entities::components::sound_emitter>(L, "[_c_se_emit_sound]");
 				auto sound_path = load_asset_path(L, 3, "[_a_play_sound_at_channel]");
 				auto sound = assets::cast_asset<assets::sound>(common::assets_manager->safe_get_asset(sound_path));
-				float volume_precent = lua_tonumber(L, 4);
+				float volume_precent = static_cast<float>(lua_tonumber(L, 4));
 				emitter->emit_sound(sound, volume_precent);
 				return 0;
 			}

@@ -26,7 +26,7 @@ namespace behaviors
 
 			int _a_set_volume(lua_State* L)
 			{
-				auto precent = lua_tonumber(L, 1);
+				float precent = static_cast<float>(lua_tonumber(L, 1));
 				common::audio_manager->set_volume(precent);
 				return 0;
 			}
@@ -47,7 +47,7 @@ namespace behaviors
 			int _a_set_volume_at_channel(lua_State* L)
 			{
 				uint32_t channel = load_id(L, 1, "[_a_play_sound_at_channel]", "Channel ");
-				float precent = lua_tonumber(L, 2);
+				float precent = static_cast<float>(lua_tonumber(L, 2));
 				common::audio_manager->set_volume_at_channel(channel, precent);
 				return 0;
 			}
@@ -69,9 +69,9 @@ namespace behaviors
 			int _a_set_channel_position(lua_State* L)
 			{
 				uint32_t channel = load_id(L, 1, "[_a_play_sound_at_channel]", "Channel ");
-				float x = lua_tonumber(L, 2);
-				float y = lua_tonumber(L, 3);
-				float z = lua_tonumber(L, 4);
+				float x = static_cast<float>(lua_tonumber(L, 2));
+				float y = static_cast<float>(lua_tonumber(L, 3));
+				float z = static_cast<float>(lua_tonumber(L, 4));
 				common::audio_manager->set_position_at_channel(channel, { x, y, z });
 				return 0;
 			}

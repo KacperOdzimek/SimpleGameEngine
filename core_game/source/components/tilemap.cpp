@@ -36,17 +36,17 @@ void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tb
 {
 	int layer_counter = 0;
 
-	float tile_x_size = (tileset_asset->tile_width / common::pixels_per_world_unit);
-	float tile_y_size = (tileset_asset->tile_width / common::pixels_per_world_unit);
+	float tile_x_size = static_cast<float>(tileset_asset->tile_width / common::pixels_per_world_unit);
+	float tile_y_size = static_cast<float>(tileset_asset->tile_width / common::pixels_per_world_unit);
 
 	for (auto& layer : tilemap_asset->layers)
 	{
-		float y_mod = -1 * (float(tilemap_asset->height) / 2 - 0.5) * tile_y_size;
+		float y_mod = static_cast<float>(- 1 * (float(tilemap_asset->height) / 2 - 0.5) * tile_y_size);
 		auto row = layer.end() - 1;
 
 		while (true)
 		{
-			float x_mod = -1 * (float(tilemap_asset->width) / 2 - 0.5) * tile_x_size;
+			float x_mod = static_cast<float>(- 1 * (float(tilemap_asset->width) / 2 - 0.5) * tile_x_size);
 			for (auto& tile : *row)
 			{
 				if (tile == 0)
@@ -100,18 +100,18 @@ void tilemap::build_colliders()
 
 	int layer_counter = 0;
 
-	float tile_x_size = (tileset_asset->tile_width / common::pixels_per_world_unit);
-	float tile_y_size = (tileset_asset->tile_width / common::pixels_per_world_unit);
+	float tile_x_size = static_cast<float>(tileset_asset->tile_width / common::pixels_per_world_unit);
+	float tile_y_size = static_cast<float>(tileset_asset->tile_width / common::pixels_per_world_unit);
 	glm::vec2 extend = { tile_x_size / 2, tile_y_size /2 };
 
 	for (auto& layer : tilemap_asset->layers)
 	{
-		float y_mod = -1 * (float(tilemap_asset->height) / 2) * tile_y_size;
+		float y_mod = static_cast<float>(-1 * (float(tilemap_asset->height) / 2 - 0.5) * tile_y_size);
 		auto row = layer.end() - 1;
 
 		while (row != layer.begin())
 		{
-			float x_mod = -1 * (float(tilemap_asset->width) / 2) * tile_x_size;
+			float x_mod = static_cast<float>(-1 * (float(tilemap_asset->width) / 2 - 0.5) * tile_x_size);
 			for (auto& tile : *row)
 			{
 				if (!check_if_tile_collide(tile))
@@ -136,7 +136,7 @@ void tilemap::build_colliders()
 
 uint32_t tilemap::get_instances_amount()
 {
-	return tilemap_asset->width * tilemap_asset->height * tilemap_asset->layers.size();
+	return static_cast<uint32_t>(tilemap_asset->width * tilemap_asset->height * tilemap_asset->layers.size());
 }
 
 tilemap::~tilemap()

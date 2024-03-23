@@ -127,8 +127,8 @@ namespace behaviors
 						std::weak_ptr<::entities::entity> e = (new ::entities::entity{})->get_weak();
 
 						//scene space location
-						auto sx = x / common::pixels_per_world_unit - float(width) / 4.0f;
-						auto sy = -(y / common::pixels_per_world_unit - float(height) / 4.0f) - 0.5;
+						float sx = static_cast<float>(x / common::pixels_per_world_unit - float(width) / 4.0f);
+						float sy = static_cast<float>(-(y / common::pixels_per_world_unit - float(height) / 4.0f) - 0.5);
 
 						e.lock()->teleport({ sx, sy });
 						e.lock()->layer = layers_counter;
@@ -146,14 +146,18 @@ namespace behaviors
 
 						push_number_to_table(L, "x", sx);
 						push_number_to_table(L, "y", sy);
-						push_number_to_table(L, "layer", layers_counter);
-						push_number_to_table(L, "object_layer", object_layers_counter);
+						push_number_to_table(L, "layer", static_cast<float>(layers_counter));
+						push_number_to_table(L, "object_layer", static_cast<float>(object_layers_counter));
 
 						if (object.contains("width"))
-							push_number_to_table(L, "width", float(object.at("width")) / common::pixels_per_world_unit);
+							push_number_to_table(L, "width", 
+								static_cast<float>(float(object.at("width")) / common::pixels_per_world_unit)
+							);
 
 						if (object.contains("height"))
-							push_number_to_table(L, "height", float(object.at("height")) / common::pixels_per_world_unit);
+							push_number_to_table(L, "height",
+								static_cast<float>(float(object.at("height")) / common::pixels_per_world_unit)
+							);
 
 						if (object.contains("properties") && object.at("properties").is_array())
 							for (auto& prop : object.at("properties"))
@@ -189,8 +193,8 @@ namespace behaviors
 
 			int _en_viewport_to_world(lua_State* L)
 			{
-				float x = lua_tonumber(L, 1);
-				float y = lua_tonumber(L, 2);
+				float x = static_cast<float>(lua_tonumber(L, 1));
+				float y = static_cast<float>(lua_tonumber(L, 2));
 
 				auto cam = common::renderer->get_active_camera();
 				auto cam_loc = cam->get_owner_weak().lock()->get_location();

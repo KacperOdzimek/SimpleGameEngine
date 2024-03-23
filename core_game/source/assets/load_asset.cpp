@@ -377,7 +377,7 @@ namespace assets
 				if (source[i] == ',' || source[i] == '>')
 				{
 					if (!current_value.empty())
-						vertices.push_back(::atof(current_value.c_str()));
+						vertices.push_back(static_cast<float>(::atof(current_value.c_str())));
 					current_value.clear();
 				}
 				else if (source[i] != ' ' && source[i] != '\r' && source[i] != '\t' && source[i] != '\n')

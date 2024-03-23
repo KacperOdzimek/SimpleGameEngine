@@ -62,7 +62,7 @@ void scene::update()
         return;
 
     common::behaviors_manager->create_frame(nullptr, this);
-    common::behaviors_manager->pass_float_arg(common::delta_time);
+    common::behaviors_manager->pass_float_arg(static_cast<float>(common::delta_time));
     common::behaviors_manager->call(1);
     common::behaviors_manager->pop_frame();
 }

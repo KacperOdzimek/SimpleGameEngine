@@ -32,7 +32,7 @@ namespace rendering
 		}
 		uint32_t get_data_size()
 		{
-			return (uint8_t*)current_position - (uint8_t*)begining;
+			return static_cast<uint32_t>((uint8_t*)current_position - (uint8_t*)begining);
 		}
 	};
 }

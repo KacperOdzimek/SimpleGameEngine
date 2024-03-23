@@ -10,7 +10,7 @@ assets::mesh::mesh(const std::vector<float>& _vertices, const std::vector<int>& 
 
 	auto bb = api->create_buffer_builder();
 
-	bb->size = _vertices.size() * sizeof(float);
+	bb->size = static_cast<uint32_t>(_vertices.size() * sizeof(float));
 	bb->buffer_type = graphics_abstraction::buffer_type::vertex;
 	vertices = reinterpret_cast<graphics_abstraction::buffer*>(api->build(bb, false));
 
@@ -20,7 +20,7 @@ assets::mesh::mesh(const std::vector<float>& _vertices, const std::vector<int>& 
 		vertices->close_data_stream();
 	}
 
-	bb->size = _indicies.size() * sizeof(int);
+	bb->size = static_cast<uint32_t>(_indicies.size() * sizeof(int));
 	bb->buffer_type = graphics_abstraction::buffer_type::indicies;
 	indicies = reinterpret_cast<graphics_abstraction::buffer*>(api->build(bb));
 
@@ -36,7 +36,7 @@ assets::mesh::mesh(const std::vector<float>& _vertices)
 {
 	auto api = common::renderer->get_api();
 	auto bb = api->create_buffer_builder();
-	bb->size = _vertices.size() * sizeof(float);
+	bb->size = static_cast<uint32_t>(_vertices.size() * sizeof(float));
 	bb->buffer_type = graphics_abstraction::buffer_type::vertex;
 	vertices = reinterpret_cast<graphics_abstraction::buffer*>(api->build(bb));
 

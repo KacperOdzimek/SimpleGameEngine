@@ -26,7 +26,7 @@ void input_manager::load_config(std::weak_ptr<assets::input_config> _config_asse
 
 	for (const auto& axis : config_asset->axis_mappings)
 	{
-		axis_mappings_states.insert({ axis.first, 0 });
+		axis_mappings_states.insert({ axis.first, 0.0f });
 		for (auto& key : axis.second.keys)
 			keys_to_check.insert(key);
 	}

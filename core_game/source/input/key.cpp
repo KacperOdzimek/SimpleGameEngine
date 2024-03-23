@@ -44,6 +44,6 @@ input::key input::get_key_from_key_name(const std::string& str)
 	if (k.id == UINT32_MAX)
 		error_handling::crash(error_handling::error_source::core, "[input::get_key_from_key_name]",
 			"Trying to use not implemented key: " + str);
-	else
-		return k;
+
+	return k;
 }

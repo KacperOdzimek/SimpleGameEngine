@@ -45,7 +45,7 @@ namespace behaviors
 			{
 				auto e = load_entity(L, 1, "[_e_add_camera]");
 				uint32_t id = load_id(L, 2, "[_e_add_camera]", "Component");
-				float width = lua_tonumber(L, 3);
+				float width = static_cast<float>(lua_tonumber(L, 3));
 				
 				e->attach_component(
 					new ::entities::components::camera{
@@ -84,8 +84,8 @@ namespace behaviors
 				}
 
 				glm::vec2 extend;
-				extend.x = lua_tonumber(L, 4);
-				extend.y = lua_tonumber(L, 5);
+				extend.x = static_cast<float>(lua_tonumber(L, 4));
+				extend.y = static_cast<float>(lua_tonumber(L, 5));
 
 				e->attach_component(
 					new ::entities::components::collider{
@@ -101,7 +101,7 @@ namespace behaviors
 				auto e = load_entity(L, 1, "[_e_add_sprite]");
 				uint32_t id = load_id(L, 2, "[_e_add_sprite]", "Component");
 				auto texture = load_asset_path(L, 3, "[_e_add_sprite]");
-				int sprite_id = lua_tointeger(L, 4);
+				int sprite_id = static_cast<int>(lua_tointeger(L, 4));
 				auto preset_name = lua_tostring(L, 5);
 
 				physics::collision_preset preset;

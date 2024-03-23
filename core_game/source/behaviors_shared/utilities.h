@@ -38,7 +38,7 @@ inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id,
 			"Entity reference should be std::weak_ptr<::entities::entity>* userdata");
 
 	auto* ptr = reinterpret_cast<std::weak_ptr<::entities::entity>*>(luaL_checkudata(L, arg_id, "entity"));
-	luaL_argcheck(L, ptr != NULL, arg_id, "Entity reference expected");
+	luaL_argcheck(L, ptr != nullptr, arg_id, "Entity reference expected");
 
 	if (ptr->expired())
 		error_handling::crash(error_handling::error_source::mod, parent_function, "Trying to perform operations on dead entity.");
@@ -48,10 +48,11 @@ inline std::shared_ptr<::entities::entity> load_entity(lua_State* L, int arg_id,
 inline uint32_t load_id(lua_State* L, int arg_id, std::string parent_function, const std::string id_of_what) noexcept
 {
 	if (lua_isnumber(L, arg_id) || lua_isinteger(L, arg_id))
-		return lua_tointeger(L, arg_id);
+		return static_cast<uint32_t>(lua_tointeger(L, arg_id));
 	else if (lua_isstring(L, arg_id))
 		return ::utilities::hash_string(lua_tostring(L, arg_id));
 	error_handling::crash(error_handling::error_source::mod, parent_function, id_of_what + " id should be integer or string");
+	return 0;
 }
 
 inline std::string load_asset_path(lua_State* L, int arg_id, std::string parent_function) noexcept
@@ -59,6 +60,7 @@ inline std::string load_asset_path(lua_State* L, int arg_id, std::string parent_
 	if (lua_isstring(L, arg_id))
 		return lua_tostring(L, arg_id);
 	error_handling::crash(error_handling::error_source::mod, parent_function, "Asset path should be string");
+	return "";
 }
 
 template<class comp_class>

@@ -38,7 +38,7 @@ void entities::components::behavior::call_function(behaviors::functions func, st
 			break;
 		case behaviors::functions::update:
 			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
-			common::behaviors_manager->pass_float_arg(common::delta_time);
+			common::behaviors_manager->pass_float_arg(static_cast<float>(common::delta_time));
 			common::behaviors_manager->call(2);
 			break;
 		case behaviors::functions::destroy:

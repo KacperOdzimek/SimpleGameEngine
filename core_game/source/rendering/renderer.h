@@ -11,8 +11,8 @@ namespace entities
 {
 	namespace components
 	{
-		struct mesh;
-		struct camera;
+		class mesh;
+		class camera;
 	}
 }
 

@@ -36,21 +36,21 @@ void filesystem::set_mods_directory(std::string path)
 
 std::string filesystem::get_package(std::string path)
 {
-	int split_index = path.find('/');
+	int split_index = static_cast<int>(path.find('/'));
 	std::string package = path.substr(0, split_index);
 	return package;
 }
 
 std::string filesystem::get_owning_folder(std::string path)
 {
-	int split_index = path.find_last_of('/');
+	int split_index = static_cast<int>(path.find_last_of('/'));
 	std::string owning_folder = path.substr(0, split_index);
 	return owning_folder;
 }
 
 std::string filesystem::get_global_path(std::string path)
 {
-	int split_index = path.find('/');
+	int split_index = static_cast<int>(path.find('/'));
 	std::string package = path.substr(0, split_index);
 	if (package == "mod")
 		return  mod_assets_path + path.substr(split_index, path.size());
@@ -65,7 +65,7 @@ std::string filesystem::get_global_path(std::string path)
 
 std::fstream filesystem::load_file(std::string path)
 {
-	int split_index = path.find('/');
+	int split_index = static_cast<int>(path.find('/'));
 	std::string global_path = filesystem::get_global_path(path);
 
 	std::fstream file;

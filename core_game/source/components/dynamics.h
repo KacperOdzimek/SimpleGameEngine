@@ -18,9 +18,9 @@ namespace entities
 			void apply_forces();
 		public:
 			bool use_maximum_velocity = false;
-			float maximum_velocity = 0;
-			float drag = 0.7;
-			float mass = 1;
+			float maximum_velocity = 0.0f;
+			float drag = 0.7f;
+			float mass = 1.0f;
 
 			dynamics(uint32_t _id);
 			~dynamics();

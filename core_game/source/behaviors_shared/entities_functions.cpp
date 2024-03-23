@@ -99,7 +99,7 @@ namespace behaviors
 			int _e_set_layer(lua_State* L)
 			{
 				auto e = load_entity(L, 1, "[_e_set_layer]");
-				int layer = lua_tointeger(L, 2);
+				int layer = static_cast<int>(lua_tointeger(L, 2));
 				e->layer = layer;
 				return 0;
 			}

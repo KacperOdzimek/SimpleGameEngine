@@ -35,5 +35,5 @@ void rendering::flipbooks_manager::unregister_flipbook(entities::components::fli
 void rendering::flipbooks_manager::update()
 {
 	for (auto& flip : impl->flipbooks)
-		flip->move_playback(common::delta_time);
+		flip->move_playback(static_cast<float>(common::delta_time));
 }
