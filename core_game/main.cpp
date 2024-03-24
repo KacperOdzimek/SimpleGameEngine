@@ -24,6 +24,10 @@
 
 constexpr double frame_time_ms = (1000 / 60);
 
+#ifndef _DEBUG 
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
 int main()
 {
 	try
@@ -32,9 +36,20 @@ int main()
 		common::renderer->initialize();
 		common::window_manager->set_resize_callback(common::renderer->get_resize_function());
 
-		filesystem::set_mods_directory("C:/Projekty/TopDownGame/mods/");
-		filesystem::set_mod_assets_directory("C:/Projekty/TopDownGame/mods/example_mod/");
-		filesystem::set_core_assets_directory("C:/Projekty/TopDownGame/core_game/assets");
+#ifdef _DEBUG 
+		{
+			filesystem::set_mods_directory("C:/Projekty/TopDownGame/mods/");
+			filesystem::set_mod_assets_directory("C:/Projekty/TopDownGame/mods/example_mod/");
+			filesystem::set_core_assets_directory("C:/Projekty/TopDownGame/core_game/assets");
+		}
+#else
+		{
+			std::string path = filesystem::get_main_dir();
+			filesystem::set_mods_directory(path + "mods/");
+			filesystem::set_mod_assets_directory(path + "mods/" + "/example_mod/");
+			filesystem::set_core_assets_directory(path + "assets/");
+		}
+#endif	
 
 		//Load required assets
 		common::assets_manager->load_asset("core/square_mesh");
@@ -42,7 +57,12 @@ int main()
 		common::assets_manager->load_asset("core/sprite_shader");
 		common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
 
+#if _DEBUG
 		common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/game");
+#else
+		std::string path = filesystem::get_main_dir();
+		common::mods_manager->load_mod(path + "mods/" + "/game");
+#endif
 
 		while (!common::window_manager->should_close())
 		{
@@ -72,7 +92,6 @@ int main()
 
 
 			double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
-
 			double delta_time = frame_end - frame_start;
 
 			if (delta_time < frame_time_ms)
@@ -83,7 +102,7 @@ int main()
 
 				frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 			}
-
+			
 			common::delta_time = frame_end - frame_start;
 		}
 	}

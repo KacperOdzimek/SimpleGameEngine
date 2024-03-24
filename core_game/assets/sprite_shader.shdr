@@ -6,14 +6,11 @@
     #version 330 core
     layout (location = 0) in vec2 aPos;
     layout (location = 1) in vec2 aTexCoord;
-    struct instanceData
-    {
-        vec2 pos;
-        vec2 scale;
-        float layer;
-        float sprite_id;
-    };
-    layout (location = 2) in instanceData aInstance;
+
+    layout (location = 2) in vec2 pos;
+    layout (location = 3) in vec2 scale;
+    layout (location = 4) in float layer;
+    layout (location = 5) in float sprite_id;
 
     out vec2 TexCoord;
 
@@ -25,16 +22,16 @@
 
     void main()
     {  
-        float depth = -1 * (aInstance.layer - itr_lowest_layer) / (itr_highest_layer - itr_lowest_layer);
+        float depth = -1 * (layer - itr_lowest_layer) / (itr_highest_layer - itr_lowest_layer);
 
-        vec2 transformed_pos = (aPos * aInstance.scale) + aInstance.pos;
+        vec2 transformed_pos = (aPos * scale) + pos;
         vec4 projected_pos = (vec4(transformed_pos, 0, 1.0) - itr_camera_location) * itr_projection;
         
         projected_pos.z = depth;
         gl_Position = projected_pos;
 
         vec2 unit_sprite = vec2(1, 1) / itr_sprites;
-        TexCoord = vec2(mod(aInstance.sprite_id, itr_sprites.x), (itr_sprites.y - 1) - floor(aInstance.sprite_id / itr_sprites.x)) * unit_sprite + aTexCoord * unit_sprite;
+        TexCoord = vec2(mod(sprite_id, itr_sprites.x), (itr_sprites.y - 1) - floor(sprite_id / itr_sprites.x)) * unit_sprite + aTexCoord * unit_sprite;
     }
 >
 

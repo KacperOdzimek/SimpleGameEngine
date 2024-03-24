@@ -57,6 +57,11 @@ namespace filesystem
 	returns full paths of directory subfolders
 	*/
 	std::vector<std::string> get_all_subfolders(std::string dir);
+	/*
+	get_main_dir
+	returns system dir of main.cpp file
+	*/
+	std::string get_main_dir();
 
 	struct image_file
 	{

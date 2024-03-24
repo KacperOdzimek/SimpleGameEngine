@@ -65,7 +65,6 @@ std::string filesystem::get_global_path(std::string path)
 
 std::fstream filesystem::load_file(std::string path)
 {
-	int split_index = static_cast<int>(path.find('/'));
 	std::string global_path = filesystem::get_global_path(path);
 
 	std::fstream file;
@@ -97,6 +96,55 @@ std::vector<std::string> filesystem::get_all_subfolders(std::string folder)
 	closedir(dir);
 
 	return result;
+}
+
+#if defined(_WIN32)
+#include <windows.h>
+#include <Shlwapi.h>
+#include <io.h> 
+
+#define access _access_s
+#endif
+
+#ifdef __linux__
+#include <limits.h>
+#include <libgen.h>
+#include <unistd.h>
+
+#if defined(__sun)
+#define PROC_SELF_EXE "/proc/self/path/a.out"
+#else
+#define PROC_SELF_EXE "/proc/self/exe"
+#endif
+
+#endif
+
+#if defined(_WIN32)
+	std::string getExecutableDir() {
+		char rawPathName[MAX_PATH];
+		GetModuleFileNameA(NULL, rawPathName, MAX_PATH);
+
+		auto path = std::string(rawPathName);
+		size_t index = path.find_last_of('\\', path.size());
+
+		return path.substr(0, index + 1);
+	}
+#endif
+
+#ifdef __linux__
+	std::string getExecutableDir() {
+		std::string executablePath = getExecutablePath();
+		char* executablePathStr = new char[executablePath.length() + 1];
+		strcpy(executablePathStr, executablePath.c_str());
+		char* executableDir = dirname(executablePathStr);
+		delete[] executablePathStr;
+		return std::string(executableDir);
+	}
+#endif
+
+std::string filesystem::get_main_dir()
+{
+	return getExecutableDir();
 }
 
 filesystem::image_file::~image_file()
