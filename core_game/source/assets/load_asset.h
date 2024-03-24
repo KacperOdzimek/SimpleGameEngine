@@ -27,5 +27,6 @@ namespace assets
 		std::shared_ptr<asset> load_rendering_config(const load_data& data);
 		std::shared_ptr<asset> load_input_config(const load_data& data);
 		std::shared_ptr<asset> load_collision_config(const load_data& data);
+		std::shared_ptr<asset> load_custom_data(const load_data& data);
 	}
 }

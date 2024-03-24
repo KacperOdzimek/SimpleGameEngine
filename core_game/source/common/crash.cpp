@@ -12,17 +12,17 @@
 */
 static bool pending_unload = false;
 
-void shutdown(std::string text)
+void error_handling::show_crash_info(std::string text)
 {
+	if (pending_unload)
+		return;
+
 #ifdef WIN32
 	wchar_t* title = (wchar_t*)L"GAME ERROR\0\u2210";
 	std::wstring_convert<std::codecvt<char16_t, char, std::mbstate_t>, char16_t> converter;
 	std::u16string text16 = converter.from_bytes(text);
 	MessageBox(NULL, (wchar_t*)text16.c_str(), title, MB_ICONERROR | MB_OK);
 #endif
-
-	pending_unload = true;
-	throw std::exception{"Shutdown call"};
 }
 
 void error_handling::crash(error_source source, std::string function, std::string text)
@@ -46,5 +46,8 @@ void error_handling::crash(error_source source, std::string function, std::strin
 	full_text.push_back('\n');
 	full_text.append(text.c_str());
 
-	shutdown(full_text);
+	show_crash_info(full_text);
+
+	pending_unload = true;
+	throw std::exception{"Shutdown call"};
 }

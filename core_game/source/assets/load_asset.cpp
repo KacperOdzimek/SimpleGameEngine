@@ -17,6 +17,7 @@
 #include "rendering_config_asset.h"
 #include "input_config_asset.h"
 #include "collision_config_asset.h"
+#include "custom_data_assset.h"
 
 #include <fstream>
 
@@ -603,6 +604,15 @@ namespace assets
 			auto collision_config_asset = std::make_shared<assets::collision_config>
 				(body_types_loaded, collision_presets_loaded, collision_presets_names);
 			return collision_config_asset;
+		}
+
+		std::shared_ptr<asset> load_custom_data(const load_data& ld)
+		{
+			auto owned_copy = std::make_unique<nlohmann::json>();
+			*owned_copy = *ld.header_data;
+			owned_copy->erase("asset_type");
+			auto asset = std::make_shared<assets::custom_data>(owned_copy);
+			return asset;
 		}
 	}
 }

@@ -125,6 +125,9 @@ void assets_manager::load_asset(std::string path)
     case utilities::hash_string("collision_config") :
         new_asset = loading::load_collision_config(load_data);
         break;
+    case utilities::hash_string("custom_data"):
+        new_asset = loading::load_custom_data(load_data);
+        break;
     default:
         error_handling::crash(error_handling::error_source::core,
             "[asset_manager::load_asset]", "Invalid asset: " + path + " invalid asset_type");

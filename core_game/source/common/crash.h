@@ -13,4 +13,5 @@ namespace error_handling
 		creates window contating error message and closes the game 
 	*/
 	void crash(error_source source, std::string function, std::string text);
+	void show_crash_info(std::string text);
 }

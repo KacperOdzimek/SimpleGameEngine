@@ -87,13 +87,15 @@ int main()
 			common::delta_time = frame_end - frame_start;
 		}
 	}
-	catch (const std::exception& a)
+	catch (const std::exception& exc)
 	{
-		error_handling::crash(error_handling::error_source::core, "[main]",
-			"Unhandled exception: " + std::string(a.what()));
+		error_handling::show_crash_info("[core][main]:\n Unhandled exception: " + std::string(exc.what()));
 	}
 
 	//ensure that entities are destroyed first, as their components 
 	//holds shared pointers to almost every resource in the engine
 	common::world->destroy();
+	//ensure that assets are destroyed second, as they owns resources, 
+	//that can be only destroyed by other manager class
+	common::assets_manager.reset();
 }

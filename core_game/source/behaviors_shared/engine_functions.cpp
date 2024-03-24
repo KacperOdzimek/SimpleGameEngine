@@ -12,6 +12,8 @@
 
 #include "source/filesystem/filesystem.h"
 
+#include "source/assets/custom_data_assset.h"
+
 #include "include/nlohmann/json.hpp"
 
 namespace behaviors
@@ -210,12 +212,68 @@ namespace behaviors
 				return 2;
 			}
 
+			void dump_object_to_table(lua_State* L, nlohmann::json* object, bool is_array)
+			{
+				lua_newtable(L);
+				int counter = 1;
+				for (auto element = object->begin(); element != object->end(); ++element)
+				{
+					if (is_array)
+						lua_pushinteger(L, counter);
+					else
+						lua_pushstring(L, element.key().c_str());
+
+					auto& value = element.value();
+					switch (element.value().type())
+					{
+					case nlohmann::json::value_t::string:
+						lua_pushstring(L, std::string(value).c_str());
+						break;
+					case nlohmann::json::value_t::number_integer:
+						lua_pushinteger(L, int(value));
+						break;
+					case nlohmann::json::value_t::number_float:
+						lua_pushnumber(L, float(value));
+						break;
+					case nlohmann::json::value_t::number_unsigned:
+						lua_pushinteger(L, int(value));
+						break;
+					case nlohmann::json::value_t::boolean:
+						lua_pushboolean(L, bool(value));
+						break;
+					case nlohmann::json::value_t::object:
+						dump_object_to_table(L, &value, false);
+						break;
+					case nlohmann::json::value_t::array:
+						dump_object_to_table(L, &value, true);
+						break;
+					default:
+						error_handling::crash(error_handling::error_source::core, "[_en_load_custom_data]",
+							"Unsuported data type: " + std::string(value.type_name()));
+					}
+					lua_settable(L, -3);
+					counter++;
+				}
+			}
+
+			int _en_load_custom_data(lua_State* L)
+			{
+				auto path = load_asset_path(L, 1, "[_en_load_custom_data]");
+				auto data_asset = assets::cast_asset<assets::custom_data>(common::assets_manager->safe_get_asset(path)).lock();
+				auto data = data_asset->access_data();
+
+				dump_object_to_table(L, data.get(), false);
+
+				return 1;
+			}
+
 			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_en_load_scene", _en_load_scene);
 				lua_register(L, "_en_unload_scene", _en_unload_scene);
 				lua_register(L, "_en_create_entities_from_tilemap", _en_create_entities_from_tilemap);
 				lua_register(L, "_en_viewport_to_world", _en_viewport_to_world);
+				lua_register(L, "_en_load_custom_data", _en_load_custom_data);
 			}
 		}
 	}
