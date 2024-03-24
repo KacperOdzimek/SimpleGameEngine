@@ -20,29 +20,31 @@
 #include <thread>
 #include <chrono>
 
+#include "source/physics/collision_solver.h"
+
 constexpr double frame_time_ms = (1000 / 60);
 
 int main()
 {
-	common::window_manager->create_window("Top Down Game", 16 * 80, 9 * 80, false);
-	common::renderer->initialize();
-	common::window_manager->set_resize_callback(common::renderer->get_resize_function());
-
-	filesystem::set_mods_directory("C:/Projekty/TopDownGame/mods/");
-	filesystem::set_mod_assets_directory("C:/Projekty/TopDownGame/mods/example_mod/");
-	filesystem::set_core_assets_directory("C:/Projekty/TopDownGame/core_game/assets");
-
-	//Load required assets
-	common::assets_manager->load_asset("core/square_mesh");
-	common::assets_manager->lock_asset(utilities::hash_string("core/square_mesh"));
-	common::assets_manager->load_asset("core/sprite_shader");
-	common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
-
-	common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/game");
-
-	while (!common::window_manager->should_close())
+	try
 	{
-		try
+		common::window_manager->create_window("Top Down Game", 16 * 80, 9 * 80, false);
+		common::renderer->initialize();
+		common::window_manager->set_resize_callback(common::renderer->get_resize_function());
+
+		filesystem::set_mods_directory("C:/Projekty/TopDownGame/mods/");
+		filesystem::set_mod_assets_directory("C:/Projekty/TopDownGame/mods/example_mod/");
+		filesystem::set_core_assets_directory("C:/Projekty/TopDownGame/core_game/assets");
+
+		//Load required assets
+		common::assets_manager->load_asset("core/square_mesh");
+		common::assets_manager->lock_asset(utilities::hash_string("core/square_mesh"));
+		common::assets_manager->load_asset("core/sprite_shader");
+		common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
+
+		common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/game");
+
+		while (!common::window_manager->should_close())
 		{
 			double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
@@ -81,16 +83,18 @@ int main()
 
 				frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 			}
-			
+
 			common::delta_time = frame_end - frame_start;
-		}
-		catch (const std::exception& a)
-		{
-			error_handling::crash(error_handling::error_source::core, "[main]", 
-				"Unhandled exception: " + std::string(a.what()));
+			throw std::exception{};
 		}
 	}
+	catch (const std::exception& a)
+	{
+		error_handling::crash(error_handling::error_source::core, "[main]",
+			"Unhandled exception: " + std::string(a.what()));
+	}
 
+	//ensure that entities are destroyed first, as their components 
+	//holds shared pointers to almost every resource in the engine
 	common::world->destroy();
-	common::world.reset();
 }
