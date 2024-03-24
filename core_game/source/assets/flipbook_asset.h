@@ -10,8 +10,8 @@ namespace assets
 	public: 
 		struct animation
 		{
-			float frames_per_second;
-			std::vector<int> frames;
+			float frames_per_second = 1;
+			std::vector<int> frames{};
 		};
 
 		const std::map<uint32_t, animation> animations;

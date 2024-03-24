@@ -91,6 +91,13 @@ namespace behaviors
 		*/
 		std::string create_functions_table(const std::string& file_path);
 		/*
+			destroy_functions_table
+			frees table and functions created by create_functions_table
+			-l-
+			[table_name] name of the table, returned by create_functions_table
+		*/
+		void destroy_functions_table(const std::string& table_name);
+		/*
 			prepare_behavior_function_call
 			informs lua environement about incoming behavior function call
 			returns true if function can be called

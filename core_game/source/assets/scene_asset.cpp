@@ -6,3 +6,8 @@ assets::scene::scene(std::string& lua_file_path)
 {
     name = common::behaviors_manager->create_functions_table(lua_file_path);
 }
+
+assets::scene::~scene()
+{
+    common::behaviors_manager->destroy_functions_table(name);
+}

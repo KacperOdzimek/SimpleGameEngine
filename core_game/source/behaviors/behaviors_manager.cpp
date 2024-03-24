@@ -157,8 +157,8 @@ std::string behaviors::behaviors_manager::create_functions_table(const std::stri
         error_handling::crash(error_handling::error_source::core, "[behaviors_manager::create_behavior]", lua_tostring(L, -1));
 
     lua_newtable(L);
-    lua_newtable(L);
-    lua_getglobal(L, "_G");
+    lua_newtable(L); 
+    lua_getglobal(L, "_G"); 
     lua_setfield(L, -2, "__index");
     lua_setmetatable(L, -2);
     lua_setfield(L, LUA_REGISTRYINDEX, name.c_str());
@@ -170,6 +170,12 @@ std::string behaviors::behaviors_manager::create_functions_table(const std::stri
         error_handling::crash(error_handling::error_source::core, "[behaviors_manager::create_behavior]", lua_tostring(L, -1));
 
     return name;
+}
+
+void behaviors::behaviors_manager::destroy_functions_table(const std::string& table_name)
+{
+    lua_pushnil(impl->L);
+    lua_setfield(impl->L, LUA_REGISTRYINDEX, table_name.c_str());
 }
 
 void behaviors::behaviors_manager::pass_pointer_arg(void* arg)

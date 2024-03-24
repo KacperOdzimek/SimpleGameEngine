@@ -15,5 +15,6 @@ namespace assets
 		std::string name;
 	public:
 		behavior(std::string& lua_file_path);
+		~behavior();
 	};
 }

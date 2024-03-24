@@ -15,5 +15,6 @@ namespace assets
 		std::string name;
 	public:
 		scene(std::string& lua_file_path);
+		~scene();
 	};
 }
