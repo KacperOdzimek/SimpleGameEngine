@@ -517,8 +517,14 @@ namespace assets
 					error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
 						"Invalid collision config: \nbody_types should be an object");
 
+				int body_types_counter = 0;
 				for (auto body_type = body_types.begin(); body_type != body_types.end(); ++body_type)
 				{
+					body_types_counter++;
+					if (body_types_counter == 15)
+						error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
+							"Engine supports up to 14 collision body types");
+
 					if (!body_type.value().is_number())
 						error_handling::crash(error_handling::error_source::core, "[loading::load_collision_config]",
 							"Invalid collision config: \nbody_types element value should be an number");
