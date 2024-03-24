@@ -65,6 +65,21 @@ namespace behaviors
 				return package + path;
 			}
 
+			nlohmann::json load_template(std::string path)
+			{
+				filesystem::set_active_assets_directory_enabled(true);
+				auto file = filesystem::load_file(path);
+				filesystem::set_active_assets_directory_enabled(false);
+
+				auto _template = nlohmann::json::parse(file);
+
+				if (!(_template.contains("object") && _template.at("object").is_object()))
+					error_handling::crash(error_handling::error_source::core, "[_en_create_entities_from_tilemap]",
+						"Invalid template: " + path);
+
+				return _template.at("object");
+			}
+
 			int _en_create_entities_from_tilemap(lua_State* L)
 			{
 				auto tilemap_asset = load_asset_path(L, 1, "[_en_create_entities_from_tilemap]");
@@ -89,6 +104,8 @@ namespace behaviors
 				auto tilemap = nlohmann::json::parse(tilemap_file);
 				tilemap_file.close();
 
+				std::string tilemap_folder = filesystem::get_owning_folder(tilemap_file_path) + "/";
+
 				filesystem::set_active_assets_directory_enabled(false);
 
 				if (!(tilemap.contains("layers") && tilemap.at("layers").is_array()))
@@ -107,6 +124,7 @@ namespace behaviors
 
 				int layers_counter = -1;
 				int object_layers_counter = -1;
+
 				for (auto& layer : tilemap.at("layers"))
 				{
 					layers_counter++;
@@ -120,9 +138,6 @@ namespace behaviors
 
 					for (auto& object : objects)
 					{
-						if (object.at("visible") == false)
-							continue;							//Discard invisible objects
-
 						float x = object.at("x");
 						float y = object.at("y");
 
@@ -139,30 +154,43 @@ namespace behaviors
 
 						lua_createtable(L, 0, 0);
 
-						lua_pushstring(L, "entity");
-						push_entity(L, e);
-						lua_settable(L, -3);
-
-						push_string_to_table(L, "name", std::string(object.at("name")).c_str());
-						push_string_to_table(L, "class", std::string(object.at("type")).c_str());
-
 						push_number_to_table(L, "x", sx);
 						push_number_to_table(L, "y", sy);
 						push_number_to_table(L, "layer", static_cast<float>(layers_counter));
 						push_number_to_table(L, "object_layer", static_cast<float>(object_layers_counter));
 
-						if (object.contains("width"))
+						lua_pushstring(L, "entity");
+						push_entity(L, e);
+						lua_settable(L, -3);
+
+						bool templated = object.contains("template") && object.at("template").is_string();
+						nlohmann::json obj_template;
+
+						if (templated)
+							obj_template = load_template(tilemap_folder + std::string(object.at("template")));
+
+						nlohmann::json* data;
+						if (templated)
+							data = &obj_template;
+						else
+							data = &object;
+
+						push_string_to_table(L, "name", std::string(data->at("name")).c_str());
+						push_string_to_table(L, "class", std::string(data->at("type")).c_str());
+
+						if (data->contains("width"))
 							push_number_to_table(L, "width", 
-								static_cast<float>(float(object.at("width")) / common::pixels_per_world_unit)
+								static_cast<float>(float(data->at("width")) / common::pixels_per_world_unit)
 							);
 
-						if (object.contains("height"))
+						if (data->contains("height"))
 							push_number_to_table(L, "height",
-								static_cast<float>(float(object.at("height")) / common::pixels_per_world_unit)
+								static_cast<float>(float(data->at("height")) / common::pixels_per_world_unit)
 							);
 
-						if (object.contains("properties") && object.at("properties").is_array())
-							for (auto& prop : object.at("properties"))
+						auto load_properites = [&](nlohmann::json source)
+						{
+							for (auto& prop : source.at("properties"))
 							{
 								lua_pushstring(L, std::string(prop.at("name")).c_str());
 								std::string type = prop.at("type");
@@ -177,15 +205,24 @@ namespace behaviors
 								else if (type == "string")
 									lua_pushstring(L, std::string(value).c_str());
 								else
-									error_handling::crash(error_handling::error_source::core, "[_en_create_entities_from_tilemap]",
+									error_handling::crash(error_handling::error_source::core, 
+										"[_en_create_entities_from_tilemap]",
 										"Unsuported property type: " + type);
 
 								lua_settable(L, -3);
 							}
+						};
+
+						if (obj_template.contains("properties") && obj_template.at("properties").is_array())
+							load_properites(obj_template);
+
+						if (object.contains("properties") && object.at("properties").is_array())
+							load_properites(object);
 
 						auto err = lua_pcall(L, 1, 0, 0);
 						if (err != LUA_OK)
-							error_handling::crash(error_handling::error_source::core, "[_en_create_entities_from_tilemap]", 
+							error_handling::crash(error_handling::error_source::core, 
+								"[_en_create_entities_from_tilemap]", 
 								lua_tostring(L, -1));
 					}
 				}
