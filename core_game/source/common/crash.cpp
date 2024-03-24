@@ -5,6 +5,13 @@
 #include <codecvt>
 #endif
 
+/*
+	if true, new crashes would be ignored
+	added so crash function would not make an infinite loop with 
+	main functions try - catch statement
+*/
+static bool pending_unload = false;
+
 void shutdown(std::string text)
 {
 #ifdef WIN32
@@ -12,14 +19,17 @@ void shutdown(std::string text)
 	std::wstring_convert<std::codecvt<char16_t, char, std::mbstate_t>, char16_t> converter;
 	std::u16string text16 = converter.from_bytes(text);
 	MessageBox(NULL, (wchar_t*)text16.c_str(), title, MB_ICONERROR | MB_OK);
-	abort();
-#else
-	abort();
 #endif
+
+	pending_unload = true;
+	throw std::exception{"Shutdown call"};
 }
 
 void error_handling::crash(error_source source, std::string function, std::string text)
 {
+	if (pending_unload)
+		return;
+
 	std::string full_text;
 	switch (source)
 	{
