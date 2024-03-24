@@ -22,6 +22,7 @@ void shutdown(std::string text)
 #endif
 
 	pending_unload = true;
+	throw std::exception{"Shutdown call"};
 }
 
 void error_handling::crash(error_source source, std::string function, std::string text)

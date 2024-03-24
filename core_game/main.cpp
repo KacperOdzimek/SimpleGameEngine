@@ -85,7 +85,6 @@ int main()
 			}
 
 			common::delta_time = frame_end - frame_start;
-			throw std::exception{};
 		}
 	}
 	catch (const std::exception& a)
