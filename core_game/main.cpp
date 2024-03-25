@@ -26,6 +26,9 @@ constexpr double frame_time_ms = (1000 / 60);
 
 #ifndef _DEBUG 
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#else
+//Included in .gitignore, needs to be created for each download
+#include "debug_config.h"
 #endif
 
 int main()
@@ -38,15 +41,13 @@ int main()
 
 #ifdef _DEBUG 
 		{
-			filesystem::set_mods_directory("C:/Projekty/TopDownGame/mods/");
-			filesystem::set_mod_assets_directory("C:/Projekty/TopDownGame/mods/example_mod/");
-			filesystem::set_core_assets_directory("C:/Projekty/TopDownGame/core_game/assets");
+			filesystem::set_mods_directory(debug_mods_directory);
+			filesystem::set_core_assets_directory(debug_core_asssets_directory);
 		}
 #else
 		{
 			std::string path = filesystem::get_main_dir();
 			filesystem::set_mods_directory(path + "mods/");
-			filesystem::set_mod_assets_directory(path + "mods/" + "/example_mod/");
 			filesystem::set_core_assets_directory(path + "assets/");
 		}
 #endif	
@@ -58,7 +59,7 @@ int main()
 		common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
 
 #if _DEBUG
-		common::mods_manager->load_mod("C:/Projekty/TopDownGame/mods/game");
+		common::mods_manager->load_mod(debug_loaded_mod);
 #else
 		std::string path = filesystem::get_main_dir();
 		common::mods_manager->load_mod(path + "mods/" + "/game");
