@@ -26,7 +26,7 @@ void dynamics::apply_forces()
 	if (glm::length(velocity) > maximum_velocity && use_maximum_velocity)
 		velocity = glm::normalize(velocity) * maximum_velocity;
 
-	velocity -= velocity * float(drag * common::delta_time);
+	velocity -= velocity * float(drag * common::delta_time) * common::physics_time_dilation_mod;
 
 	if (glm::length(frame_force) == 0)
 	{
@@ -37,12 +37,12 @@ void dynamics::apply_forces()
 			velocity.y = 0;
 	}
 
-	velocity += (frame_force / mass) * float(common::delta_time);
+	velocity += (frame_force / mass) * float(common::delta_time) * common::physics_time_dilation_mod;
 	frame_force = { 0, 0 };
 }
 
 void dynamics::sweep()
 {
 	apply_forces();
-	owner->sweep(owner->get_location() + velocity * float(common::delta_time));
+	owner->sweep(owner->get_location() + velocity * float(common::delta_time) * common::physics_time_dilation_mod);
 }

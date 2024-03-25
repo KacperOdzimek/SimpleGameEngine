@@ -58,6 +58,10 @@ namespace common
 		texture pixels per world unit
 	*/
 	extern double pixels_per_world_unit;
+	/*
+		multiplied by delta_time gives the delta time used by dynamics component
+	*/
+	extern float physics_time_dilation_mod;
 	extern std::unique_ptr<rendering::flipbooks_manager> flipbooks_manager;
 	extern std::unique_ptr<rendering::renderer> renderer;
 	extern std::unique_ptr<audio::audio_manager> audio_manager;

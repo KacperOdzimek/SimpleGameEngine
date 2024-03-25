@@ -304,6 +304,20 @@ namespace behaviors
 				return 1;
 			}
 
+			int _en_time_period_to_physics(lua_State* L)
+			{
+				float dt = static_cast<float>(lua_tonumber(L, 1));
+				lua_pushnumber(L, dt * common::physics_time_dilation_mod);
+				return 1;
+			}
+
+			int _en_set_physics_time_dilation(lua_State* L)
+			{
+				float new_dilation = static_cast<float>(lua_tonumber(L, 1));
+				common::physics_time_dilation_mod = new_dilation;
+				return 0;
+			}
+
 			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_en_load_scene", _en_load_scene);
@@ -311,6 +325,8 @@ namespace behaviors
 				lua_register(L, "_en_create_entities_from_tilemap", _en_create_entities_from_tilemap);
 				lua_register(L, "_en_viewport_to_world", _en_viewport_to_world);
 				lua_register(L, "_en_load_custom_data", _en_load_custom_data);
+				lua_register(L, "_en_time_period_to_physics", _en_time_period_to_physics);
+				lua_register(L, "_en_set_physics_time_dilation", _en_set_physics_time_dilation);
 			}
 		}
 	}
