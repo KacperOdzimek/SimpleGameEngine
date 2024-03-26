@@ -78,6 +78,11 @@ namespace filesystem
 	returns system dir of main.cpp file
 	*/
 	std::string get_main_dir();
+	/*
+	ensure_mod_saves_folder_exist
+	creates folder for mods saves if needed
+	*/
+	void ensure_mod_saves_folder_exist(std::string& mod_name);
 
 	struct image_file
 	{

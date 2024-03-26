@@ -192,3 +192,35 @@ inline void dump_json_to_table(lua_State* L, nlohmann::json* object, const std::
 		counter++;
 	}
 }
+
+inline void dump_table_to_json(lua_State* L, nlohmann::json* object, int table_stack_id, const std::string& parent_func_name)
+{
+	lua_pushvalue(L, table_stack_id);
+	lua_pushnil(L);
+
+	while (lua_next(L, -2))
+	{
+		lua_pushvalue(L, -2);
+		auto key = std::string(lua_tostring(L, -1));
+
+		switch (lua_type(L, -2))
+		{
+		case LUA_TNUMBER:
+			(*object)[key] = static_cast<int>(lua_tointeger(L, -2));
+			break;
+		case LUA_TBOOLEAN:
+			(*object)[(key)] = static_cast<bool>(lua_toboolean(L, -2));
+			break;
+		case LUA_TSTRING:
+			(*object)[key] = std::string(lua_tostring(L, -2));
+			break;
+		case LUA_TTABLE:
+			auto nested_object = nlohmann::json::object();
+			dump_table_to_json(L, &nested_object, -2, parent_func_name);
+			(*object)[key] = nested_object;
+			break;
+		}
+		lua_pop(L, 2);
+	}
+	lua_pop(L, 1);
+}

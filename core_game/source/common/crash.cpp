@@ -3,6 +3,7 @@
 #ifndef WIN32
 #include "windows.h"
 #include <codecvt>
+#include <filesystem>
 #endif
 
 /*
@@ -19,9 +20,8 @@ void error_handling::show_crash_info(std::string text)
 
 #ifdef WIN32
 	wchar_t* title = (wchar_t*)L"GAME ERROR\0\u2210";
-	std::wstring_convert<std::codecvt<char16_t, char, std::mbstate_t>, char16_t> converter;
-	std::u16string text16 = converter.from_bytes(text);
-	MessageBox(NULL, (wchar_t*)text16.c_str(), title, MB_ICONERROR | MB_OK);
+	std::filesystem::path a{text};
+	MessageBox(NULL, (wchar_t*)a.u16string().c_str(), title, MB_ICONERROR | MB_OK);
 #endif
 }
 

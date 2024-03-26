@@ -2,6 +2,7 @@
 #include "source/common/crash.h"
 #include "include/stb/stb_image.h"
 #include "include/dirent.h"
+#include <filesystem>
 
 static std::string mod_assets_path;
 static std::string core_assets_path;
@@ -176,6 +177,13 @@ std::vector<std::string> filesystem::get_all_subfolders(std::string folder)
 std::string filesystem::get_main_dir()
 {
 	return getExecutableDir();
+}
+
+void filesystem::ensure_mod_saves_folder_exist(std::string& mod_name)
+{
+	std::string path = saved_path + '/' + mod_name;
+	if (!std::filesystem::is_directory(path) || !std::filesystem::exists(path))
+		std::filesystem::create_directory(path);
 }
 
 filesystem::image_file::~image_file()
