@@ -134,3 +134,61 @@ inline rendering::render_config load_render_config(lua_State* L, int arg_id, con
 
 	return rc;
 }
+
+#include "include/nlohmann/json.hpp"
+
+inline bool is_string_int(const std::string& s)
+{
+	if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
+
+	char* p;
+	strtol(s.c_str(), &p, 10);
+
+	return (*p == 0);
+}
+
+inline void dump_json_to_table(lua_State* L, nlohmann::json* object, const std::string& parent_func_name)
+{
+	lua_newtable(L);
+	int counter = 1;
+	for (auto element = object->begin(); element != object->end(); ++element)
+	{
+		if (object->is_array())
+			lua_pushinteger(L, counter);
+		else if (is_string_int(element.key()))
+			lua_pushinteger(L, std::stoi(element.key().c_str()));
+		else
+			lua_pushstring(L, element.key().c_str());
+
+		auto& value = element.value();
+		switch (element.value().type())
+		{
+		case nlohmann::json::value_t::string:
+			lua_pushstring(L, std::string(value).c_str());
+			break;
+		case nlohmann::json::value_t::number_integer:
+			lua_pushinteger(L, int(value));
+			break;
+		case nlohmann::json::value_t::number_float:
+			lua_pushnumber(L, float(value));
+			break;
+		case nlohmann::json::value_t::number_unsigned:
+			lua_pushinteger(L, int(value));
+			break;
+		case nlohmann::json::value_t::boolean:
+			lua_pushboolean(L, bool(value));
+			break;
+		case nlohmann::json::value_t::object:
+			dump_json_to_table(L, &value, parent_func_name);
+			break;
+		case nlohmann::json::value_t::array:
+			dump_json_to_table(L, &value, parent_func_name);
+			break;
+		default:
+			error_handling::crash(error_handling::error_source::core, parent_func_name,
+				"Unsuported data type: " + std::string(value.type_name()));
+		}
+		lua_settable(L, -3);
+		counter++;
+	}
+}
