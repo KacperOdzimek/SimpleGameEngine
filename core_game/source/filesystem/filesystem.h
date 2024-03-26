@@ -16,6 +16,17 @@ namespace filesystem
 	*/
 	void set_core_assets_directory(std::string path);
 	/*
+	set_saved_directory
+	sets directory where save files will be created and read from
+	also define "saved/" path prefix
+	*/
+	void set_saved_directory(std::string path);
+	/*
+	set_saved_directory
+	sets if user can use "saved/" path prefix
+	*/
+	void set_saved_directory_enabled(bool enabled);
+	/*
 	set_active_assets_directory
 	sets path that will be inserted in place of "$/" path prefix
 	*/
@@ -53,6 +64,11 @@ namespace filesystem
 	*/
 	std::fstream load_file(std::string relative_path_with_extension);
 	/*
+	create_file
+	creates file
+	*/
+	std::fstream create_file(std::string relative_path_wih_extension);
+	/*
 	get_all_subfolders
 	returns full paths of directory subfolders
 	*/
@@ -62,6 +78,11 @@ namespace filesystem
 	returns system dir of main.cpp file
 	*/
 	std::string get_main_dir();
+	/*
+	ensure_mod_saves_folder_exist
+	creates folder for mods saves if needed
+	*/
+	void ensure_mod_saves_folder_exist(std::string& mod_name);
 
 	struct image_file
 	{

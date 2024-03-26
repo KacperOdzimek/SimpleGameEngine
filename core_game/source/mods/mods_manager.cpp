@@ -14,12 +14,18 @@
 
 #include "source/utilities/hash_string.h"
 
+static std::string current_mod_name = "";
+
 void mods::mods_manager::load_mod(std::string mod_folder_name)
 {
 	filesystem::set_mod_assets_directory(mod_folder_name);
 	auto manifest_file = filesystem::load_file("mod/manifest.json");
 	nlohmann::json manifest = nlohmann::json::parse(manifest_file);
 	manifest_file.close();
+
+	size_t index = mod_folder_name.find_last_of('/');
+	current_mod_name = mod_folder_name.substr(index + 1, mod_folder_name.size());
+	filesystem::ensure_mod_saves_folder_exist(current_mod_name);
 
 	if (!(manifest.contains("start_scene") && manifest.at("start_scene").is_string()))
 		error_handling::crash(error_handling::error_source::core, "[mods_manager::load_mod]",
@@ -64,9 +70,11 @@ void mods::mods_manager::unload_mod()
 	common::assets_manager->unlock_asset(utilities::hash_string("mod/input_config"));
 	common::assets_manager->unlock_asset(utilities::hash_string("mod/collision_config"));
 	common::assets_manager->unlock_asset(utilities::hash_string("mod/rendering_config"));
+
+	current_mod_name = "";
 }
 
-std::vector<mods::mod_manifest> mods::mods_manager::get_all_mods_manifests()
+std::string mods::mods_manager::get_current_mod_folder_name()
 {
-	return {};
+	return current_mod_name;
 }

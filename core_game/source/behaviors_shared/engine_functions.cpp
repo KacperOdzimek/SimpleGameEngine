@@ -4,17 +4,15 @@
 
 #include "source/common/common.h"
 #include "source/rendering/renderer.h"
+#include "source/mods/mods_manager.h"
+#include "source/filesystem/filesystem.h"
 
 #include "source/entities/world.h"
 #include "source/entities/entity.h"
 
 #include "source/components/camera.h"
 
-#include "source/filesystem/filesystem.h"
-
 #include "source/assets/custom_data_assset.h"
-
-#include "include/nlohmann/json.hpp"
 
 namespace behaviors
 {
@@ -249,57 +247,14 @@ namespace behaviors
 				return 2;
 			}
 
-			void dump_object_to_table(lua_State* L, nlohmann::json* object, bool is_array)
-			{
-				lua_newtable(L);
-				int counter = 1;
-				for (auto element = object->begin(); element != object->end(); ++element)
-				{
-					if (is_array)
-						lua_pushinteger(L, counter);
-					else
-						lua_pushstring(L, element.key().c_str());
-
-					auto& value = element.value();
-					switch (element.value().type())
-					{
-					case nlohmann::json::value_t::string:
-						lua_pushstring(L, std::string(value).c_str());
-						break;
-					case nlohmann::json::value_t::number_integer:
-						lua_pushinteger(L, int(value));
-						break;
-					case nlohmann::json::value_t::number_float:
-						lua_pushnumber(L, float(value));
-						break;
-					case nlohmann::json::value_t::number_unsigned:
-						lua_pushinteger(L, int(value));
-						break;
-					case nlohmann::json::value_t::boolean:
-						lua_pushboolean(L, bool(value));
-						break;
-					case nlohmann::json::value_t::object:
-						dump_object_to_table(L, &value, false);
-						break;
-					case nlohmann::json::value_t::array:
-						dump_object_to_table(L, &value, true);
-						break;
-					default:
-						error_handling::crash(error_handling::error_source::core, "[_en_load_custom_data]",
-							"Unsuported data type: " + std::string(value.type_name()));
-					}
-					lua_settable(L, -3);
-					counter++;
-				}
-			}
-
 			int _en_load_custom_data(lua_State* L)
 			{
-				auto path = load_asset_path(L, 1, "[_en_load_custom_data]");
+				std::string f_name = "[_en_load_custom_data]";
+				auto path = load_asset_path(L, 1, f_name);
 				auto data_asset = assets::cast_asset<assets::custom_data>(common::assets_manager->safe_get_asset(path)).lock();
 				auto data = data_asset->access_data();
 
-				dump_object_to_table(L, data.get(), false);
+				dump_json_to_table(L, data.get(), f_name);
 
 				return 1;
 			}
@@ -318,6 +273,43 @@ namespace behaviors
 				return 0;
 			}
 
+			int _en_save_data(lua_State* L)
+			{
+				std::string filename = lua_tostring(L, 1);
+				filesystem::set_saved_directory_enabled(true);
+
+				nlohmann::json data;
+				dump_table_to_json(L, &data, 2, "[_en_save_data]");
+
+				auto file = filesystem::create_file(
+					"saved/" + common::mods_manager->get_current_mod_folder_name() + '/' + filename + ".json"
+				);			
+				file << data;
+				file.close();
+
+				filesystem::set_saved_directory_enabled(false);
+				return 0;
+			}
+
+			int _en_load_data(lua_State* L)
+			{
+				std::string filename = lua_tostring(L, 1);
+				filesystem::set_saved_directory_enabled(true);
+
+				auto file = filesystem::load_file(
+					"saved/" + common::mods_manager->get_current_mod_folder_name()  + '/' + filename + ".json"
+				);
+
+				auto data = nlohmann::json::parse(file);
+				file.close();
+
+				dump_json_to_table(L, &data, "[_en_load_data]");
+
+				filesystem::set_saved_directory_enabled(false);
+
+				return 1;
+			}
+
 			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_en_load_scene", _en_load_scene);
@@ -327,6 +319,8 @@ namespace behaviors
 				lua_register(L, "_en_load_custom_data", _en_load_custom_data);
 				lua_register(L, "_en_time_period_to_physics", _en_time_period_to_physics);
 				lua_register(L, "_en_set_physics_time_dilation", _en_set_physics_time_dilation);
+				lua_register(L, "_en_save_data", _en_save_data);
+				lua_register(L, "_en_load_data", _en_load_data);
 			}
 		}
 	}

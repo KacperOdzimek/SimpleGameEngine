@@ -11,6 +11,6 @@ namespace mods
 	public:
 		void load_mod(std::string mod_folder_name);
 		void unload_mod();
-		std::vector<mods::mod_manifest> get_all_mods_manifests();
+		std::string get_current_mod_folder_name();
 	};
 }

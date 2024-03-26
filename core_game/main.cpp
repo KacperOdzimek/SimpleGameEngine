@@ -43,12 +43,14 @@ int main()
 		{
 			filesystem::set_mods_directory(debug_mods_directory);
 			filesystem::set_core_assets_directory(debug_core_asssets_directory);
+			filesystem::set_saved_directory(debug_saved_directory);
 		}
 #else
 		{
 			std::string path = filesystem::get_main_dir();
 			filesystem::set_mods_directory(path + "mods/");
 			filesystem::set_core_assets_directory(path + "assets/");
+			filesystem::set_core_assets_directory(path + "saved/");
 		}
 #endif	
 

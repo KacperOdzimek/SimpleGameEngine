@@ -2,12 +2,18 @@
 #include "source/common/crash.h"
 #include "include/stb/stb_image.h"
 #include "include/dirent.h"
+#include <filesystem>
 
 static std::string mod_assets_path;
 static std::string core_assets_path;
+
+static std::string mods_path;
+
+static std::string saved_path;
+static bool saved_path_enabled = false;
+
 static std::string active_path;
 static bool acitve_path_enabled = false;
-static std::string mods_path;
 
 void filesystem::set_mod_assets_directory(std::string path)
 {
@@ -17,6 +23,16 @@ void filesystem::set_mod_assets_directory(std::string path)
 void filesystem::set_core_assets_directory(std::string path)
 {
 	core_assets_path = path;
+}
+
+void filesystem::set_saved_directory(std::string path)
+{
+	saved_path = path;
+}
+
+void filesystem::set_saved_directory_enabled(bool enabled)
+{
+	saved_path_enabled = enabled;
 }
 
 void filesystem::set_active_assets_directory(std::string path)
@@ -58,6 +74,8 @@ std::string filesystem::get_global_path(std::string path)
 		return core_assets_path + path.substr(split_index, path.size());
 	else if (package == "$" && acitve_path_enabled)
 		return  get_global_path(active_path + path.substr(split_index, path.size()));
+	else if (package == "saved" && saved_path_enabled)
+		return  saved_path + path.substr(split_index, path.size());
 	error_handling::crash(error_handling::error_source::core, "[filesystem::get_global_path]",
 		"Unknown/Unavaible package: " + package);
 	return "";
@@ -73,6 +91,20 @@ std::fstream filesystem::load_file(std::string path)
 	if (file.fail())
 		error_handling::crash(error_handling::error_source::core, "[filesystem::load_file]", 
 			"No such file: \n" + path + "\n" + global_path);
+
+	return file;
+}
+
+std::fstream filesystem::create_file(std::string path)
+{
+	std::string global_path = filesystem::get_global_path(path);
+
+	std::fstream file;
+	file.open(global_path, std::fstream::out);
+
+	if (file.fail())
+		error_handling::crash(error_handling::error_source::core, "[filesystem::create_file]",
+			"Cannot create file: \n" + path + "\n" + global_path);
 
 	return file;
 }
@@ -145,6 +177,13 @@ std::vector<std::string> filesystem::get_all_subfolders(std::string folder)
 std::string filesystem::get_main_dir()
 {
 	return getExecutableDir();
+}
+
+void filesystem::ensure_mod_saves_folder_exist(std::string& mod_name)
+{
+	std::string path = saved_path + '/' + mod_name;
+	if (!std::filesystem::is_directory(path) || !std::filesystem::exists(path))
+		std::filesystem::create_directory(path);
 }
 
 filesystem::image_file::~image_file()
