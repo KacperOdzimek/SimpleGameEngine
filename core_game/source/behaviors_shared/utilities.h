@@ -206,7 +206,7 @@ inline void dump_table_to_json(lua_State* L, nlohmann::json* object, int table_s
 		switch (lua_type(L, -2))
 		{
 		case LUA_TNUMBER:
-			(*object)[key] = static_cast<int>(lua_tointeger(L, -2));
+			(*object)[key] = static_cast<float>(lua_tonumber(L, -2));
 			break;
 		case LUA_TBOOLEAN:
 			(*object)[(key)] = static_cast<bool>(lua_toboolean(L, -2));
