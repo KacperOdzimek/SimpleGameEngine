@@ -3,6 +3,8 @@
 
 #include "source/assets/scene_asset.h"
 
+#include "include/glm/vec2.hpp"
+
 #include <vector>
 #include <memory>
 
@@ -24,6 +26,7 @@ namespace entities
 		*/
 		std::vector<std::weak_ptr<entity>> entities;
 		const uint32_t name;
+		const glm::vec2 world_offset;
 	protected:
 		/*
 			frames_since_purged
@@ -35,8 +38,8 @@ namespace entities
 		int frames_since_purged = 0;
 		std::shared_ptr<assets::scene> _scene;
 	public:
-		scene(uint32_t _name);
-		scene(uint32_t _name, std::weak_ptr<assets::scene> __scene);
+		scene(uint32_t _name, glm::vec2 world_offset);
+		scene(uint32_t _name, glm::vec2 world_offset, std::weak_ptr<assets::scene> __scene);
 		void update();
 		~scene();
 	};

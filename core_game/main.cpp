@@ -35,7 +35,7 @@ int main()
 {
 	try
 	{
-		common::window_manager->create_window("Top Down Game", 16 * 80, 9 * 80, false);
+		common::window_manager->create_window("Simple Game Engine", 16 * 80, 9 * 80, false);
 		common::renderer->initialize();
 		common::window_manager->set_resize_callback(common::renderer->get_resize_function());
 

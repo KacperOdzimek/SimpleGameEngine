@@ -305,7 +305,6 @@ void behaviors::behaviors_manager::pop_frame()
 const behaviors::frame* behaviors::behaviors_manager::get_current_frame()
 {
     if (impl->frames_stack.size() == 0)
-        error_handling::crash(error_handling::error_source::core, "[get_active_database]",
-            "Tried to get active database when frames stack was empty");
+        return nullptr;
     return &impl->frames_stack.back();
 }

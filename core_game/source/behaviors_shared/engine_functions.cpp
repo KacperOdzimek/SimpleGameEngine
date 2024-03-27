@@ -24,9 +24,12 @@ namespace behaviors
 			{
 				auto name = load_id(L, 1, "[_en_load_scene]", "Scene");
 				auto scene_asset = load_asset_path(L, 2, "[_en_load_scene]");
+				float x_offset = static_cast<float>(lua_tonumber(L, 3));
+				float y_offset = static_cast<float>(lua_tonumber(L, 4));
 
 				common::world->create_scene(
 					name,
+					{ x_offset , y_offset },
 					assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset(scene_asset))
 				);
 

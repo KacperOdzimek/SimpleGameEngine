@@ -9,6 +9,9 @@
 #include "source/components/behavior.h"
 #include "source/components/mesh.h"
 
+#include "source/behaviors/behaviors_manager.h"
+#include "source/behaviors/frame.h"
+
 #include <set>
 
 entities::entity::entity()
@@ -21,6 +24,10 @@ entities::entity::entity(scene* parent_scene)
 {
 	self = std::shared_ptr<entity>{ this };
 	parent_scene->entities.push_back(self);
+
+	auto f = common::behaviors_manager->get_current_frame();
+	if (f->scene_context != common::world->get_dynamic_scene())
+		location += f->scene_context->world_offset;
 }
 
 void entities::entity::attach_component(component* comp)
@@ -71,6 +78,10 @@ const glm::vec2& entities::entity::get_location()
 
 void entities::entity::teleport(glm::vec2 new_location)
 {
+	auto f = common::behaviors_manager->get_current_frame();
+	if (f->scene_context != common::world->get_dynamic_scene())
+		new_location += f->scene_context->world_offset;
+
 	location = new_location;
 	for (auto& c : components)
 	{

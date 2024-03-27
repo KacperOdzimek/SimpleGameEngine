@@ -6,11 +6,11 @@ using namespace entities;
 
 constexpr int purge_triggering_dangling_pointers_amount = 30 * 60;  //Purge every 30 seconds
 
-scene::scene(uint32_t _name) : name(_name)
+scene::scene(uint32_t _name, glm::vec2 _world_offset) : name(_name), world_offset(_world_offset)
 {
 }
 
-scene::scene(uint32_t _name, std::weak_ptr<assets::scene> __scene) : name(_name)
+scene::scene(uint32_t _name, glm::vec2 _world_offset, std::weak_ptr<assets::scene> __scene) : name(_name), world_offset(_world_offset)
 {
     _scene = __scene.lock();
 

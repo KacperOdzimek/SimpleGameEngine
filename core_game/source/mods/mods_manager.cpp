@@ -61,6 +61,7 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 
 	common::world->create_scene(
 		utilities::hash_string("start_scene"),
+		glm::vec2(0, 0),
 		assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset("mod" + start_scene))
 	);
 }

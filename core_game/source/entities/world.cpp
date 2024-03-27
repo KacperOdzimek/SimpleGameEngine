@@ -13,7 +13,7 @@ namespace entities
 	world::world()
 	{
 		impl = new implementation;
-		impl->dynamic_scene = std::make_unique<scene>(0);
+		impl->dynamic_scene = std::make_unique<scene>(0, glm::vec2(0, 0));
 	}
 
 	world::~world()
@@ -35,7 +35,7 @@ namespace entities
 			scene->update();
 	}
 
-	void world::create_scene(uint32_t name, std::weak_ptr<assets::scene> _scene)
+	void world::create_scene(uint32_t name, glm::vec2 world_offset, std::weak_ptr<assets::scene> _scene)
 	{
 		for (auto& scene : impl->scenes)
 			if (scene->name == name)
@@ -44,7 +44,7 @@ namespace entities
 					"[world::create_scene]", "Scene named: " + std::to_string(name) + " already exists");
 			}
 
-		auto s = std::make_unique<scene>(name, _scene);
+		auto s = std::make_unique<scene>(name, world_offset, _scene);
 		impl->scenes.push_back(std::move(s));
 	}
 
