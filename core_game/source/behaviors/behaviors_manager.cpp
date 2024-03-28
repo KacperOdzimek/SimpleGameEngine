@@ -228,9 +228,9 @@ bool behaviors::behaviors_manager::prepare_custom_behavior_function_call(const s
     lua_getfield(impl->L, -1, func_name.c_str());
     lua_insert(impl->L, -lua_gettop(impl->L));
     lua_remove(impl->L, -1);
-    if (lua_isnil(impl->L, -1))
+    if (lua_isnil(impl->L, 1))
     {
-        lua_pop(impl->L, -1);
+        lua_remove(impl->L, 1);
         return false;
     }
     return true;
