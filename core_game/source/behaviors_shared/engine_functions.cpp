@@ -6,6 +6,9 @@
 #include "source/rendering/renderer.h"
 #include "source/mods/mods_manager.h"
 #include "source/filesystem/filesystem.h"
+#include "source/behaviors/behaviors_manager.h"
+
+#include "source/behaviors/frame.h"
 
 #include "source/entities/world.h"
 #include "source/entities/entity.h"
@@ -142,7 +145,7 @@ namespace behaviors
 						float x = object.at("x");
 						float y = object.at("y");
 
-						std::weak_ptr<::entities::entity> e = (new ::entities::entity{})->get_weak();
+						std::weak_ptr<::entities::entity> e = (new ::entities::entity{ common::behaviors_manager->get_current_frame()->scene_context })->get_weak();
 
 						//scene space location
 						float sx = static_cast<float>(x / common::pixels_per_world_unit - float(width) / 4.0f);

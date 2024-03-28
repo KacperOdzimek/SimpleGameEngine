@@ -40,8 +40,7 @@ namespace entities
 		for (auto& scene : impl->scenes)
 			if (scene->name == name)
 			{
-				error_handling::crash(error_handling::error_source::core, 
-					"[world::create_scene]", "Scene named: " + std::to_string(name) + " already exists");
+				return;
 			}
 
 		auto s = std::make_unique<scene>(name, world_offset, _scene);
