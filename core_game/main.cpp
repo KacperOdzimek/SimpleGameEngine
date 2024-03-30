@@ -105,7 +105,12 @@ int main()
 
 				frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 			}
-			
+			else if (delta_time > frame_time_ms)
+			{
+				common::delta_time = 0;
+				continue;
+			}
+
 			common::delta_time = frame_end - frame_start;
 		}
 	}

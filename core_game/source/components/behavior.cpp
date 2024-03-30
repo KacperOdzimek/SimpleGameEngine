@@ -59,13 +59,15 @@ void entities::components::behavior::call_function(behaviors::functions func, st
 	common::behaviors_manager->pop_frame();
 }
 
-void entities::components::behavior::call_custom_function(const std::string& name)
+void entities::components::behavior::call_custom_function(const std::string& name, const int& args_registry_id)
 {
 	auto owner_weak_ptr = get_owner_weak();
 	common::behaviors_manager->create_frame(database, common::world->get_dynamic_scene());
-	bool implemented = common::behaviors_manager->prepare_custom_behavior_function_call(name, this->behavior_asset.get());
+	bool implemented = common::behaviors_manager->prepare_custom_behavior_function_call(name, this->behavior_asset.get(), args_registry_id);
 	if (!implemented)
 		return;
+	common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
+	common::behaviors_manager->pass_custom_function_args(args_registry_id);
 	common::behaviors_manager->call(2);
 	common::behaviors_manager->pop_frame();
 }

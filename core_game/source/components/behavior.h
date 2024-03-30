@@ -37,7 +37,7 @@ namespace entities
 				call_custom_function
 				calls function of given name on the behavior
 			*/
-			void call_custom_function(const std::string& name);
+			void call_custom_function(const std::string& name, const int& args_registry_id);
 			virtual void on_attach() override;
 		};
 	}

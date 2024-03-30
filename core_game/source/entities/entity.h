@@ -5,7 +5,7 @@
 #include "include/glm/vec2.hpp"
 
 #include <memory>
-#include <vector>
+#include <list>
 #include <set>
 
 namespace entities
@@ -18,7 +18,7 @@ namespace entities
 	friend class scene;
 	friend component;
 	protected:
-		std::vector<component*> components;
+		std::list<component*> components;
 		std::shared_ptr<entity> self;
 		glm::vec2 location{ 0.0f, 0.0f };
 		void call_on_overlap(std::set<std::shared_ptr<entities::entity>*>& overlaping_entities);
@@ -79,7 +79,7 @@ namespace entities
 			call_event
 			calls event event_<name> function on every behavior component in the entity
 		*/
-		void call_event(const char* name);
+		void call_event(const char* name, const int& args_registry_id);
 
 		~entity();
 	};

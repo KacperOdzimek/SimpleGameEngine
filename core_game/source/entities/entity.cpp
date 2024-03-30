@@ -59,7 +59,7 @@ void entities::entity::call_on_overlap(std::set<std::shared_ptr<entities::entity
 	}
 }
 
-void entities::entity::call_event(const char* name)
+void entities::entity::call_event(const char* name, const int& args_registry_id)
 {
 	std::string event_name = "event_";
 	event_name += name;
@@ -67,7 +67,7 @@ void entities::entity::call_event(const char* name)
 	{
 		auto behavior = dynamic_cast<components::behavior*>(comp);
 		if (behavior != nullptr)
-			behavior->call_custom_function(event_name);
+			behavior->call_custom_function(event_name, args_registry_id);
 	}
 }
 
@@ -178,12 +178,12 @@ entities::component* entities::entity::get_component(uint32_t id)
 }
 
 void entities::entity::kill_component(uint32_t id)
-{
-	for (int i = 0; i < components.size(); i++)
-		if (components[i]->id == id)
+{;
+	for (auto itr = components.begin(); itr != components.end(); itr++)
+		if ((*itr)->id == id)
 		{
-			delete components[i];
-			components.erase(components.begin() + i);
+			delete (*itr);
+			components.erase(itr);
 		}
 }
 

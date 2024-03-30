@@ -294,14 +294,15 @@ namespace behaviors
 				auto ptr = load_component<::entities::components::behavior>(L, "[_c_b_call]");
 				const char* name = lua_tostring(L, 3);
 
-				lua_remove(L, 2);	//Remove component id
-				lua_remove(L, 2);	//Remove event name
+				lua_remove(L, 1);	//Remove entity
+				lua_remove(L, 1);	//Remove component id
+				lua_remove(L, 1);	//Remove event name
 
 				std::string event_name = "event_";
 				event_name += name;
-
-				ptr->call_custom_function(event_name);
-
+				int args = luaL_ref(L, LUA_REGISTRYINDEX);
+				ptr->call_custom_function(event_name, args);
+				luaL_unref(L, LUA_REGISTRYINDEX, args);
 				return 0;
 			}
 

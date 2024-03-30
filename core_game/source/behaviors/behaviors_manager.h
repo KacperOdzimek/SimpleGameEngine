@@ -113,10 +113,11 @@ namespace behaviors
 			returns true if function can be called
 			returns false if function is not implemented and futher actions should be abort
 			-l-
-			[func_name]	name of function to be invoken
-			[bhv]		behavior from which function should be called
+			[func_name]			name of function to be invoken
+			[bhv]				behavior from which function should be called
+			[args_registry_id]	registry index of args table
 		*/
-		bool prepare_custom_behavior_function_call(const std::string& name, assets::behavior* bhv);
+		bool prepare_custom_behavior_function_call(const std::string& name, assets::behavior* bhv, const int& args_registry_id);
 		/*
 			prepare_scene_function_call
 			informs lua environement about incoming scene function call
@@ -154,6 +155,11 @@ namespace behaviors
 			passes an arg to the behavior function in the following {call} call
 		*/
 		void pass_float_arg(float arg);
+		/*
+			pass_custom_function_args
+			loads args table back from registry
+		*/
+		void pass_custom_function_args(const int& args_registry_id);
 		/*
 			create_frame
 			creates frame that holds program state

@@ -26,8 +26,6 @@ extern "C"
 #include <vector>
 #include <list>
 
-constexpr int purge_triggering_dangling_pointers_amount = 20;
-
 struct behaviors::behaviors_manager::implementation
 {
     /*
@@ -44,25 +42,9 @@ struct behaviors::behaviors_manager::implementation
     uint64_t behaviors_id_iterator = 0;
     /*
         registered_behaviors
-        set of all behavior components in the scene
-        -l-
-        [key]   pointer to the component        (possibly dangling!)
-        [value] is component valid and enabled
-        -l-
-        when component is destroyed, it turns itself off by setting the 
-        assigned value to false in unregister_behavior_component function
-        this way we don't obscure iteration throught registered_behaviors in call_update_functions
-        the set is then purged from inactive pointers
+        set of all behavior components in the world
     */
-    std::unordered_map<entities::components::behavior*, bool> registered_behaviors;
-    /*
-        dangling_pointers
-        counter of dangling pointers in registered_behaviors
-        when it become greater than {purge_triggering_dangling_pointers_amount}
-        function {purge_registered_behaviors} is triggered
-    */
-    int dangling_pointers = 0;
-
+    std::vector<entities::components::behavior*> registered_behaviors;
     /*
         frames_stack
         saves states of the program in certain points of time (function calls) so they can be restored
@@ -71,22 +53,6 @@ struct behaviors::behaviors_manager::implementation
     std::list<frame> frames_stack;
 };
 
-/*
-    purge_registered_behaviors
-    remove dangling pointers from registered_behaviors
-*/
-inline void purge_registered_behaviors(std::unordered_map<entities::components::behavior*, bool>& _r_b)
-{
-    auto iter = _r_b.begin();
-    while (iter != _r_b.end()) {
-        if (iter->second == false) {
-            iter = _r_b.erase(iter);
-        }
-        else {
-            ++iter;
-        }
-    }
-}
 
 /*
     allocate implementation and lua_State
@@ -123,22 +89,22 @@ void behaviors::behaviors_manager::destroy_database(int id)
 
 void behaviors::behaviors_manager::register_behavior_component(entities::components::behavior* comp)
 {
-    impl->registered_behaviors.insert({ comp, true });
+    impl->registered_behaviors.push_back({ comp });
 }
 
 void behaviors::behaviors_manager::unregister_behavior_component(entities::components::behavior* comp)
 {
-    impl->registered_behaviors.at(comp) = false;
-    impl->dangling_pointers++;
+    impl->registered_behaviors.erase(std::find(
+        impl->registered_behaviors.begin(), 
+        impl->registered_behaviors.end(), 
+        comp
+    ));
 }
 
 void behaviors::behaviors_manager::call_update_functions()
 {
     for (auto& behavior : impl->registered_behaviors)
-        if (behavior.second)
-            behavior.first->call_function(functions::update);
-    if (impl->dangling_pointers > purge_triggering_dangling_pointers_amount)
-        purge_registered_behaviors(impl->registered_behaviors);
+        behavior->call_function(functions::update);
 }
 
 std::string behaviors::behaviors_manager::create_functions_table(const std::string& file_path)
@@ -197,6 +163,11 @@ void behaviors::behaviors_manager::pass_float_arg(float arg)
     lua_pushnumber(impl->L, arg);
 }
 
+void behaviors::behaviors_manager::pass_custom_function_args(const int& args_registry_id)
+{
+    lua_rawgeti(impl->L, LUA_REGISTRYINDEX, args_registry_id);
+}
+
 bool behaviors::behaviors_manager::prepare_behavior_function_call(behaviors::functions func, assets::behavior* bhv)
 {
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
@@ -222,7 +193,7 @@ bool behaviors::behaviors_manager::prepare_behavior_function_call(behaviors::fun
     return true;
 }
 
-bool behaviors::behaviors_manager::prepare_custom_behavior_function_call(const std::string& func_name, assets::behavior* bhv)
+bool behaviors::behaviors_manager::prepare_custom_behavior_function_call(const std::string& func_name, assets::behavior* bhv, const int& args_registry_id)
 {
     lua_getfield(impl->L, LUA_REGISTRYINDEX, bhv->name.c_str());
     lua_getfield(impl->L, -1, func_name.c_str());
