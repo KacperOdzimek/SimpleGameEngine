@@ -48,6 +48,25 @@ namespace behaviors
 				return 0;
 			}
 
+			int _en_get_entities_in_scene(lua_State* L)
+			{
+				auto name = load_id(L, 1, "[_en_get_all_entities_in_scene]", "Scene");
+				
+				auto scene = common::world->get_scene(name);
+
+				lua_newtable(L);
+				int counter = 1;
+				for (auto& entity : scene->entities)
+				{
+					lua_pushinteger(L, counter);
+					push_entity(L, entity);
+					lua_settable(L, -3);
+					counter++;
+				}
+
+				return 1;
+			}
+
 			void push_number_to_table(lua_State* L, const char* name, float value)
 			{
 				lua_pushstring(L, name);
@@ -320,6 +339,7 @@ namespace behaviors
 			{
 				lua_register(L, "_en_load_scene", _en_load_scene);
 				lua_register(L, "_en_unload_scene", _en_unload_scene);
+				lua_register(L, "_en_get_entities_in_scene", _en_get_entities_in_scene);
 				lua_register(L, "_en_create_entities_from_tilemap", _en_create_entities_from_tilemap);
 				lua_register(L, "_en_viewport_to_world", _en_viewport_to_world);
 				lua_register(L, "_en_load_custom_data", _en_load_custom_data);

@@ -57,6 +57,14 @@ namespace entities
 			}
 	}
 
+	scene* world::get_scene(uint32_t name)
+	{
+		for (auto& scene : impl->scenes)
+			if (scene->name == name)
+				return scene.get();
+		return nullptr;
+	}
+
 	scene* world::get_dynamic_scene()
 	{
 		return impl->dynamic_scene.get();

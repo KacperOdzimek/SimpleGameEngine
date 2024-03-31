@@ -132,6 +132,12 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 			for (auto& ovr : sweep.overlap_events)
 				overlaping_entities.insert(&(ovr.other->get_owner_weak().lock().get()->self));
 
+		if (overlaping_entities.size() == 0)
+		{
+			location = new_location;
+			return {};
+		}		
+
 		call_on_overlap(overlaping_entities);
 		overlaping_entities.insert(&self);
 
@@ -153,12 +159,15 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 				if (ovr.distance < collide_event.distance)		//Check if overlap is closer than collide event
 					overlaping_entities.insert(&(ovr.other->get_owner_weak().lock().get()->self));
 
-		call_on_overlap(overlaping_entities);
-		overlaping_entities.insert(&self);
+		if (overlaping_entities.size() != 0)
+		{
+			call_on_overlap(overlaping_entities);
+			overlaping_entities.insert(&self);
 
-		for (auto& e : overlaping_entities)
-			if (e->get() != this)
-				(*e)->call_on_overlap(overlaping_entities);
+			for (auto& e : overlaping_entities)
+				if (e->get() != this)
+					(*e)->call_on_overlap(overlaping_entities);
+		}
 
 		location += events.at(closest_event_id).velocity;
 

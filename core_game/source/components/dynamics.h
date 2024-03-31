@@ -32,6 +32,11 @@ namespace entities
 
 			void sweep();
 
+			const void set_velocity(glm::vec2 vel)
+			{
+				velocity = vel;
+			}
+
 			const glm::vec2& get_velocity() 
 			{ 
 				return velocity; 

@@ -479,6 +479,17 @@ namespace behaviors
 				return 2;
 			}
 
+			int _c_d_set_vel(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_max_vel]");
+				auto x = static_cast<float>(lua_tonumber(L, 3));
+				auto y = static_cast<float>(lua_tonumber(L, 4));
+				
+				d->set_velocity({ x, y });
+
+				return 0;
+			}
+
 			int _c_d_set_max_vel(lua_State* L)
 			{
 				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_max_vel]");
@@ -598,6 +609,7 @@ namespace behaviors
 				lua_register(L, "_c_d_get_max_vel", _c_d_get_max_vel);
 				lua_register(L, "_c_d_set_max_vel", _c_d_set_max_vel);
 				lua_register(L, "_c_d_get_vel", _c_d_get_vel);
+				lua_register(L, "_c_d_set_vel", _c_d_set_vel);
 
 				lua_register(L, "_c_t_get_layers_stride", _c_t_get_layers_stride);
 				lua_register(L, "_c_t_set_layers_stride", _c_t_set_layers_stride);
