@@ -224,3 +224,31 @@ inline void dump_table_to_json(lua_State* L, nlohmann::json* object, int table_s
 	}
 	lua_pop(L, 1);
 }
+
+inline void push_nil_to_table(lua_State* L, const char* name)
+{
+	lua_pushstring(L, name);
+	lua_pushnil(L);
+	lua_settable(L, -3);
+}
+
+inline void push_number_to_table(lua_State* L, const char* name, float value)
+{
+	lua_pushstring(L, name);
+	lua_pushnumber(L, value);
+	lua_settable(L, -3);
+}
+
+inline void push_string_to_table(lua_State* L, const char* name, const char* value)
+{
+	lua_pushstring(L, name);
+	lua_pushstring(L, value);
+	lua_settable(L, -3);
+}
+
+inline void push_entity_to_table(lua_State* L, const char* name, std::weak_ptr<::entities::entity> value)
+{
+	lua_pushstring(L, name);
+	push_entity(L, value);
+	lua_settable(L, -3);
+}

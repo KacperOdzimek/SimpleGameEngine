@@ -67,20 +67,6 @@ namespace behaviors
 				return 1;
 			}
 
-			void push_number_to_table(lua_State* L, const char* name, float value)
-			{
-				lua_pushstring(L, name);
-				lua_pushnumber(L, value);
-				lua_settable(L, -3);
-			}
-
-			void push_string_to_table(lua_State* L, const char* name, const char* value)
-			{
-				lua_pushstring(L, name);
-				lua_pushstring(L, value);
-				lua_settable(L, -3);
-			}
-
 			std::string create_path(const std::string& path, const std::string& package)
 			{
 				if (path.at(0) == '$')

@@ -30,6 +30,12 @@ namespace physics
 		collision_event check_if_ray_collide(
 			collision_preset trace_preset, glm::vec2 trace_begin, glm::vec2 trace_dir, entities::components::collider* collider);
 		/*
+			check_if_ray_collide
+			checks if ray of infinite length would hit any collider
+		*/
+		collision_event check_if_ray_collide(
+			collision_preset trace_preset, glm::vec2 trace_begin, glm::vec2 trace_dir);
+		/*
 			check_if_collider_collide_on_move
 			checks wheter collider would hit another collider when moved to some location
 		*/

@@ -10,6 +10,7 @@
 #include "source/behaviors_shared/add_component_functions.h"
 #include "source/behaviors_shared/components_functions.h"
 #include "source/behaviors_shared/input_functions.h"
+#include "source/behaviors_shared/collision_functions.h"
 
 void behaviors::register_shared(lua_State* L)
 {
@@ -21,4 +22,5 @@ void behaviors::register_shared(lua_State* L)
 	lua_shared::add_component::register_shared(L);
 	lua_shared::components::register_shared(L);
 	lua_shared::input::register_shared(L);
+	lua_shared::collision::register_shared(L);
 }

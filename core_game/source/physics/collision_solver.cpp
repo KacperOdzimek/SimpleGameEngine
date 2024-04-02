@@ -3,11 +3,7 @@
 
 #include "include/glm/glm.hpp"
 
-#include <list>
-#include <unordered_map>
-#include <set>
 #include <vector>
-#include <map>
 #include <algorithm>
 
 using collider = entities::components::collider;
@@ -40,6 +36,19 @@ namespace physics
 	}
 
 	collision_event collision_solver::check_if_ray_collide(
+		collision_preset trace_preset, glm::vec2 trace_begin, glm::vec2 trace_dir)
+	{
+		for (auto& c : impl->all_colliders)
+		{
+			auto event = check_if_ray_collide(trace_preset, trace_begin, trace_dir, c);
+			if (event.response == collision_response::collide)
+				return event;
+		}
+
+		return {};
+	}
+
+	collision_event collision_solver::check_if_ray_collide(
 		collision_preset trace_preset, glm::vec2 trace_begin, glm::vec2 trace_dir, entities::components::collider* collider)
 	{
 		auto response = get_response_type(trace_preset, collider->preset);
@@ -54,12 +63,13 @@ namespace physics
 
 		if (near.x > far.y || near.y > far.x) return {};
 
-		collision_event e;
-
 		float hit_near = std::max(near.x, near.y);
 		float hit_far = std::min(far.x, far.y);
 
 		if (hit_far < 0) return {};
+		if (hit_near != hit_near) hit_near = hit_far;
+
+		collision_event e;
 
 		e.location = trace_begin + hit_near * trace_dir;
 		e.distance = glm::distance(trace_begin, e.location);
