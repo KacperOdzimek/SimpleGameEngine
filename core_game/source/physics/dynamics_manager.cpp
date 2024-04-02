@@ -34,6 +34,9 @@ void physics::dynamics_manager::unregister_dynamics(entities::components::dynami
 
 void physics::dynamics_manager::update()
 {
-	for (auto& flip : impl->all_dynamics)
-		flip->sweep();
+	for (auto& d : impl->all_dynamics)
+	{
+		d->grouned = false;
+		d->sweep();
+	}
 }

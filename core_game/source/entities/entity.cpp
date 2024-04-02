@@ -8,6 +8,7 @@
 #include "source/components/collider.h"
 #include "source/components/behavior.h"
 #include "source/components/mesh.h"
+#include "source/components/dynamics.h"
 
 #include "source/behaviors/behaviors_manager.h"
 #include "source/behaviors/frame.h"
@@ -96,12 +97,11 @@ void entities::entity::teleport(glm::vec2 new_location)
 
 physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 {
-	if (new_location.x == location.x && new_location.y == location.y)
-		return {};
-
 	std::vector<physics::sweep_move_event> events;
 	int closest_event_id = -1;
 	components::collider* collider = nullptr;
+
+	std::vector<components::dynamics*> dynamics_components;
 
 	for (auto& c : components)
 	{
@@ -122,6 +122,9 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 		{
 			m_ptr->mark_pipeline_dirty();
 		}
+		auto d_ptr = dynamic_cast<components::dynamics*>(c);
+		if (d_ptr != nullptr)
+			dynamics_components.push_back(d_ptr);
 	}
 
 	if (closest_event_id == -1)
@@ -170,6 +173,9 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 		}
 
 		location += events.at(closest_event_id).velocity;
+
+		for (auto& d : dynamics_components)
+			d->collide_event(events.at(closest_event_id).collide_event.normal);
 
 		call_on_collide(collide_event.other->get_owner_weak());
 		collide_event.other->get_owner_weak().lock()->call_on_collide(this->self);

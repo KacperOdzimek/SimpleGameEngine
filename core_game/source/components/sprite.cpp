@@ -86,8 +86,8 @@ void sprite::pass_transformation(rendering::transformations_buffer_iterator& tbi
 		tbi.put(std::move(location.x));
 		tbi.put(std::move(location.y));
 
-		tbi.put(sprite_extend.x);
-		tbi.put(sprite_extend.y);
+		tbi.put(sprite_extend.x * scale.x);
+		tbi.put(sprite_extend.y * scale.y);
 
 		tbi.put(owner->layer);
 		tbi.put(sprite_id);

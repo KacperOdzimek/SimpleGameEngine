@@ -17,6 +17,7 @@ namespace common
 	double delta_time = 0.0;
 	double pixels_per_world_unit = 32;
 	float physics_time_dilation_mod = 1.0f;
+	bool top_down = false;
 	std::unique_ptr<rendering::renderer> renderer = std::make_unique<rendering::renderer>();
 	std::unique_ptr<rendering::flipbooks_manager> flipbooks_manager = std::make_unique<rendering::flipbooks_manager>();
 	std::unique_ptr<audio::audio_manager> audio_manager = std::make_unique<audio::audio_manager>();;

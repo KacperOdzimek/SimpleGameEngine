@@ -498,6 +498,13 @@ namespace behaviors
 				return 0;
 			}
 
+			int _c_d_get_grounded(lua_State* L)
+			{
+				auto d = load_component<::entities::components::dynamics>(L, "[_c_d_set_max_vel]");
+				lua_pushboolean(L, d->get_grounded());
+				return 1;
+			}
+
 			/*
 				Tilemap
 			*/
@@ -610,6 +617,7 @@ namespace behaviors
 				lua_register(L, "_c_d_set_max_vel", _c_d_set_max_vel);
 				lua_register(L, "_c_d_get_vel", _c_d_get_vel);
 				lua_register(L, "_c_d_set_vel", _c_d_set_vel);
+				lua_register(L, "_c_d_get_grounded", _c_d_get_grounded);
 
 				lua_register(L, "_c_t_get_layers_stride", _c_t_get_layers_stride);
 				lua_register(L, "_c_t_set_layers_stride", _c_t_set_layers_stride);

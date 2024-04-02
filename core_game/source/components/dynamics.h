@@ -2,6 +2,11 @@
 #include "source/entities/component.h"
 #include "include/glm/vec2.hpp"
 
+namespace physics
+{
+	class dynamics_manager;
+}
+
 namespace entities
 {
 	namespace components
@@ -13,9 +18,14 @@ namespace entities
 		class dynamics : virtual public component
 		{
 		private:
+			friend entities::entity;
+			friend physics::dynamics_manager;
+
 			glm::vec2 velocity{};
 			glm::vec2 frame_force{};
+			bool grouned = false;
 			void apply_forces();
+			void collide_event(glm::vec2 normal);
 		public:
 			bool use_maximum_velocity = false;
 			float maximum_velocity = 0.0f;
@@ -24,6 +34,8 @@ namespace entities
 
 			dynamics(uint32_t _id);
 			~dynamics();
+
+			const bool& get_grounded() { return grouned; }
 
 			void add_force(glm::vec2 force)
 			{

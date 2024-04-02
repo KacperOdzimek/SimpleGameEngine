@@ -26,7 +26,10 @@ void dynamics::apply_forces()
 	if (glm::length(velocity) > maximum_velocity && use_maximum_velocity)
 		velocity = glm::normalize(velocity) * maximum_velocity;
 
-	velocity -= velocity * float(drag * common::delta_time) * common::physics_time_dilation_mod;
+	if (common::top_down)
+		velocity -= velocity * float(drag * common::delta_time) * common::physics_time_dilation_mod;
+	else
+		velocity.x -= velocity.x * float(drag * common::delta_time) * common::physics_time_dilation_mod;
 
 	if (glm::length(frame_force) == 0)
 	{
@@ -39,6 +42,19 @@ void dynamics::apply_forces()
 
 	velocity += (frame_force / mass) * float(common::delta_time) * common::physics_time_dilation_mod;
 	frame_force = { 0, 0 };
+}
+
+void dynamics::collide_event(glm::vec2 normal)
+{
+	if (velocity.x > 0 && normal.x < 0) velocity.x = 0;
+	else if (velocity.x < 0 && normal.x > 0) velocity.x = 0;
+
+	if (velocity.y > 0 && normal.y < 0) velocity.y = 0;
+	else if (velocity.y < 0 && normal.y > 0)
+	{
+		velocity.y = 0;
+		grouned = true;
+	}
 }
 
 void dynamics::sweep()

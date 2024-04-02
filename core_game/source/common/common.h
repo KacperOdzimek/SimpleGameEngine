@@ -62,6 +62,10 @@ namespace common
 		multiplied by delta_time gives the delta time used by dynamics component
 	*/
 	extern float physics_time_dilation_mod;
+	/*
+		whether to apply drag to y axis in dynamics component
+	*/
+	extern bool top_down;
 	extern std::unique_ptr<rendering::flipbooks_manager> flipbooks_manager;
 	extern std::unique_ptr<rendering::renderer> renderer;
 	extern std::unique_ptr<audio::audio_manager> audio_manager;

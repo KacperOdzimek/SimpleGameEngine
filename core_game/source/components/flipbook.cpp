@@ -49,8 +49,8 @@ void flipbook::pass_transformation(rendering::transformations_buffer_iterator& t
 		tbi.put(std::move(location.x));
 		tbi.put(std::move(location.y));
 
-		tbi.put(sprite_extend.x);
-		tbi.put(sprite_extend.y);
+		tbi.put(sprite_extend.x * scale.x);
+		tbi.put(sprite_extend.y * scale.y);
 
 		tbi.put(owner->layer);
 		tbi.put(reinterpret_cast<assets::flipbook*>(rc.textures.at(0).get())

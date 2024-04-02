@@ -39,6 +39,12 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 
 	common::pixels_per_world_unit = manifest.at("pixels_per_unit");
 
+	if (!(manifest.contains("top_down") && manifest.at("top_down").is_boolean()))
+		error_handling::crash(error_handling::error_source::core, "[mods_manager::load_mod]",
+			"Invalid mod manifest: missing top_down / top_down isn't bool");
+
+	common::top_down = manifest.at("top_down");
+
 	if (!(manifest.contains("audio_rolloff") && manifest.at("audio_rolloff").is_number()))
 		error_handling::crash(error_handling::error_source::core, "[mods_manager::load_mod]",
 			"Invalid mod manifest: missing audio_rolloff / audio_rolloff isn't number");
