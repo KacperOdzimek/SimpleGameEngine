@@ -10,7 +10,7 @@
 using namespace entities;
 using namespace components;
 
-dynamics::dynamics(uint32_t _id) : component(_id)
+dynamics::dynamics(uint32_t _id) : component(_id), gravity_enabled(!common::top_down)
 {
 	common::dynamics_manager->register_dynamics(this);
 }
@@ -38,6 +38,12 @@ void dynamics::apply_forces()
 
 		if (std::abs(velocity.y) < 0.3f)
 			velocity.y = 0;
+	}
+
+	if (gravity_enabled)
+	{
+		//TODO
+		frame_force.y -= 25.0f;
 	}
 
 	velocity += (frame_force / mass) * float(common::delta_time) * common::physics_time_dilation_mod;
