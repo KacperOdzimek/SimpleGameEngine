@@ -124,12 +124,12 @@ namespace behaviors
 				if (!(tilemap.contains("width") && tilemap.at("width").is_number_integer()))
 					error_handling::crash(error_handling::error_source::core, "[_en_create_entities_from_tilemap]",
 						"Source file is missing width");
-				unsigned int width = tilemap.at("width");
+				unsigned int map_width = tilemap.at("width");
 
 				if (!(tilemap.contains("height") && tilemap.at("height").is_number_integer()))
 					error_handling::crash(error_handling::error_source::core, "[_en_create_entities_from_tilemap]",
 						"Source file is missing height");
-				unsigned int height = tilemap.at("height");
+				unsigned int map_height = tilemap.at("height");
 
 				int layers_counter = -1;
 				int object_layers_counter = -1;
@@ -152,19 +152,12 @@ namespace behaviors
 
 						std::weak_ptr<::entities::entity> e = (new ::entities::entity{ common::behaviors_manager->get_current_frame()->scene_context })->get_weak();
 
-						//scene space location
-						float sx = static_cast<float>(x / common::pixels_per_world_unit - float(width) / 4.0f);
-						float sy = static_cast<float>(-(y / common::pixels_per_world_unit - float(height) / 4.0f) - 0.5);
-
-						e.lock()->teleport({ sx, sy });
 						e.lock()->layer = layers_counter;
 
 						lua_rawgeti(L, LUA_REGISTRYINDEX, creator_function_ref);	//Restore the creator from registry
 
 						lua_createtable(L, 0, 0);
-
-						push_number_to_table(L, "x", sx);
-						push_number_to_table(L, "y", sy);
+				
 						push_number_to_table(L, "layer", static_cast<float>(layers_counter));
 						push_number_to_table(L, "object_layer", static_cast<float>(object_layers_counter));
 
@@ -178,24 +171,43 @@ namespace behaviors
 						if (templated)
 							obj_template = load_template(tilemap_folder + std::string(object.at("template")));
 
+						if (object.contains("width") || obj_template.contains("width"))
+						{
+							float width;
+							if (object.contains("width"))
+								width = static_cast<float>(float(object.at("width")));
+							else
+								width = static_cast<float>(float(obj_template.at("width")));
+							push_number_to_table(L, "width", width / static_cast<float>(common::pixels_per_world_unit));
+							x += width / 2;
+						}
+
+						if (object.contains("height") || obj_template.contains("height"))
+						{
+							float height;
+							if (object.contains("height"))
+								height = static_cast<float>(float(object.at("height")));
+							else
+								height = static_cast<float>(float(obj_template.at("height")));
+							push_number_to_table(L, "height", height / static_cast<float>(common::pixels_per_world_unit));
+							y += height / 2 - static_cast<float>(common::pixels_per_world_unit / 2);
+						}
+
 						nlohmann::json* data;
-						if (templated)
-							data = &obj_template;
-						else
-							data = &object;
+						if (templated) data = &obj_template;
+						else data = &object;
 
 						push_string_to_table(L, "name", std::string(data->at("name")).c_str());
 						push_string_to_table(L, "class", std::string(data->at("type")).c_str());
 
-						if (data->contains("width"))
-							push_number_to_table(L, "width", 
-								static_cast<float>(float(data->at("width")) / common::pixels_per_world_unit)
-							);
+						//scene space location
+						float sx = static_cast<float>(x / common::pixels_per_world_unit - float(map_width) / 4.0f);
+						float sy = static_cast<float>(-(y / common::pixels_per_world_unit - float(map_height) / 4.0f) - 0.5);
 
-						if (data->contains("height"))
-							push_number_to_table(L, "height",
-								static_cast<float>(float(data->at("height")) / common::pixels_per_world_unit)
-							);
+						e.lock()->teleport({ sx, sy });
+
+						push_number_to_table(L, "x", sx);
+						push_number_to_table(L, "y", sy);
 
 						auto load_properites = [&](nlohmann::json source)
 						{

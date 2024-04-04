@@ -55,8 +55,12 @@ namespace physics
 		if (response == collision_response::ignore)
 			return {};
 
+		collider->extend /= 4;
+
 		glm::vec2 near = (collider->get_world_pos() - glm::vec2{collider->extend.x, -collider->extend.y} - trace_begin) / trace_dir;
 		glm::vec2 far = (collider->get_world_pos() + glm::vec2{collider->extend.x, -collider->extend.y} - trace_begin) / trace_dir;
+
+		collider->extend *= 4;
 
 		if (near.x > far.x) std::swap(near.x, far.x);
 		if (near.y > far.y) std::swap(near.y, far.y);
