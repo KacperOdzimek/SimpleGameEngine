@@ -51,6 +51,13 @@ struct behaviors::behaviors_manager::implementation
         also holds used databases alive
     */
     std::list<frame> frames_stack;
+    /*
+        loaded_modules
+        modules loaded via require_module
+        key is module relative path
+        value is lua registry address of the module
+    */
+    std::unordered_map<std::string, int> loaded_modules;
 };
 
 
@@ -71,6 +78,9 @@ behaviors::behaviors_manager::behaviors_manager()
 */
 behaviors::behaviors_manager::~behaviors_manager()
 {
+    for (auto& module : impl->loaded_modules)
+        luaL_unref(impl->L, LUA_REGISTRYINDEX, module.second);
+
     lua_close(impl->L);
     delete impl;
 }
@@ -99,6 +109,24 @@ void behaviors::behaviors_manager::unregister_behavior_component(entities::compo
         impl->registered_behaviors.end(), 
         comp
     ));
+}
+
+void behaviors::behaviors_manager::require_module(const std::string& relative_path)
+{
+    auto itr = impl->loaded_modules.find(relative_path);   
+    if (itr == impl->loaded_modules.end())
+    {
+        std::string global_path = filesystem::get_global_path(relative_path) + ".lua";
+        if (luaL_dofile(impl->L, global_path.c_str())) 
+        { 
+            throw std::exception{(std::string{"Unable to load lua module: " + global_path}).c_str()};
+        }
+        int module_index = luaL_ref(impl->L, LUA_REGISTRYINDEX);
+        impl->loaded_modules.insert({ relative_path, module_index });
+
+    }
+    int module_index = impl->loaded_modules.at(relative_path);
+    lua_rawgeti(impl->L, LUA_REGISTRYINDEX, module_index);
 }
 
 void behaviors::behaviors_manager::call_update_functions()
@@ -142,12 +170,6 @@ void behaviors::behaviors_manager::destroy_functions_table(const std::string& ta
 {
     lua_pushnil(impl->L);
     lua_setfield(impl->L, LUA_REGISTRYINDEX, table_name.c_str());
-}
-
-void behaviors::behaviors_manager::pass_pointer_arg(void* arg)
-{
-    lua_pushinteger(impl->L, (uint64_t)arg);
-    luaL_ref(impl->L, LUA_REGISTRYINDEX);
 }
 
 void behaviors::behaviors_manager::pass_entity_arg(std::weak_ptr<entities::entity>* entity)

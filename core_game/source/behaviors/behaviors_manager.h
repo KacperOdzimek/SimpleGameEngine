@@ -66,6 +66,11 @@ namespace behaviors
 			returns current frame
 		*/
 		const behaviors::frame* get_current_frame();
+		/*
+			require_module
+			loads lua module (if not already loaded) and puts it on the stack
+		*/
+		void require_module(const std::string& path);
 	private:
 		struct implementation;
 		implementation* impl;
@@ -140,11 +145,6 @@ namespace behaviors
 			ends execution of the current lua function
 		*/
 		void abort();
-		/*
-			pass_x_arg
-			passes an arg to the behavior function in the following {call} call
-		*/
-		void pass_pointer_arg(void* arg);
 		/*
 			pass_entity_arg
 			passes an arg to the behavior function in the following {call} call
