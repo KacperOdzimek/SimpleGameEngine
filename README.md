@@ -1,5 +1,5 @@
 # SimpleGameEnigne
-Simple Game Engine with core written in C++, with Lua scripting support.
+ Simple Game Engine with core written in C++, with Lua scripting support.
 
-Made for fun and educational purposes.
+ Made for fun and educational purposes.
 WIP
