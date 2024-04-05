@@ -66,6 +66,7 @@ namespace common
 		whether to apply drag to y axis in dynamics component
 	*/
 	extern bool top_down;
+	extern float gravitational_acceleration;
 	extern std::unique_ptr<rendering::flipbooks_manager> flipbooks_manager;
 	extern std::unique_ptr<rendering::renderer> renderer;
 	extern std::unique_ptr<audio::audio_manager> audio_manager;

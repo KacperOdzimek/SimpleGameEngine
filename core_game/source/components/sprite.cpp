@@ -83,8 +83,8 @@ void sprite::pass_transformation(rendering::transformations_buffer_iterator& tbi
 	{
 		glm::vec2 location = owner->get_location();
 
-		tbi.put(std::move(location.x));
-		tbi.put(std::move(location.y));
+		tbi.put(std::move(location.x + offset.x));
+		tbi.put(std::move(location.y + offset.y));
 
 		tbi.put(sprite_extend.x * scale.x);
 		tbi.put(sprite_extend.y * scale.y);

@@ -27,10 +27,11 @@ namespace entities
 			void apply_forces();
 			void collide_event(glm::vec2 normal);
 		public:
-			bool use_maximum_velocity = false;
+			bool  use_maximum_velocity = false;
 			float maximum_velocity = 0.0f;
 			float drag = 0.7f;
 			float mass = 1.0f;
+			bool  gravity_enabled;
 
 			dynamics(uint32_t _id);
 			~dynamics();

@@ -105,7 +105,7 @@ void tilemap::build_colliders()
 
 	float tile_x_size = static_cast<float>(tileset_asset->tile_width / common::pixels_per_world_unit);
 	float tile_y_size = static_cast<float>(tileset_asset->tile_width / common::pixels_per_world_unit);
-	glm::vec2 extend = { tile_x_size / 2, tile_y_size /2 };
+	glm::vec2 extend = { tile_x_size * 2, tile_y_size * 2 };
 
 	for (auto& layer : tilemap_asset->layers)
 	{
