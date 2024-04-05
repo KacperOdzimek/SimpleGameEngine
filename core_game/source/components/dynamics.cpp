@@ -42,8 +42,7 @@ void dynamics::apply_forces()
 
 	if (gravity_enabled)
 	{
-		//TODO
-		frame_force.y -= 25.0f;
+		frame_force.y -= common::gravitational_acceleration;
 	}
 
 	velocity += (frame_force / mass) * float(common::delta_time) * common::physics_time_dilation_mod;

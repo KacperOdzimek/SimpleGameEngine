@@ -45,6 +45,12 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 
 	common::top_down = manifest.at("top_down");
 
+	if (!(manifest.contains("gravitational_acceleration") && manifest.at("gravitational_acceleration").is_number()))
+		error_handling::crash(error_handling::error_source::core, "[mods_manager::load_mod]",
+			"Invalid mod manifest: missing gravitational_acceleration / gravitational_acceleration isn't float");
+
+	common::gravitational_acceleration = manifest.at("gravitational_acceleration");
+
 	if (!(manifest.contains("audio_rolloff") && manifest.at("audio_rolloff").is_number()))
 		error_handling::crash(error_handling::error_source::core, "[mods_manager::load_mod]",
 			"Invalid mod manifest: missing audio_rolloff / audio_rolloff isn't number");
