@@ -34,26 +34,26 @@ void entities::components::behavior::call_function(behaviors::functions func, st
 		{
 		case behaviors::functions::init:
 			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
-			common::behaviors_manager->call(1);
+			common::behaviors_manager->call(1, 0);
 			break;
 		case behaviors::functions::update:
 			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
 			common::behaviors_manager->pass_float_arg(static_cast<float>(common::delta_time));
-			common::behaviors_manager->call(2);
+			common::behaviors_manager->call(2, 0);
 			break;
 		case behaviors::functions::destroy:
 			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
-			common::behaviors_manager->call(1);
+			common::behaviors_manager->call(1, 0);
 			break;
 		case behaviors::functions::on_overlap:
 			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
 			common::behaviors_manager->pass_entity_arg(&other);
-			common::behaviors_manager->call(2);
+			common::behaviors_manager->call(2, 0);
 			break;
 		case behaviors::functions::on_collide:
 			common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
 			common::behaviors_manager->pass_entity_arg(&other);
-			common::behaviors_manager->call(2);
+			common::behaviors_manager->call(2, 0);
 			break;
 		}
 	common::behaviors_manager->pop_frame();
@@ -68,6 +68,7 @@ void entities::components::behavior::call_custom_function(const std::string& nam
 		return;
 	common::behaviors_manager->pass_entity_arg(&owner_weak_ptr);
 	common::behaviors_manager->pass_custom_function_args(args_registry_id);
-	common::behaviors_manager->call(2);
+	if (!common::behaviors_manager->call(2, 1))
+		common::behaviors_manager->pass_nil();
 	common::behaviors_manager->pop_frame();
 }

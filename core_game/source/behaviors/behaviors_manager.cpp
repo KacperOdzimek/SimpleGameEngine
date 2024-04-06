@@ -123,7 +123,6 @@ void behaviors::behaviors_manager::require_module(const std::string& relative_pa
         }
         int module_index = luaL_ref(impl->L, LUA_REGISTRYINDEX);
         impl->loaded_modules.insert({ relative_path, module_index });
-
     }
     int module_index = impl->loaded_modules.at(relative_path);
     lua_rawgeti(impl->L, LUA_REGISTRYINDEX, module_index);
@@ -183,6 +182,11 @@ void behaviors::behaviors_manager::pass_entity_arg(std::weak_ptr<entities::entit
 void behaviors::behaviors_manager::pass_float_arg(float arg)
 {
     lua_pushnumber(impl->L, arg);
+}
+
+void behaviors::behaviors_manager::pass_nil()
+{
+    lua_pushnil(impl->L);
 }
 
 void behaviors::behaviors_manager::pass_custom_function_args(const int& args_registry_id)
@@ -250,7 +254,7 @@ bool behaviors::behaviors_manager::prepare_scene_function_call(behaviors::functi
     return true;
 }
 
-void behaviors::behaviors_manager::call(int args_amount)
+int behaviors::behaviors_manager::call(int args_amount, int results)
 {
     if (impl->frames_stack.back().target_object_database.get() == nullptr)
     {
@@ -263,14 +267,21 @@ void behaviors::behaviors_manager::call(int args_amount)
         lua_setglobal(impl->L, "self");
     }
 
-    auto err = lua_pcall(impl->L, args_amount, 0, 0);
+    int stack_size = lua_gettop(impl->L);
+
+    auto err = lua_pcall(impl->L, args_amount, results, 0);
     if (err != LUA_OK)
         error_handling::crash(error_handling::error_source::core, "[behaviors_manager::call]", lua_tostring(impl->L, -1));
-}
 
-void behaviors::behaviors_manager::abort()
-{
-    luaL_dostring(impl->L, "do return end");
+    int actuall_results = lua_gettop(impl->L) - stack_size + args_amount + 1;
+
+    while (actuall_results > results) 
+    {
+        lua_pop(impl->L, 1);
+        results++;
+    };
+
+    return std::min(actuall_results, results);
 }
 
 void behaviors::behaviors_manager::create_frame(std::shared_ptr<database> database, entities::scene* scene_context)

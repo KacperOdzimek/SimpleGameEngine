@@ -60,18 +60,6 @@ void entities::entity::call_on_overlap(std::set<std::shared_ptr<entities::entity
 	}
 }
 
-void entities::entity::call_event(const char* name, const int& args_registry_id)
-{
-	std::string event_name = "event_";
-	event_name += name;
-	for (auto& comp : components)
-	{
-		auto behavior = dynamic_cast<components::behavior*>(comp);
-		if (behavior != nullptr)
-			behavior->call_custom_function(event_name, args_registry_id);
-	}
-}
-
 const glm::vec2& entities::entity::get_location()
 {
 	return location;

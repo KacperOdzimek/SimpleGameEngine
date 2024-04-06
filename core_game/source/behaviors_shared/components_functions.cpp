@@ -303,7 +303,7 @@ namespace behaviors
 				int args = luaL_ref(L, LUA_REGISTRYINDEX);
 				ptr->call_custom_function(event_name, args);
 				luaL_unref(L, LUA_REGISTRYINDEX, args);
-				return 0;
+				return 1;
 			}
 
 			/*

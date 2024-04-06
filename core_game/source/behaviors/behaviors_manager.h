@@ -138,23 +138,13 @@ namespace behaviors
 			calls behaviors function
 			-l-
 			[args_amount] amount of function arguments
+			[results_amount] max amount of functions results
+			[return value] amount of functions results limited by results_amount
 		*/
-		void call(int args_amount);
-		/*
-			abort
-			ends execution of the current lua function
-		*/
-		void abort();
-		/*
-			pass_entity_arg
-			passes an arg to the behavior function in the following {call} call
-		*/
+		int call(int args_amount, int results_amount);
 		void pass_entity_arg(std::weak_ptr<entities::entity>* entity);
-		/*
-			pass_x_arg
-			passes an arg to the behavior function in the following {call} call
-		*/
 		void pass_float_arg(float arg);
+		void pass_nil();
 		/*
 			pass_custom_function_args
 			loads args table back from registry

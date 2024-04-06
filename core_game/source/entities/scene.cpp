@@ -21,7 +21,7 @@ scene::scene(uint32_t _name, glm::vec2 _world_offset, std::weak_ptr<assets::scen
         return;
 
     common::behaviors_manager->create_frame(nullptr, this);
-    common::behaviors_manager->call(0);
+    common::behaviors_manager->call(0, 0);
     common::behaviors_manager->pop_frame();
 }
 
@@ -31,7 +31,7 @@ scene::~scene()
         !common::behaviors_manager->prepare_scene_function_call(behaviors::functions::destroy, _scene.get())))
     {
         common::behaviors_manager->create_frame(nullptr, this);
-        common::behaviors_manager->call(0);
+        common::behaviors_manager->call(0, 0);
         common::behaviors_manager->pop_frame();
     }
 
@@ -63,6 +63,6 @@ void scene::update()
 
     common::behaviors_manager->create_frame(nullptr, this);
     common::behaviors_manager->pass_float_arg(static_cast<float>(common::delta_time));
-    common::behaviors_manager->call(1);
+    common::behaviors_manager->call(1, 0);
     common::behaviors_manager->pop_frame();
 }

@@ -2,6 +2,7 @@
 
 #include "utilities.h"
 
+#include "source/entities/component.h"
 #include "source/components/behavior.h"
 
 #include "source/common/common.h"
@@ -52,9 +53,36 @@ namespace behaviors
 				lua_remove(L, 1);
 				lua_remove(L, 1);
 				int args = luaL_ref(L, LUA_REGISTRYINDEX);
-				e->call_event(name, args);
+
+				auto& comps = e->get_components();
+				std::string event_name = "event_";
+				event_name += name;
+
+				lua_newtable(L);
+
+				int result_table = luaL_ref(L, LUA_REGISTRYINDEX);
+
+				int counter = 1;
+				for (auto& comp : comps)
+				{
+					auto behavior = dynamic_cast<::entities::components::behavior*>(comp);
+					if (behavior != nullptr)
+					{
+						behavior->call_custom_function(event_name, args);
+						lua_rawgeti(L, LUA_REGISTRYINDEX, result_table);
+						lua_pushinteger(L, counter);
+						lua_insert(L, -3);
+						lua_insert(L, -3);
+						lua_settable(L, -3);
+						lua_remove(L, -1);
+						counter++;
+					}
+				}		
+
 				luaL_unref(L, LUA_REGISTRYINDEX, args);
-				return 0;
+				lua_rawgeti(L, LUA_REGISTRYINDEX, result_table);
+				luaL_unref(L, LUA_REGISTRYINDEX, result_table);
+				return 1;
 			}
 
 			int _e_teleport(lua_State* L)

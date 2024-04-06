@@ -75,11 +75,7 @@ namespace entities
 		*/
 		std::weak_ptr<entities::entity> get_weak();
 
-		/*
-			call_event
-			calls event event_<name> function on every behavior component in the entity
-		*/
-		void call_event(const char* name, const int& args_registry_id);
+		inline const std::list<component*> get_components() { return components; };
 
 		~entity();
 	};
