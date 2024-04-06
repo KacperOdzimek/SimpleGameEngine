@@ -81,6 +81,11 @@ std::string filesystem::get_global_path(std::string path)
 	return "";
 }
 
+bool filesystem::file_exists(std::string path)
+{
+	return std::filesystem::exists(filesystem::get_global_path(path));
+}
+
 std::fstream filesystem::load_file(std::string path)
 {
 	std::string global_path = filesystem::get_global_path(path);

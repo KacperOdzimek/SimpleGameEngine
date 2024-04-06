@@ -114,7 +114,6 @@ namespace behaviors
 				tilemap_file.close();
 
 				std::string tilemap_folder = filesystem::get_owning_folder(tilemap_file_path) + "/";
-
 				filesystem::set_active_assets_directory_enabled(false);
 
 				if (!(tilemap.contains("layers") && tilemap.at("layers").is_array()))
@@ -147,6 +146,9 @@ namespace behaviors
 
 					for (auto& object : objects)
 					{
+						filesystem::set_active_assets_directory(filesystem::get_owning_folder(tilemap_asset));	//Restore active assets directory 
+																												//as it can by asset manager
+
 						float x = object.at("x");
 						float y = object.at("y");
 
@@ -314,6 +316,18 @@ namespace behaviors
 				return 0;
 			}
 
+			int _en_data_exists(lua_State* L)
+			{
+				std::string filename = lua_tostring(L, 1);
+				filesystem::set_saved_directory_enabled(true);
+				lua_pushboolean(L, 
+					filesystem::file_exists(
+						"saved/" + common::mods_manager->get_current_mod_folder_name() + '/' + filename + ".json"
+				));
+				filesystem::set_saved_directory_enabled(false);
+				return 1;
+			}
+
 			int _en_load_data(lua_State* L)
 			{
 				std::string filename = lua_tostring(L, 1);
@@ -344,6 +358,7 @@ namespace behaviors
 				lua_register(L, "_en_time_period_to_physics", _en_time_period_to_physics);
 				lua_register(L, "_en_set_physics_time_dilation", _en_set_physics_time_dilation);
 				lua_register(L, "_en_save_data", _en_save_data);
+				lua_register(L, "_en_data_exists", _en_data_exists);
 				lua_register(L, "_en_load_data", _en_load_data);
 			}
 		}

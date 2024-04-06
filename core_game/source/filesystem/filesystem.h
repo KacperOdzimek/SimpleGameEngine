@@ -59,6 +59,11 @@ namespace filesystem
 	*/
 	std::string get_global_path(std::string path);
 	/*
+	file_exists
+	checks if file exists
+	*/
+	bool file_exists(std::string relative_path_with_extension);
+	/*
 	load_file
 	loads file
 	*/
