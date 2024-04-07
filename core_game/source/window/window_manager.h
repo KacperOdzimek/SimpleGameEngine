@@ -21,6 +21,7 @@ namespace window
 
 		std::pair<int, int> get_size();
 
+		void set_mouse_visible(bool visible);
 		void set_resize_callback(std::function<void(void)> callback);
 
 		input::key_state get_key_state(input::key key);

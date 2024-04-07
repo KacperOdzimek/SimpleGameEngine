@@ -4,6 +4,7 @@
 
 #include "source/common/common.h"
 #include "source/input/input_manager.h"
+#include "source/window/window_manager.h"
 
 namespace behaviors
 {
@@ -43,12 +44,20 @@ namespace behaviors
 				return 1;
 			}
 
+			int _i_set_mouse_visible(lua_State* L)
+			{
+				bool visible = lua_toboolean(L, 1);
+				common::window_manager->set_mouse_visible(visible);
+				return 0;
+			}
+
 			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_i_action", _i_action);
 				lua_register(L, "_i_action_just_pressed", _i_action_just_pressed);
 				lua_register(L, "_i_action_just_relased", _i_action_just_relased);
 				lua_register(L, "_i_axis", _i_axis);
+				lua_register(L, "_i_set_mouse_visible", _i_set_mouse_visible);
 			}
 		}
 	}

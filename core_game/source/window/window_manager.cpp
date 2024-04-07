@@ -112,6 +112,14 @@ std::pair<int, int> window_manager::get_size()
     return { impl->width, impl->height };
 }
 
+void window::window_manager::set_mouse_visible(bool visible)
+{
+    if (visible)
+        glfwSetInputMode(impl->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    else
+        glfwSetInputMode(impl->window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+}
+
 void window_manager::set_resize_callback(std::function<void()> callback)
 {
     impl->resize_callback = callback;
