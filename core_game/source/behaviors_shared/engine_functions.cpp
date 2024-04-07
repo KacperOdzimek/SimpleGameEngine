@@ -52,9 +52,12 @@ namespace behaviors
 			{
 				auto name = load_id(L, 1, "[_en_get_all_entities_in_scene]", "Scene");
 				
-				auto scene = common::world->get_scene(name);
-
 				lua_newtable(L);
+
+				auto scene = common::world->get_scene(name);
+				if (scene == nullptr)
+					return 1;
+
 				int counter = 1;
 				for (auto& entity : scene->entities)
 				{
