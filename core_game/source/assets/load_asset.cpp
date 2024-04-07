@@ -433,8 +433,28 @@ namespace assets
 
 			bool use_pixel_aligned_camera = header.at("use_pixel_aligned_camera");
 
+			if (!header.contains("background_color") || !header.at("background_color").is_array())
+				error_handling::crash(error_handling::error_source::core, "[loading::load_rendering_config]",
+					"missing/invalid background_color");
+
+			int counter = 0;
+			glm::vec3 bg_color;
+			for (auto& channel : header.at("background_color"))
+			{
+				if (counter == 3) 
+					error_handling::crash(error_handling::error_source::core, "[loading::load_rendering_config]",
+						"too many background_color color channels");
+
+				bg_color[counter] = channel;
+				counter++;
+			}
+
+			if (counter != 3)
+				error_handling::crash(error_handling::error_source::core, "[loading::load_rendering_config]",
+					"too little background_color color channels");
+
 			auto rendering_config_asset = std::make_shared<assets::rendering_config>(
-				use_pixel_aligned_camera, default_shader
+				use_pixel_aligned_camera, default_shader, bg_color
 			);
 			return rendering_config_asset;
 		}

@@ -303,7 +303,8 @@ void renderer::render()
 
     impl->api->set_enabled(graphics_abstraction::functionalities::depth_testing, true);
 
-    screen_framebuffer->clear_color_buffers(0.0f, 0.0f, 0.0f, 1.0f);
+    auto bg_color = impl->config->background_color;
+    screen_framebuffer->clear_color_buffers(bg_color.x, bg_color.y, bg_color.z, 1.0f);
     screen_framebuffer->clear_depth_buffer();
     screen_framebuffer->clear_stencil_buffer();
 
