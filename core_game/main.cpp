@@ -16,13 +16,9 @@
 
 #include "source/utilities/hash_string.h"
 
-#include <iostream>
-#include <thread>
-#include <chrono>
-
 #include "source/physics/collision_solver.h"
 
-constexpr double frame_time_ms = (1000 / 60);
+constexpr double frame_time = (60.0f / 1000.0f);
 
 #ifndef _DEBUG 
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
@@ -93,25 +89,10 @@ int main()
 			//Remove not used assets
 			common::assets_manager->unload_unreferenced_assets();
 
-
+			//Adjust the frame rate
 			double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
-			double delta_time = frame_end - frame_start;
-
-			if (delta_time < frame_time_ms)
-			{
-				std::this_thread::sleep_for(
-					std::chrono::milliseconds(int(frame_time_ms - delta_time))
-				);
-
-				frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
-			}
-			else if (delta_time > frame_time_ms)
-			{
-				common::delta_time = 0;
-				continue;
-			}
-
 			common::delta_time = frame_end - frame_start;
+			common::window_manager->vsync();
 		}
 	}
 	catch (const std::exception& exc)
@@ -121,7 +102,7 @@ int main()
 
 	//ensure that entities are destroyed first, as their components 
 	//holds shared pointers to almost every resource in the engine
-	common::world->destroy();
+	common::world.reset();
 	//ensure that assets are destroyed second, as they owns resources, 
 	//that can be only destroyed by other manager class
 	common::assets_manager.reset();

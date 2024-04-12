@@ -116,10 +116,13 @@ namespace physics
 	sweep_move_event collision_solver::sweep_move(
 		entities::components::collider* collider, const glm::vec2& end_point)
 	{
-		if (collider->preset == 0.0f)
+		if (collider->preset == 0)
 			return {};
 
 		glm::vec2 velocity = end_point - collider->get_world_pos();
+
+		if (velocity.x == 0 && velocity.y == 0)
+			return {};
 
 		collision_event collide_event;
 		std::vector<collision_event> overlap_events;
@@ -148,15 +151,15 @@ namespace physics
 			}
 
 		sweep_move_event sme;
-		sme.velocity = velocity;
-		sme.collide_event = collide_event;
+		sme.velocity = std::move(velocity);
+		sme.collide_event = std::move(collide_event);
 
 		if (collide_event.other == nullptr)
 			sme.overlap_events = std::move(overlap_events);
 		else
 			for (auto& event : overlap_events)
 				if (event.distance < sme.collide_event.distance)
-					sme.overlap_events.push_back(event);
+					sme.overlap_events.push_back(std::move(event));
 
 		return sme;
 	}

@@ -21,13 +21,6 @@ namespace entities
 		delete impl;
 	}
 
-	void world::destroy()
-	{
-		for (auto& scene : impl->scenes)
-			scene.reset();
-		impl->dynamic_scene.reset();
-	}
-
 	void world::update()
 	{
 		impl->dynamic_scene->update();

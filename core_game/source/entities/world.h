@@ -11,7 +11,6 @@ namespace entities
 	public:
 		world();
 		~world();
-		void destroy();
 		void update();
 		void create_scene(uint32_t name, glm::vec2 world_offset, std::weak_ptr<assets::scene> scene);
 		void remove_scene(uint32_t name);

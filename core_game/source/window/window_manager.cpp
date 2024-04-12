@@ -5,6 +5,11 @@
 
 #include "glfw/glfw3.h"
 
+#include <thread>
+#include <chrono>
+
+#include <iostream>
+
 using namespace window;
 
 struct window_manager::implementation
@@ -14,6 +19,7 @@ struct window_manager::implementation
     int height;
 
     bool fullscreen;
+    float fullscreen_refresh_rate;
     int width_before_fullscreen;
     int height_before_fullscreen;
     int posx_before_fullscreen;
@@ -66,6 +72,8 @@ void window_manager::create_window(std::string title, int width, int height, boo
     glfwMakeContextCurrent(impl->window);
     glfwSetFramebufferSizeCallback(impl->window, &implementation::glfw_window_resize_callback);
     glfwSetWindowAspectRatio(impl->window, 16, 9);
+
+    glfwSwapInterval(1);
 }
 
 GLFWmonitor* get_current_monitor(GLFWwindow* window);
@@ -89,6 +97,11 @@ void window_manager::update()
             const GLFWvidmode* mode = glfwGetVideoMode(monitor);
             glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
             glfwSetWindowMonitor(impl->window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+
+            glfwSwapInterval(0);    //Disable vsync, because it does not work in fullscreen on many graphics drivers
+                                    //Insted the refresh rate is adjusted in window_manager::vsync function
+
+            impl->fullscreen_refresh_rate = static_cast<float>(mode->refreshRate);
         }
         else
         {
@@ -96,6 +109,7 @@ void window_manager::update()
                 impl->posx_before_fullscreen, impl->posy_before_fullscreen, 
                 impl->width_before_fullscreen, impl->height_before_fullscreen, 
                 GLFW_DONT_CARE);
+            glfwSwapInterval(1);
         }
     }
     else
@@ -123,6 +137,17 @@ void window::window_manager::set_mouse_visible(bool visible)
 void window_manager::set_resize_callback(std::function<void()> callback)
 {
     impl->resize_callback = callback;
+}
+
+void window_manager::vsync()
+{
+    if (!impl->fullscreen) return;
+
+    double frame_time = (1.0 / impl->fullscreen_refresh_rate);
+    double sleep_time = frame_time - common::delta_time;
+
+    if (sleep_time > 2)
+        std::this_thread::sleep_for(std::chrono::milliseconds(int(sleep_time)));
 }
 
 input::key_state window_manager::get_key_state(input::key key)

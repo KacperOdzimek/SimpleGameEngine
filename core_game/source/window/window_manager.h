@@ -24,6 +24,8 @@ namespace window
 		void set_mouse_visible(bool visible);
 		void set_resize_callback(std::function<void(void)> callback);
 
+		void vsync();
+
 		input::key_state get_key_state(input::key key);
 	};
 }
