@@ -206,8 +206,8 @@ namespace behaviors
 						push_string_to_table(L, "class", std::string(data->at("type")).c_str());
 
 						//scene space location
-						float sx = static_cast<float>(x / common::pixels_per_world_unit - float(map_width) / 4.0f);
-						float sy = static_cast<float>(-(y / common::pixels_per_world_unit - float(map_height) / 4.0f) - 0.5);
+						float sx = static_cast<float>(x / common::pixels_per_world_unit - float(map_width) / (common::pixels_per_world_unit / 4.0));
+						float sy = static_cast<float>(-(y / common::pixels_per_world_unit - float(map_height) / (common::pixels_per_world_unit / 4.0)) - 0.5);
 
 						e.lock()->teleport({ sx, sy });
 

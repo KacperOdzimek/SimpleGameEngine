@@ -24,7 +24,6 @@ extern "C"
 
 #include <unordered_map>
 #include <vector>
-#include <list>
 
 struct behaviors::behaviors_manager::implementation
 {
@@ -44,7 +43,7 @@ struct behaviors::behaviors_manager::implementation
         registered_behaviors
         set of all behavior components in the world
     */
-    std::vector<entities::components::behavior*> registered_behaviors;
+    std::list<entities::components::behavior*> registered_behaviors;
     /*
         frames_stack
         saves states of the program in certain points of time (function calls) so they can be restored

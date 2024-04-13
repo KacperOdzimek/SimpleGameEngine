@@ -110,10 +110,12 @@ void tilemap::build_colliders()
 	for (auto& layer : tilemap_asset->layers)
 	{
 		float y_mod = static_cast<float>(-1 * (float(tilemap_asset->height) / 2 - 0.5) * tile_y_size);
-		auto row = layer.end() - 1;
+		auto row = layer.end();
 
-		while (row != layer.begin())
+		do
 		{
+			row--;
+
 			float x_mod = static_cast<float>(-1 * (float(tilemap_asset->width) / 2 - 0.5) * tile_x_size);
 			for (auto& tile : *row)
 			{
@@ -124,7 +126,7 @@ void tilemap::build_colliders()
 				}
 
 				auto collider = new components::collider{ uint32_t(owned_colliders.size()), preset, extend };
-				collider->layer_offset = 1;
+				collider->layer_offset = layer_counter;
 				collider->entity_offset = { x_mod, y_mod };
 				collider->initialize_in_tilemap(owner);
 				owned_colliders.push_back(collider);
@@ -132,8 +134,10 @@ void tilemap::build_colliders()
 				x_mod += tile_x_size;
 			}
 			y_mod += tile_y_size;
-			row--;
 		}
+		while (row != layer.begin());
+
+		layer_counter++;
 	}
 }
 

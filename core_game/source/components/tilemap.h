@@ -22,7 +22,7 @@ namespace entities
 			std::shared_ptr<assets::tileset> tileset_asset;
 			rendering::render_config _config;
 			physics::collision_preset preset = 0;
-			unsigned int layers_stride = 2;
+			unsigned int layers_stride = 1;
 			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
 			void build_colliders();
 		public:
