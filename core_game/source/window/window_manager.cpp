@@ -146,7 +146,7 @@ void window_manager::vsync()
     double frame_time = (1.0 / impl->fullscreen_refresh_rate);
     double sleep_time = frame_time - common::delta_time;
 
-    if (sleep_time > 2)
+    if (sleep_time > 0)
         std::this_thread::sleep_for(std::chrono::milliseconds(int(sleep_time)));
 }
 

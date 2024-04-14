@@ -42,8 +42,9 @@ struct behaviors::behaviors_manager::implementation
     /*
         registered_behaviors
         set of all behavior components in the world
+        bool indicates if behavior should not be deleted
     */
-    std::list<entities::components::behavior*> registered_behaviors;
+    std::list<std::pair<entities::components::behavior*, bool>> registered_behaviors;
     /*
         frames_stack
         saves states of the program in certain points of time (function calls) so they can be restored
@@ -98,16 +99,20 @@ void behaviors::behaviors_manager::destroy_database(int id)
 
 void behaviors::behaviors_manager::register_behavior_component(entities::components::behavior* comp)
 {
-    impl->registered_behaviors.push_back({ comp });
+    impl->registered_behaviors.push_back({ comp, true });
 }
 
 void behaviors::behaviors_manager::unregister_behavior_component(entities::components::behavior* comp)
 {
-    impl->registered_behaviors.erase(std::find(
-        impl->registered_behaviors.begin(), 
-        impl->registered_behaviors.end(), 
-        comp
-    ));
+    auto i = std::find(
+        impl->registered_behaviors.begin(),
+        impl->registered_behaviors.end(),
+        std::pair<entities::components::behavior*, bool>{ comp, true }
+    );
+
+    if (impl->registered_behaviors.end() == i) return;
+
+    i->second = false;
 }
 
 void behaviors::behaviors_manager::require_module(const std::string& relative_path)
@@ -129,8 +134,22 @@ void behaviors::behaviors_manager::require_module(const std::string& relative_pa
 
 void behaviors::behaviors_manager::call_update_functions()
 {
-    for (auto& behavior : impl->registered_behaviors)
-        behavior->call_function(functions::update);
+    auto itr = impl->registered_behaviors.begin();
+    while (itr != impl->registered_behaviors.end())
+    {
+        if (!itr->second)
+        { 
+            itr = impl->registered_behaviors.erase(itr);
+            continue;
+        }
+        itr->first->call_function(functions::update);
+        if (!itr->second)
+        {
+            itr = impl->registered_behaviors.erase(itr);
+            continue;
+        }
+        ++itr;
+    }
 }
 
 std::string behaviors::behaviors_manager::create_functions_table(const std::string& file_path)

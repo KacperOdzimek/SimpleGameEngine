@@ -51,10 +51,6 @@ namespace physics
 	collision_event collision_solver::check_if_ray_collide(
 		collision_preset trace_preset, glm::vec2 trace_begin, glm::vec2 trace_dir, entities::components::collider* collider)
 	{
-		auto response = get_response_type(trace_preset, collider->preset);
-		if (response == collision_response::ignore)
-			return {};
-
 		collider->extend /= 4;
 
 		glm::vec2 near = (collider->get_world_pos() - glm::vec2{collider->extend.x, -collider->extend.y} - trace_begin) / trace_dir;
@@ -90,7 +86,7 @@ namespace physics
 				e.normal = { 0, -1 };
 
 		e.other = collider;
-		e.response = response;
+		e.response = get_response_type(trace_preset, collider->preset);
 
 		return e;
 	}
@@ -98,6 +94,10 @@ namespace physics
 	collision_event collision_solver::check_if_collider_collide_on_move(
 		entities::components::collider* moved_collider, const glm::vec2& velocity, entities::components::collider* other)
 	{
+		auto response = get_response_type(moved_collider->preset, other->preset);
+		if (response == collision_response::ignore)
+			return {};
+
 		if (moved_collider->get_layer() != other->get_layer())
 			return {};
 
@@ -139,6 +139,9 @@ namespace physics
 		for (auto& c : impl->all_colliders)
 			if (c != collider)
 			{
+				if (glm::distance(c->get_world_pos(), collider->get_world_pos()) > glm::length(c->extend + collider->extend))
+					continue;
+
 				collision_event e = check_if_collider_collide_on_move(collider, velocity, c);
 				if (e.response == collision_response::collide)
 				{

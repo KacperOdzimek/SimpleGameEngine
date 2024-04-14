@@ -94,6 +94,12 @@ audio_manager::audio_manager()
     if (result != MA_SUCCESS)
         error_handling::crash(error_handling::error_source::core, "[audio_manager::audio_manager]",
             "Cannot initialize sounds group. Error: " + std::to_string(result));
+
+    if (impl->active_listener == nullptr)
+    {
+        ma_sound_group_set_volume(&impl->group, 0);
+        return;
+    }
 }
 
 audio_manager::~audio_manager()
