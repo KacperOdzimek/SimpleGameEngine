@@ -116,46 +116,52 @@ namespace physics
 	}
 
 	sweep_move_event* collision_solver::sweep_move(
-		entities::components::collider* collider, const glm::vec2& end_point)
+		entities::components::collider* col, const glm::vec2& end_point)
 	{
-		glm::vec2 velocity = end_point - collider->get_world_pos();
+		glm::vec2 velocity = end_point - col->get_world_pos();
 
-		if (collider->preset == 0 || velocity.x == 0 && velocity.y == 0)
+		if (col->preset == 0 || velocity.x == 0 && velocity.y == 0)
 			return nullptr;
 
 		collision_event* collide_event = nullptr;
 		std::vector<collision_event*> overlap_events;
 
-		//Pay attention to this		
-		/*std::sort(impl->all_colliders.begin(), impl->all_colliders.end(), [&](
+		std::vector<collider*> potential_collisions;
+
+		for (auto& c : impl->all_colliders)
+			if (glm::distance(c->get_world_pos(), col->get_world_pos()) - glm::length(c->extend + col->extend) / 2.0f <= glm::length(velocity))
+				potential_collisions.push_back(c);
+
+		std::sort(potential_collisions.begin(), potential_collisions.end(), [&](
 			entities::components::collider* a, 
 			entities::components::collider* b)
 			{
 				return
-					glm::length(a->get_world_pos() - collider->get_world_pos()) <
-					glm::length(b->get_world_pos() - collider->get_world_pos());
-			});*/
+					glm::length(a->get_world_pos() - col->get_world_pos()) <
+					glm::length(b->get_world_pos() - col->get_world_pos());
+			});
 
-		for (auto& c : impl->all_colliders)
-			if (c != collider)
+		for (auto& c : potential_collisions)
+		{
+			if (c == col) continue;
+
+			if (glm::distance(c->get_world_pos(), col->get_world_pos()) > glm::length(c->extend + col->extend))
+				continue;
+
+			collision_event* e = check_if_collider_collide_on_move(col, velocity, c);
+			if (e == nullptr)
+				continue;
+			else if (e->response == collision_response::collide)
 			{
-				if (glm::distance(c->get_world_pos(), collider->get_world_pos()) > glm::length(c->extend + collider->extend))
-					continue;
-
-				collision_event* e = check_if_collider_collide_on_move(collider, velocity, c);
-				if (e == nullptr)
-					continue;
-				else if (e->response == collision_response::collide)
-				{
-					velocity *= (glm::vec2(1, 1) - glm::vec2(std::abs(e->normal.x), std::abs(e->normal.y)));
-					if (collide_event == nullptr || e->distance < collide_event->distance)
-						collide_event = e;
-					else
-						delete e;
-				}
-				else if (e->response == collision_response::overlap)
-					overlap_events.push_back(std::move(e));
+				velocity *= (glm::vec2(1, 1) - glm::vec2(std::abs(e->normal.x), std::abs(e->normal.y)));
+				if (collide_event == nullptr || e->distance < collide_event->distance)
+					collide_event = e;
+				else
+					delete e;
 			}
+			else if (e->response == collision_response::overlap)
+				overlap_events.push_back(std::move(e));
+		}
 
 		sweep_move_event* sme = new sweep_move_event;
 		sme->velocity = std::move(velocity);

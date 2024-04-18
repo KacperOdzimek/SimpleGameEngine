@@ -27,8 +27,6 @@ constexpr double frame_time = (60.0f / 1000.0f);
 #include "debug_config.h"
 #endif
 
-#include <iostream>
-
 int main()
 {
 	try
@@ -96,8 +94,7 @@ int main()
 			common::window_manager->vsync(frame_end - frame_start);
 			frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 			common::delta_time = frame_end - frame_start;
-
-			std::cout << common::delta_time << '\n';
+			if (common::delta_time > frame_time) common::delta_time = frame_time;
 		}
 	}
 	catch (const std::exception& exc)
