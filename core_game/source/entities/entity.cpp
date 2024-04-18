@@ -100,9 +100,10 @@ void entities::entity::teleport(glm::vec2 new_location)
 
 physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 {
-	std::vector<physics::sweep_move_event> events;
+	if (location == new_location) return {};
+
+	std::vector<physics::sweep_move_event*> events;
 	int closest_event_id = -1;
-	components::collider* collider = nullptr;
 
 	std::vector<components::dynamics*> dynamics_components;
 
@@ -111,38 +112,48 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 		auto c_ptr = dynamic_cast<components::collider*>(c);
 		if (c_ptr != nullptr)
 		{
-			events.push_back(common::collision_solver->sweep_move(c_ptr, new_location));
+			auto current_event = common::collision_solver->sweep_move(c_ptr, new_location);
+			
+			if (current_event == nullptr) continue;
+
+			events.push_back(current_event);
+			
 			if (
-				(
-					closest_event_id == -1 
-					|| events.back().collide_event.distance < events.at(closest_event_id).collide_event.distance
-				) 
-				&& events.back().collide_event.other != nullptr)
+				events.back()->collide_event != nullptr &&														//If there was a collide
+				(closest_event_id == -1 ||																		//And there was no hit before
+				events.back()->collide_event->distance < events.at(closest_event_id)->collide_event->distance)	//Or this hit is closer than previous
+			)	
 				closest_event_id = static_cast<int>(events.size() - 1);
+
+			continue;
 		}
 		auto m_ptr = dynamic_cast<components::mesh*>(c);
 		if (m_ptr != nullptr)
 		{
 			m_ptr->mark_pipeline_dirty();
+			continue;
 		}
 		auto d_ptr = dynamic_cast<components::dynamics*>(c);
 		if (d_ptr != nullptr)
+		{
 			dynamics_components.push_back(d_ptr);
+			continue;
+		}
 	}
 
 	std::vector<std::weak_ptr<entities::entity>> overlaping_entities;
 
 	if (closest_event_id == -1)
 		for (auto& sweep : events)
-			for (auto& ovr : sweep.overlap_events)
-				overlaping_entities.push_back(ovr.other->get_owner_weak());
+			for (auto& ovr : sweep->overlap_events)
+				overlaping_entities.push_back(ovr->other->get_owner_weak());
 	else
 	{
-		physics::collision_event& collide_event = events.at(closest_event_id).collide_event;
+		physics::collision_event* collide_event = events.at(closest_event_id)->collide_event;
 		for (auto& sweep : events)
-			for (auto& ovr : sweep.overlap_events)
-				if (ovr.distance < collide_event.distance)		//Check if overlap is closer than collide event
-					overlaping_entities.push_back(ovr.other->get_owner_weak());
+			for (auto& ovr : sweep->overlap_events)
+				if (ovr->distance < collide_event->distance)		//Check if overlap is closer than collide event
+					overlaping_entities.push_back(ovr->other->get_owner_weak());
 	}
 
 	overlaping_entities.push_back(get_weak());
@@ -155,12 +166,15 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 		return {};
 	}
 
-	location += events.at(closest_event_id).velocity;
+	location += events.at(closest_event_id)->velocity;
 
-	physics::collision_event& collide_event = events.at(closest_event_id).collide_event;
+	physics::collision_event collide_event = *events.at(closest_event_id)->collide_event;
+
+	for (auto& e : events)
+		delete e;
 
 	for (auto& d : dynamics_components)
-		d->collide_event(events.at(closest_event_id).collide_event.normal);
+		d->collide_event(collide_event.normal);
 
 	call_on_collide(get_weak(), collide_event.other->get_owner_weak());
 

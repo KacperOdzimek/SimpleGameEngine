@@ -139,12 +139,12 @@ void window_manager::set_resize_callback(std::function<void()> callback)
     impl->resize_callback = callback;
 }
 
-void window_manager::vsync()
+void window_manager::vsync(double frame_processing_time)
 {
     if (!impl->fullscreen) return;
 
     double frame_time = (1.0 / impl->fullscreen_refresh_rate);
-    double sleep_time = frame_time - common::delta_time;
+    double sleep_time = frame_time - frame_processing_time;
 
     if (sleep_time > 0)
         std::this_thread::sleep_for(std::chrono::milliseconds(int(sleep_time)));

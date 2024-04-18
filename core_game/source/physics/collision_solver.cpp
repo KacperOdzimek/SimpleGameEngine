@@ -35,106 +35,106 @@ namespace physics
 #undef target
 	}
 
-	collision_event collision_solver::check_if_ray_collide(
+	collision_event* collision_solver::check_if_ray_collide(
 		collision_preset trace_preset, glm::vec2 trace_begin, glm::vec2 trace_dir)
 	{
 		for (auto& c : impl->all_colliders)
 		{
 			auto event = check_if_ray_collide(trace_preset, trace_begin, trace_dir, c);
-			if (event.response == collision_response::collide)
+
+			if (event == nullptr)
+				continue;
+
+			if (event->response == collision_response::collide)
 				return event;
 		}
 
-		return {};
+		return nullptr;
 	}
 
-	collision_event collision_solver::check_if_ray_collide(
+	collision_event* collision_solver::check_if_ray_collide(
 		collision_preset trace_preset, glm::vec2 trace_begin, glm::vec2 trace_dir, entities::components::collider* collider)
 	{
-		collider->extend /= 4;
-
-		glm::vec2 near = (collider->get_world_pos() - glm::vec2{collider->extend.x, -collider->extend.y} - trace_begin) / trace_dir;
-		glm::vec2 far = (collider->get_world_pos() + glm::vec2{collider->extend.x, -collider->extend.y} - trace_begin) / trace_dir;
-
-		collider->extend *= 4;
+		glm::vec2 near = (collider->get_world_pos() - (glm::vec2{collider->extend.x, -collider->extend.y} / 4.0f) - trace_begin) / trace_dir;
+		glm::vec2 far = (collider->get_world_pos() + (glm::vec2{collider->extend.x, -collider->extend.y} / 4.0f) - trace_begin) / trace_dir;
 
 		if (near.x > far.x) std::swap(near.x, far.x);
 		if (near.y > far.y) std::swap(near.y, far.y);
 
-		if (near.x > far.y || near.y > far.x) return {};
+		if (near.x > far.y || near.y > far.x) return nullptr;
 
 		float hit_near = std::max(near.x, near.y);
 		float hit_far = std::min(far.x, far.y);
 
-		if (hit_far < 0) return {};
+		if (hit_far < 0) return nullptr;
 		if (hit_near != hit_near) hit_near = hit_far;
 
-		collision_event e;
+		collision_event* e = new collision_event;
 
-		e.location = trace_begin + hit_near * trace_dir;
-		e.distance = glm::distance(trace_begin, e.location);
+		e->location = trace_begin + hit_near * trace_dir;
+		e->distance = glm::distance(trace_begin, e->location);
 
 		if (near.x > near.y)
 			if (trace_dir.x < 0)
-				e.normal = { 1, 0 };
+				e->normal = { 1, 0 };
 			else
-				e.normal = { -1, 0 };
+				e->normal = { -1, 0 };
 		else if (near.x < near.y)
 			if (trace_dir.y < 0)
-				e.normal = { 0, 1 };
+				e->normal = { 0, 1 };
 			else
-				e.normal = { 0, -1 };
+				e->normal = { 0, -1 };
 
-		e.other = collider;
-		e.response = get_response_type(trace_preset, collider->preset);
+		e->other = collider;
+		e->response = get_response_type(trace_preset, collider->preset);
 
 		return e;
 	}
 
-	collision_event collision_solver::check_if_collider_collide_on_move(
+	collision_event* collision_solver::check_if_collider_collide_on_move(
 		entities::components::collider* moved_collider, const glm::vec2& velocity, entities::components::collider* other)
 	{
 		auto response = get_response_type(moved_collider->preset, other->preset);
-		if (response == collision_response::ignore)
-			return {};
 
-		if (moved_collider->get_layer() != other->get_layer())
-			return {};
-
-		if (velocity.x == 0 && velocity.y == 0)
-			return {};
+		if (
+			response == collision_response::ignore ||
+			moved_collider->get_layer() != other->get_layer() ||
+			velocity.x == 0 && velocity.y == 0		
+		)
+			return nullptr;
 
 		other->extend += moved_collider->extend;
-		auto event = check_if_ray_collide(moved_collider->preset, moved_collider->get_world_pos(), velocity, other);
+		auto e = check_if_ray_collide(moved_collider->preset, moved_collider->get_world_pos(), velocity, other);
 		other->extend -= moved_collider->extend;
 
-		if (event.distance < glm::length(velocity))
-			return event;
-		return {};
+		if (e == nullptr)
+			return nullptr;
+		else if (e->distance < glm::length(velocity))
+			return e;
+		delete e;
+		return nullptr;
 	}
 
-	sweep_move_event collision_solver::sweep_move(
+	sweep_move_event* collision_solver::sweep_move(
 		entities::components::collider* collider, const glm::vec2& end_point)
 	{
-		if (collider->preset == 0)
-			return {};
-
 		glm::vec2 velocity = end_point - collider->get_world_pos();
 
-		if (velocity.x == 0 && velocity.y == 0)
-			return {};
+		if (collider->preset == 0 || velocity.x == 0 && velocity.y == 0)
+			return nullptr;
 
-		collision_event collide_event;
-		std::vector<collision_event> overlap_events;
+		collision_event* collide_event = nullptr;
+		std::vector<collision_event*> overlap_events;
 
-		std::sort(impl->all_colliders.begin(), impl->all_colliders.end(), [&](
+		//Pay attention to this		
+		/*std::sort(impl->all_colliders.begin(), impl->all_colliders.end(), [&](
 			entities::components::collider* a, 
 			entities::components::collider* b)
 			{
 				return
 					glm::length(a->get_world_pos() - collider->get_world_pos()) <
 					glm::length(b->get_world_pos() - collider->get_world_pos());
-			});
+			});*/
 
 		for (auto& c : impl->all_colliders)
 			if (c != collider)
@@ -142,27 +142,31 @@ namespace physics
 				if (glm::distance(c->get_world_pos(), collider->get_world_pos()) > glm::length(c->extend + collider->extend))
 					continue;
 
-				collision_event e = check_if_collider_collide_on_move(collider, velocity, c);
-				if (e.response == collision_response::collide)
+				collision_event* e = check_if_collider_collide_on_move(collider, velocity, c);
+				if (e == nullptr)
+					continue;
+				else if (e->response == collision_response::collide)
 				{
-					if (e.response == collision_response::collide && e.distance < collide_event.distance)
+					velocity *= (glm::vec2(1, 1) - glm::vec2(std::abs(e->normal.x), std::abs(e->normal.y)));
+					if (collide_event == nullptr || e->distance < collide_event->distance)
 						collide_event = e;
-					velocity *= (glm::vec2(1, 1) - glm::vec2(std::abs(e.normal.x), std::abs(e.normal.y)));
+					else
+						delete e;
 				}
-				else if (e.response == collision_response::overlap)
+				else if (e->response == collision_response::overlap)
 					overlap_events.push_back(std::move(e));
 			}
 
-		sweep_move_event sme;
-		sme.velocity = std::move(velocity);
-		sme.collide_event = std::move(collide_event);
+		sweep_move_event* sme = new sweep_move_event;
+		sme->velocity = std::move(velocity);
+		sme->collide_event = std::move(collide_event);
 
-		if (collide_event.other == nullptr)
-			sme.overlap_events = std::move(overlap_events);
+		if (sme->collide_event == nullptr)
+			sme->overlap_events = std::move(overlap_events);
 		else
 			for (auto& event : overlap_events)
-				if (event.distance < sme.collide_event.distance)
-					sme.overlap_events.push_back(std::move(event));
+				if (event->distance < sme->collide_event->distance)
+					sme->overlap_events.push_back(std::move(event));
 
 		return sme;
 	}
