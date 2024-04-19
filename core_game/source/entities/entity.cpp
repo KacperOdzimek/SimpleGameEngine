@@ -160,25 +160,28 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 	if (overlaping_entities.size() != 0)
 		call_on_overlap(overlaping_entities);
 
+	physics::collision_event result_collide;
+
 	if (closest_event_id == -1)
 	{
 		location = new_location;
-		return {};
+		result_collide = {};
 	}
+	else
+	{
+		location += events.at(closest_event_id)->velocity;
+		result_collide = *events.at(closest_event_id)->collide_event;
 
-	location += events.at(closest_event_id)->velocity;
+		for (auto& d : dynamics_components)
+			d->collide_event(result_collide.normal);
 
-	physics::collision_event collide_event = *events.at(closest_event_id)->collide_event;
+		call_on_collide(get_weak(), result_collide.other->get_owner_weak());
+	}
 
 	for (auto& e : events)
 		delete e;
 
-	for (auto& d : dynamics_components)
-		d->collide_event(collide_event.normal);
-
-	call_on_collide(get_weak(), collide_event.other->get_owner_weak());
-
-	return collide_event;
+	return result_collide;
 }
 
 entities::component* entities::entity::get_component(uint32_t id)

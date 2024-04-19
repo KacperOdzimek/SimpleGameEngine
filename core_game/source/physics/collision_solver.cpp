@@ -47,6 +47,8 @@ namespace physics
 
 			if (event->response == collision_response::collide)
 				return event;
+
+			delete event;
 		}
 
 		return nullptr;
