@@ -49,7 +49,7 @@ void dynamics::apply_forces()
 	frame_force = { 0, 0 };
 }
 
-void dynamics::collide_event(glm::vec2 normal)
+void dynamics::collide_event(glm::vec2& normal)
 {
 	if (velocity.x > 0 && normal.x < 0) velocity.x = 0;
 	else if (velocity.x < 0 && normal.x > 0) velocity.x = 0;

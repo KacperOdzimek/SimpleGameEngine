@@ -86,17 +86,26 @@ namespace physics
 			collide_event
 			closest collision
 		*/
-		collision_event collide_event;
+		collision_event* collide_event;
 		/*
 			overlap_events
 			all overlap events before collide_event
 		*/
-		std::vector<collision_event> overlap_events;
+		std::vector<collision_event*> overlap_events;
 		/*
 			velocity
 			final velocity
 		*/
 		glm::vec2 velocity;
+
+		~sweep_move_event()
+		{
+			if (collide_event != nullptr) 
+				delete collide_event;
+
+			for (auto& c : overlap_events)
+				delete c;
+		}
 	};
 
 	/*

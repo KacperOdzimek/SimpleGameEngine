@@ -25,7 +25,7 @@ namespace entities
 			glm::vec2 frame_force{};
 			bool grouned = false;
 			void apply_forces();
-			void collide_event(glm::vec2 normal);
+			void collide_event(glm::vec2& normal);
 		public:
 			bool  use_maximum_velocity = false;
 			float maximum_velocity = 0.0f;

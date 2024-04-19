@@ -41,16 +41,18 @@ namespace behaviors
 
 				lua_newtable(L);
 
-				if (event.other != nullptr && event.distance < glm::distance(start, end))
+				if (event != nullptr && event->distance < glm::distance(start, end))
 				{
-					push_entity_to_table(L, "entity", event.other->get_owner_weak());
-					push_number_to_table(L, "distance", event.distance);
+					push_entity_to_table(L, "entity", event->other->get_owner_weak());
+					push_number_to_table(L, "distance", event->distance);
 				}
 				else
 				{
 					push_nil_to_table(L, "entity");
 					push_nil_to_table(L, "distance");
 				}
+
+				delete event;
 
 				return 1;
 			}

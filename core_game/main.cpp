@@ -91,8 +91,10 @@ int main()
 
 			//Adjust the frame rate
 			double frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
+			common::window_manager->vsync(frame_end - frame_start);
+			frame_end = ((double)clock()) / (double)CLOCKS_PER_SEC;
 			common::delta_time = frame_end - frame_start;
-			common::window_manager->vsync();
+			if (common::delta_time > frame_time) common::delta_time = frame_time;
 		}
 	}
 	catch (const std::exception& exc)
