@@ -16,6 +16,7 @@
  Engine lua api allows passing strings as the components names - passed strings will be auto hashed into integers.
 
  There are 10 types of components:
+ 
  -*behavior* : links *behavior asset* to the entity therefore adding logic to the owner  
  -*camera* : allows renderer to render game objects to the screen  
  -*collider* : adds collision to the entity  
@@ -40,6 +41,7 @@
   }
 ```
   There are 14 types of assets:  
+  
 -*behavior* : represents lua script. (See *TODO*) Example:  
  ```
 {
@@ -219,11 +221,25 @@
     ]
 }
 ```
+# Engine API
+SGE exposes api, through which lua scripts can manipulate the engine.  
+All api functions uses following naming convention:   
+``'\_' + letter indication of manipulated submodule + '\_' + rest of the name``
+For example: ``_a_set_volume``, means ``audio\_subsystem::set\_volume``
 
+## Entities Functions
+Entities functions uses _e prefix  
 
-
-
-
+``entity_ref _e_create()``             : creates entity inside current scene (See *TODO*) and returns reference to it.    
+``nil _e_kill(entity_ref e)``   : kills entity *e*    
+``nil _e_is_alive(entity_ref e)`` : checks if entity *e* is still alive (has not been killed)  
+``table _e_call(entity_ref e, string event_name, table args)`` : calls event of given name on all behaviors components inside the entity. Returns table of event calls return values. (See *TODO*)  
+``nil _e_teleport(entity_ref e, number x, number y)`` : moves entity *e* to the postion *(x, y)* without checking the collision.  
+``bool _e_sweep(entity_ref e, number x, number y)`` : moves entity *e* to the position *(x, y)* while checking the collision. Returns true, if entity has collided with other entity.  
+``number, number _e_get_location(entity_ref e)`` : returns (x, y) position of the *e* entity  
+``nil _e_kill_component(entity_ref e, integer/string name)`` : removes compononent of the given name from the entity.  
+``integer _e_get_layer(entity_ref e)`` : returns layer on which the entity is located  
+``nil _e_set_layer(entity_ref e, integer new_layer)`` : sets layer on which the entity is located
 
 
 
