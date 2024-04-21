@@ -142,12 +142,12 @@ void window_manager::set_resize_callback(std::function<void()> callback)
 void window_manager::vsync(double frame_processing_time)
 {
     if (!impl->fullscreen) return;
-
+    return;
     double frame_time = (1.0 / impl->fullscreen_refresh_rate);
     double sleep_time = frame_time - frame_processing_time;
 
     if (sleep_time > 0)
-        std::this_thread::sleep_for(std::chrono::milliseconds(int(sleep_time)));
+        std::this_thread::sleep_for(std::chrono::milliseconds(int(sleep_time * 1000)));
 }
 
 input::key_state window_manager::get_key_state(input::key key)
