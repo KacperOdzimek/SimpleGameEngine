@@ -191,6 +191,35 @@
     }
 }
 ```
+-*custom_data* : contains custom set of informations. The information can be accessed from lua via _en_load_custom_data function. Example:
+```
+{
+    "asset_type" : "custom_data",
+
+    "abc" : "foo",
+    "b" : 64,
+    "pi" : 3.14,
+    "is_valid" : true,
+
+    "an_object" : {
+        "title" : "bar",
+        "value" : 2024,
+        "nested_data" : {
+            "x" : 12
+        }
+    },
+    "an_array" : [1, 2, 3],
+    "array_of_objects" : [
+        {
+            "x" : 12
+        },
+        {
+            "x" : 12
+        }
+    ]
+}
+```
+
 
 
 
