@@ -224,11 +224,11 @@
 # Engine API
 SGE exposes api, through which lua scripts can manipulate the engine.  
 All api functions uses following naming convention:   
-``'\_' + letter indication of manipulated submodule + '\_' + rest of the name``
+``'\_' + letter indication of manipulated submodule / indication of the function + '\_' + rest of the name``
 For example: ``_a_set_volume``, means ``audio\_subsystem::set\_volume``
 
 ## Entities Functions
-Entities functions uses _e prefix  
+Entities functions uses _e prefix.  
 
 ``entity_ref _e_create()``             : creates entity inside current scene (See *TODO*) and returns reference to it.    
 ``nil _e_kill(entity_ref e)``   : kills entity *e*    
@@ -241,14 +241,41 @@ Entities functions uses _e prefix
 ``integer _e_get_layer(entity_ref e)`` : returns layer on which the entity is located  
 ``nil _e_set_layer(entity_ref e, integer new_layer)`` : sets layer on which the entity is located
 
+## Add Component Function
+Add component functions used _e_add prefix.  
 
+``nil _e_add_behavior(entity_ref e, integer/string name, string behavior_asset)`` : adds behavior component to the entity.  
+``nil _e_add_camera(entity_ref e, integer/string name, number ortho_width)`` : adds camera component with given ortho width.  
+``nil _e_add_static_mesh(entity_ref e, integer/string name, rendering_config rc)`` : adds static_mesh component to the entity.  
+``nil _e_add_collider(entity_ref e, integer/string name, number extend_x, number extend_y)`` : adds collider component with given extend to the entity.  
+``nil _e_add_sprite(entity_ref e, integer/string name, string sprite_sheet_asset, integer sprite_id, string collision_preset_name)`` : adds sprite component to the entity.  
+``nil _e_add_flipbook(entity_ref e, integer/string name, string sprite_sheet_asset, string flipbook_animation, string collision_preset_name)`` : adds flipbook component to the entity.  
+``nil _e_add_tilemap(entity_ref e, integer/string name, string tilemap_asset, string tileset_asset, string collision_preset_name)`` : adds tilemap component to the entity.  
+``nil _e_add_dynamics(entity_ref e, integer/string name)`` : adds dynamics component to the entity.   
+``nil _e_add_listener(entity_ref e, integer/string name)`` : adds listener component to the entity.  
+``nil _e_add_sound_emitter(entity_ref e, integer/string name)`` : adds sound emmiter component to the entity.  
 
+## Components Functions
+Components functions uses _c\_ +  max. 2 letters indicating targetet component type prefix.  
+Many functions are just obvious getters and setters so they descriptions are omitted.  
+Also, because each of the functions takes as the first two arguments ``entity_ref e, integer/string component_name`` to shorten and simplify the docs those args are represented by \[Comp] in functions decriptions.  
 
+any mesh functions (static_mesh, sprite, flipbook, tilemap) functions (_c_m):  
+``bool _c_m_get_visible([Comp])``  
+``nil _c_m_set_visible([Comp], bool visible)``  
+``number, number _c_m_get_scale([Comp])``  
+``nil _c_m_set_scale([Comp], number scale_x, number scale_y)``  
+``number, number _c_m_get_offset([Comp])``  
+``nil _c_m_set_offset([Comp], number offset_x, number offset_y)``  
 
+static_mesh functions (_c_sm):   
+``rendering_config _c_sm_get_render_config([Comp])``  
+``nil _c_sm_set_render_config([Comp], rendering_config rc)``  
 
-
-
-
+sprite functions (_c_s):  
+``integer _c_s_get_sprite([Comp])``  
+``nil _c_s_set_sprite([Comp], integer new_sprite)``  
+``nil _c_s_set_shader([Comp], string new_shader)``  
 
 
 
