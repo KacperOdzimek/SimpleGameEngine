@@ -567,8 +567,9 @@ namespace behaviors
 			{
 				auto emitter = load_component<::entities::components::sound_emitter>(L, "[_c_se_emit_sound]");
 				auto sound_path = load_asset_path(L, 3, "[_a_play_sound_at_channel]");
-				auto sound = assets::cast_asset<assets::sound>(common::assets_manager->safe_get_asset(sound_path));
 				float volume_precent = static_cast<float>(lua_tonumber(L, 4));
+
+				auto sound = assets::cast_asset<assets::sound>(common::assets_manager->safe_get_asset(sound_path));
 				emitter->emit_sound(sound, volume_precent);
 				return 0;
 			}

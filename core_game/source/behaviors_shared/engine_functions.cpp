@@ -279,6 +279,7 @@ namespace behaviors
 			{
 				std::string f_name = "[_en_load_custom_data]";
 				auto path = load_asset_path(L, 1, f_name);
+
 				auto data_asset = assets::cast_asset<assets::custom_data>(common::assets_manager->safe_get_asset(path)).lock();
 				auto data = data_asset->access_data();
 
