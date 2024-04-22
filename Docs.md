@@ -242,7 +242,7 @@ Entities functions uses _e prefix.
 ``nil _e_set_layer(entity_ref e, integer new_layer)`` : sets layer on which the entity is located
 
 ## Add Component Function
-Add component functions used _e_add prefix.  
+Add component functions uses _e_add prefix.  
 
 ``nil _e_add_behavior(entity_ref e, integer/string name, string behavior_asset)`` : adds behavior component to the entity.  
 ``nil _e_add_camera(entity_ref e, integer/string name, number ortho_width)`` : adds camera component with given ortho width.  
@@ -336,19 +336,36 @@ listener component (_c_l):
 sound_emmiter component (_c_se):  
 ``nil _c_se_emit_sound([Comp], string sound_asset_to_emmit, number volume_precent)`` : emmits sound at the owner's world position, that can be captured by a listener component  
 
+## Input Functions
+Input functions uses _i prefix.  
 
+``bool _i_action(string action_name)`` : returns the state of given action; true if pressed and false if not  
+``bool _i_action_just_pressed(string action_name)`` : returns if action was pressed in this exact frame  
+``bool _i_action_just_relased(string action_name)`` : returns if action was relased in this exact frame  
+``number _i_axis(string axis_name)`` : returns the state of the given axis mapping  
+``nil _i_set_mouse_visible(bool visible)``  
 
+## Collision Functions
+Collision functions uses _cl prefix. 
 
+``trace_result _cl_trace(string trace_collision_preset, number start_x, number start_y, number end_x, number end_y)`` : casts a trace from (start_x, start_y) to (end_x, end_y) and returns if it has hitten any collider. The result is a table : 
+```
+{
+   entity : {hited entity or a nil},
+   distance : {hit distance from (start_x, start_y) or a nil}
+}
+```
 
+## Audio Functions
+Add collision functions uses _a prefix.   
 
-
-
-
-
-
-
-
-
+``nil _a_play_sound(string sound_asset)`` : simply plays given sound  
+``nil _a_set_volume(number new_volume_precent)`` : assigns new global volume  
+``nil _a_play_sound_at_channel(string sound_asset, integer/string channel_name, bool looping)`` : creates playback object i.e.channel that allows to control the sound playback, and starts to play given sound on it  
+``nil _a_set_volume_at_channel(integer/string channel_name, number new_volume_precent)`` : assigns additional volume modyficator to the channel  
+``nil _a_resume_channel(integer/string channel_name)`` : resumes the playback  
+``nil _a_stop_channel(integer/string channel_name)`` : stops the playback  
+``nil _a_set_channel_position(integer/string channel_name, number x, number y, number layer)`` : puts given channel in the position in space. After calling, the sound is affected by the audio rolloff  
 
 
 
