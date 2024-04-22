@@ -357,7 +357,7 @@ Collision functions uses _cl prefix.
 ```
 
 ## Audio Functions
-Add collision functions uses _a prefix.   
+Audio functions uses _a prefix.   
 
 ``nil _a_play_sound(string sound_asset)`` : simply plays given sound  
 ``nil _a_set_volume(number new_volume_precent)`` : assigns new global volume  
@@ -367,10 +367,36 @@ Add collision functions uses _a prefix.
 ``nil _a_stop_channel(integer/string channel_name)`` : stops the playback  
 ``nil _a_set_channel_position(integer/string channel_name, number x, number y, number layer)`` : puts given channel in the position in space. After calling, the sound is affected by the audio rolloff  
 
+## Engine Functions
+Engine functions uses _en prefix. 
+``nil _en_load_scene(integer/string scene_name, string scene_asset, number x_world_offset, number y_world_offset)`` : creates a scene from the given *scene_asset*, and then registers it using *scene_name*, so other functions can refer to this exact scene instance using this name. Also offsets all entities in the new scene by (*x_world_offset*, *y_world_offset*).  
+``nil _en_unload_scene(integer/string scene_name)`` : unloads the scene with all the entities in it   
+``table _en_get_entities_in_scene(integer/string scene_name)`` : returns a table containing references to all the entities in the scene.  
+``nil _en_create_entities_from_tilemap(string tilemap_asset, function creator_function)`` : tiled's object layers integration. For every object on any of the object layers in the tilemap, it creates entity and calls *creator_function* with table of arguments, so it can process the entity further.  
+Table of arguments contains:  
+```
+entity_ref entity = created entity
+string name = tiled object name
+string class = tiled object class
+number x, y = world space entity position (in engine units)
+number layer = entity's layer
 
+(if object is a box)
+number width, height = object dimensions (in engine units)
 
-
-
++ all additional object properties
+```
+If the objects derives from a tiled template, the default object properties will be passed, unless the object instance overrides them.  
+Example *creator_function*:
+```
+function creator(args)
+    if args.class == "cactus" then
+        cactus.make_cactus(args.entity)
+    elseif args.class == "tree" then
+        tree.make_tree(args.entity)
+    end
+end
+```
 
 
 
