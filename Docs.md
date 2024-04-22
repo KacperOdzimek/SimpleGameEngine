@@ -6,7 +6,7 @@
 ### Entities, components and assets
  In SGE, game objects are called **entities**. Entities are composites made of **components**.
  Components allows entity to interact with engine subsystems like the renderer or audio system.
- They can be also dynamically added and removed from the entities at runtime. 
+ They can be also added and removed from the entities at runtime. 
 
  Often components needs additional data to work, eg. sprite needs an image.
  This data is stored inside **assets**. Assets are automatically loaded when needed, and unloaded when not.
