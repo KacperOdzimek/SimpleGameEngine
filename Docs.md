@@ -309,13 +309,32 @@ collider component (_c_cl):
 ``nil _c_cl_set_layer_offset([Comp], integer new_layer_offset)`` : asigns layer offset  
 
 dynamics component (_c_d):  
-``nil _c_d_add_force([Comp], number x, number y)`` : adds (x, y) force
-``nil _c_d_add_movement_input([Comp], number dir_x, number dir_y, number speed)`` : adds force in normalized (dir_x, dir_y) direction multiplied by speed 
-``number _c_d_get_drag([Comp])`` : returns movement drag
-``nil _c_d_set_drag([Comp], number new_drag)`` : assigns new movement drag
-``number _c_d_get_mass([Comp])`` : returns assigned mass
-``nil _c_d_set_mass([Comp], number new_mass)`` : assigns new mass
-``bool _c_d_get_use_max_vel([Comp])`` : returns whether to limit velocity to the max_velocity
+``nil _c_d_add_force([Comp], number x, number y)`` : adds (x, y) force  
+``nil _c_d_add_movement_input([Comp], number dir_x, number dir_y, number speed)`` : adds force in normalized (dir_x, dir_y) direction multiplied by speed  
+``number _c_d_get_drag([Comp])`` : returns movement drag  
+``nil _c_d_set_drag([Comp], number new_drag)`` : assigns new movement drag  
+``number _c_d_get_mass([Comp])`` : returns assigned mass  
+``nil _c_d_set_mass([Comp], number new_mass)`` : assigns new mass  
+``bool _c_d_get_use_max_vel([Comp])`` : returns whether to limit velocity to the max_velocity  
+``nil _c_d_set_use_max_vel([Comp], bool use)``    
+``number _c_d_get_max_vel([Comp])`` : returns max_velocity  
+``nil _c_d_get_vel([Comp], number new_max_vel)`` : assigns new max velocity  
+``number, number _c_d_get_vel([Comp])`` : returns (x, y) velocity  
+``nil _c_d_set_vel([Comp], number x, number, y)`` : assigns new (x, y) velocity  
+``bool _c_d_get_gravity_enabled([Comp])``  
+``nil _c_d_set_gravity_enabled([Comp], bool enabled)``  
+``bool _c_d_get_grounded([Comp])`` : returns whether entity is currently standing on the ground. Valid only if the project is not - topdown  
+
+tilemap component (_c_t):  
+``number _c_t_get_layers_stride([Comp])`` : returns stride between tilemap layers  
+``nil _c_t_set_layers_stride([Comp], number new_stride)`` : assigns new stride between tilemap layers  
+
+listener component (_c_l):
+``bool _c_l_get_active([Comp])`` : returns whether the sound captured by this listener gets streamed to audio output
+``nil _c_l_set_active([Comp])``  
+
+sound_emmiter component (_c_se):  
+``nil _c_se_emit_sound([Comp], string sound_asset_to_emmit, number volume_precent)`` : emmits sound at the owner's world position, that can be captured by a listener component  
 
 
 
