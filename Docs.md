@@ -260,7 +260,7 @@ Components functions uses _c\_ +  max. 2 letters indicating targetet component t
 Many functions are just obvious getters and setters so they descriptions are omitted.  
 Also, because each of the functions takes as the first two arguments ``entity_ref e, integer/string component_name`` to shorten and simplify the docs those args are represented by \[Comp] in functions decriptions.  
 
-any mesh functions (static_mesh, sprite, flipbook, tilemap) functions (_c_m):  
+any mesh component (static_mesh, sprite, flipbook, tilemap) functions (_c_m):  
 ``bool _c_m_get_visible([Comp])``  
 ``nil _c_m_set_visible([Comp], bool visible)``  
 ``number, number _c_m_get_scale([Comp])``  
@@ -268,14 +268,69 @@ any mesh functions (static_mesh, sprite, flipbook, tilemap) functions (_c_m):
 ``number, number _c_m_get_offset([Comp])``  
 ``nil _c_m_set_offset([Comp], number offset_x, number offset_y)``  
 
-static_mesh functions (_c_sm):   
+static_mesh component (_c_sm):   
 ``rendering_config _c_sm_get_render_config([Comp])``  
 ``nil _c_sm_set_render_config([Comp], rendering_config rc)``  
 
-sprite functions (_c_s):  
+sprite component (_c_s):  
 ``integer _c_s_get_sprite([Comp])``  
 ``nil _c_s_set_sprite([Comp], integer new_sprite)``  
 ``nil _c_s_set_shader([Comp], string new_shader)``  
+
+flipbook component (_c_f):
+``integer _c_f_get_animation([Comp])`` : returns current flipbook animation hashed name   
+``nil _c_f_set_animation([Comp], string/integer animation_name)`` : sets animation of given name as current   
+``bool _c_f_get_looping([Comp])``  
+``nil _c_f_set_looping([Comp], bool looping)``  
+
+camera component (_c_c):  
+``number _c_c_get_ortho_width([Comp])``    
+``nil _c_c_set_ortho_width([Comp], number new_ortho)``    
+``number _c_c_get_lowest_layer([Comp])`` : returns number of the deepest rendered layer  
+``nil  _c_c_set_lowest_layer([Comp], number new_lowest_layer)`` : sets number of the deepest rendered layer  
+``number _c_c_get_highest_layer([Comp])`` : returns number of the highest rendered layer  
+``nil  _c_c_set_highest_layer([Comp], number new_highest_layer)`` : sets number of the highest rendered layer  
+``bool _c_c_get_active([Comp])`` : returns whether this camera component is currently used for rendering  
+``nil _c_c_set_active([Comp])`` :  makes camera component used for rendering  
+
+behavior component (_c_b):  
+``string _c_b_get_behavior([Comp])`` : returns currently used behavior asset  
+``nil _c_b_set_behavior([Comp], string behavior_asset_path)`` : assign new behavior asset to the component  
+``nil/value _c_b_call([Comp], string event_name, table args)`` : calls function named "event\_" + event_name implemented in behavior asset. If not implemented returns nil.  
+
+collider component (_c_cl):  
+``string _c_cl_get_collision_preset([Comp])`` : returns collision preset used by collider  
+``nil _c_cl_set_collision_preset([Comp], string new_preset_name)`` : asigns new collision preset to the collider  
+``number, number _c_cl_get_offset([Comp])`` : returns (x, y) offset from owner   
+``nil _c_cl_set_offset([Comp], number x, number y)`` : asigns new (x, y) offset from owning entity  
+``number, number _c_cl_get_extend([Comp])`` : returns (x, y) collider extend   
+``nil _c_cl_set_extend([Comp], number x, number y)`` : asigns new (x, y) collider extend  
+``integer _c_cl_get_layer_offset([Comp])`` : returns collider's layer offset from owning entity layer  
+``nil _c_cl_set_layer_offset([Comp], integer new_layer_offset)`` : asigns layer offset  
+
+dynamics component (_c_d):  
+``nil _c_d_add_force([Comp], number x, number y)`` : adds (x, y) force
+``nil _c_d_add_movement_input([Comp], number dir_x, number dir_y, number speed)`` : adds force in normalized (dir_x, dir_y) direction multiplied by speed 
+``number _c_d_get_drag([Comp])`` : returns movement drag
+``nil _c_d_set_drag([Comp], number new_drag)`` : assigns new movement drag
+``number _c_d_get_mass([Comp])`` : returns assigned mass
+``nil _c_d_set_mass([Comp], number new_mass)`` : assigns new mass
+``bool _c_d_get_use_max_vel([Comp])`` : returns whether to limit velocity to the max_velocity
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
