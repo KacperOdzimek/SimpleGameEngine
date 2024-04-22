@@ -386,7 +386,7 @@ number width, height = object dimensions (in engine units)
 
 + all additional object properties
 ```
-If the objects derives from a tiled template, the default object properties will be passed, unless the object instance overrides them.  
+If the objects derives from a tiled template, the default object properties will be passed, unless the object instance overrides them    
 Example *creator_function*:
 ```
 function creator(args)
@@ -397,9 +397,13 @@ function creator(args)
     end
 end
 ```
-
-
-
+``number, number _en_viewport_to_world(number v_x, number v_y)`` : translated (v_x, v_y) viewport coordinates into world coordinates  
+``table _en_load_custom_data(string custom_data_asset)`` : loads and return the content of the given custom data asset  
+``number _en_time_period_to_physics(number time)`` : multiplies *time* by *physics_time_dilation* modyficator and returns  
+``nil _en_set_physics_time_dilation(number new_dilation)`` : sets global physics time dilation modyfiactor. This change affects dynamics components, but not the delta_time argument passed into the *on_update* functions   
+``nil _en_save_data(string filename, table data)`` : saves *data* as a *filename* + .json file in the *saved* engine directory   
+``bool _en_data_exists(string filename)`` : return whether a file with the given filename exists   
+``table _en_load_data(string filename)`` : restores data saved using *_en_save_data* from the given file  
 
 
 
