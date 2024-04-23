@@ -420,7 +420,17 @@ end
 ``bool _en_data_exists(string filename)`` : return whether a file with the given filename exists   
 ``table _en_load_data(string filename)`` : restores data saved using *_en_save_data* from the given file  
 
+## Dependencies  
+SGE uses following libraries:   
+[glm](https://github.com/g-truc/glm) - linear algebra  
+[glfw](https://www.glfw.org/) - window creation and management  
+[nothings/stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) - images loading   
+[nlohmann/json](https://github.com/nlohmann/json) - json files    
+[miniaudio](https://miniaud.io/) - audio library  
+[lua 5.4.2](https://luabinaries.sourceforge.net/download.html) - lua  
 
+## Building the engine  
+In order to build the engine from source 
 
 
 
