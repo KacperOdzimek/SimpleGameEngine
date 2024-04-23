@@ -1,7 +1,6 @@
 #include "filesystem.h"
 #include "source/common/crash.h"
 #include "include/stb/stb_image.h"
-#include "include/dirent.h"
 #include <filesystem>
 
 static std::string mod_assets_path;
@@ -116,21 +115,21 @@ std::fstream filesystem::create_file(std::string path)
 
 std::vector<std::string> filesystem::get_all_subfolders(std::string folder)
 {
-	std::vector<std::string> result;
-
-	DIR* dir = opendir(folder.c_str());
-
-	struct dirent* entry = readdir(dir);
-
-	while (entry != NULL)
+	std::vector<std::filesystem::path> dirs;
+	for (const auto& entry : std::filesystem::directory_iterator(folder))
 	{
-		if (entry->d_type == DT_DIR)
-			result.push_back(entry->d_name);
-
-		entry = readdir(dir);
+		dirs.push_back(entry);
+		if (std::filesystem::is_directory(entry))
+		{
+			auto subdirs = get_all_subfolders(entry.path().u8string());
+			dirs.insert(dirs.end(), subdirs.begin(), subdirs.end());
+		}
 	}
 
-	closedir(dir);
+	std::vector<std::string> result;
+
+	for (auto& path : dirs)
+		result.push_back(path.u8string());
 
 	return result;
 }
