@@ -430,10 +430,11 @@ SGE uses following libraries:
 [lua 5.4.2](https://luabinaries.sourceforge.net/download.html) - lua  
 
 ## Building the engine  
+This tutorial explains how to build the engine on 64 bit windows machine.  
 In order to build the engine from source you first need to clone this repo.  
 From now we will refer to the repo folder as `repo/`.  
 Once you have it, go to `repo/core_game` and create `include` folder inside.  
-Now we have to get required libraries.
+Now we have to get required libraries. 
 
 ### GLM
 To download GLM go to [https://github.com/g-truc/glm](https://github.com/g-truc/glm) and clone the repo.  
@@ -444,8 +445,8 @@ To download GLFW go to [https://www.glfw.org/](https://www.glfw.org/) and press 
 Once you have it, unzip and enter `glfw-3.x\include`. Rename the `GLFW` folder to `glfw` and then move it to the `repo/core_game/include`.
 
 ### STB_IMAGE
-Inside the `repo/core_game/include` folder create folder named `stb`. Inside it create two files: `stb_image.h` and `stb_image.cpp`. 
-Open the `stb_image.cpp` file and paste in following code:
+Inside the `repo/core_game/include` directory create a new folder named `stb`. Inside it create two files: `stb_image.h` and `stb_image.cpp`. 
+Open the `stb_image.cpp` file and paste in the following code:
 ```
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -457,5 +458,42 @@ Clone [https://github.com/nlohmann/json](https://github.com/nlohmann/json) and u
 Open the repo, go into the `include` folder and then copy the `nlohmann` folder into the `repo/core_game/include` folder.
 
 ### MINIAUDIO
+Inside the `repo/core_game/include` directory create a new folder named `miniaudio`. Inside it create two files: `miniaudio.h` and `miniaudio.c`. 
+Open the `miniaudio.c` file and paste in the following code:
+```
+#define MINIAUDIO_IMPLEMENTATION
+#include "miniaudio.h"
+```
+Then go to [https://raw.githubusercontent.com/mackron/miniaudio/master/miniaudio.h](https://raw.githubusercontent.com/mackron/miniaudio/master/miniaudio.h), and paste it's content to into the `miniaudio.h` file.  
+
+### LUA
+In the `repo/core_game/include` directory create a new named `lua_5_4_2`.  
+Now go to the [https://luabinaries.sourceforge.net/download.html](https://luabinaries.sourceforge.net/download.html) site and download the `lua-5.4.2_Win64_dllw6_lib.zip`. If you are using mac or linux, take some other option, but remember that next steps will look diffrent for you then. 
+Once you have your .zip, move it to the `repo/core_game/include/lua_5_4_2` and unzip.
+
+## GRAPHICS ABSTRACTION
+
+## GRAPHICS ABSTRACTION OPENGL 3.3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
