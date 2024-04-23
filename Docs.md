@@ -433,7 +433,7 @@ SGE uses following libraries:
 This tutorial explains how to build the engine on 64 bit windows machine.  
 In order to build the engine from source you first need to clone this repo.  
 From now we will refer to the repo folder as `repo/`.  
-Once you have it, go to `repo/core_game` and create `include` folder inside.  
+Once you have it, go to `repo/core_game` and create `include` and `libs` folders inside.  
 Now we have to get required libraries. 
 
 ### GLM
@@ -441,8 +441,9 @@ To download GLM go to [https://github.com/g-truc/glm](https://github.com/g-truc/
 Then enter it and move `glm` folder to the `repo/core_game/include`.  
 
 ### GLFW
-To download GLFW go to [https://www.glfw.org/](https://www.glfw.org/) and press `Download GLFW 3.x`.  
-Once you have it, unzip and enter `glfw-3.x\include`. Rename the `GLFW` folder to `glfw` and then move it to the `repo/core_game/include`.
+To download GLFW go to [https://www.glfw.org/download.html](https://www.glfw.org/download.html) and then press `64 bit Windows Binaries`.  
+Once you have them, unzip and enter. Then go to `include` directory. Rename the `GLFW` folder to `glfw` and then move it to the `repo/core_game/include`.
+When you have it done, go back to your glfw binaries and then move `glfw3.lib` from `lib-vc2022` to the `repo/core_game/libs` folder.
 
 ### STB_IMAGE
 Inside the `repo/core_game/include` directory create a new folder named `stb`. Inside it create two files: `stb_image.h` and `stb_image.cpp`. 
@@ -470,6 +471,7 @@ Then go to [https://raw.githubusercontent.com/mackron/miniaudio/master/miniaudio
 In the `repo/core_game/include` directory create a new named `lua_5_4_2`.  
 Now go to the [https://luabinaries.sourceforge.net/download.html](https://luabinaries.sourceforge.net/download.html) site and download the `lua-5.4.2_Win64_dllw6_lib.zip`. If you are using mac or linux, take some other option, but remember that next steps will look diffrent for you then. 
 Once you have your .zip, move it to the `repo/core_game/include/lua_5_4_2` and unzip.
+After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/core_game/libs` folder. 
 
 ## GRAPHICS ABSTRACTION
 
