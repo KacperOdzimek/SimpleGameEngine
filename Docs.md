@@ -473,9 +473,9 @@ Now go to the [https://luabinaries.sourceforge.net/download.html](https://luabin
 Once you have your .zip, move it to the `repo/core_game/include/lua_5_4_2` and unzip.
 After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/core_game/libs` folder. 
 
-## GRAPHICS ABSTRACTION
+### GRAPHICS ABSTRACTION
 
-## GRAPHICS ABSTRACTION OPENGL 3.3
+### GRAPHICS ABSTRACTION OPENGL 3.3
 
 
 
