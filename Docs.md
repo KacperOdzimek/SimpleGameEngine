@@ -452,7 +452,7 @@ Open the `stb_image.cpp` file and paste in following code:
 ```
 Then go to [https://github.com/nothings/stb/blob/master/stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h), and paste it's content to into the `stb_image.h` file.
 
-# NLOHMANN JSON
+### NLOHMANN JSON
 Clone [https://github.com/nlohmann/json](https://github.com/nlohmann/json) and unzip it. 
 Open the repo, go into the `include` folder and then copy the `nlohmann` folder into the `repo/core_game/include` folder.
 
