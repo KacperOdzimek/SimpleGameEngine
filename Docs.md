@@ -430,8 +430,32 @@ SGE uses following libraries:
 [lua 5.4.2](https://luabinaries.sourceforge.net/download.html) - lua  
 
 ## Building the engine  
-In order to build the engine from source 
+In order to build the engine from source you first need to clone this repo.  
+From now we will refer to the repo folder as `repo/`.  
+Once you have it, go to `repo/core_game` and create `include` folder inside.  
+Now we have to get required libraries.
 
+# GLM
+To download GLM go to [https://github.com/g-truc/glm](https://github.com/g-truc/glm) and clone the repo.  
+Then enter it and move `glm` folder to the `repo/core_game/include`.  
 
+# GLFW
+To download GLFW go to [https://www.glfw.org/](https://www.glfw.org/) and press `Download GLFW 3.x`.  
+Once you have it, unzip and enter `glfw-3.x\include`. Rename the `GLFW` folder to `glfw` and then move it to the `repo/core_game/include`.
+
+# STB_IMAGE
+Inside the `repo/core_game/include` folder create folder named `stb`. Inside it create two files: `stb_image.h` and `stb_image.cpp`. 
+Open the `stb_image.cpp` file and paste in following code:
+```
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+```
+Then go to [https://github.com/nothings/stb/blob/master/stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h), and paste it's content to into the `stb_image.h` file.
+
+# NLOHMANN JSON
+Clone [https://github.com/nlohmann/json](https://github.com/nlohmann/json) and unzip it. 
+Open the repo, go into the `include` folder and then copy the `nlohmann` folder into the `repo/core_game/include` folder.
+
+# MINIAUDIO
 
 
