@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{6a0ee848-5112-4d81-93bb-5db5f0c94366}</ProjectGuid>
+    <RootNamespace>vs</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>SimpleGameEngine</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\core_game;$(ProjectDir)..\core_game\include\;$(ProjectDir)..\core_game\include\graphics_abstraction</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\core_game;$(ProjectDir)..\core_game\include\;$(ProjectDir)..\core_game\include\graphics_abstraction</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\core_game;$(ProjectDir)..\core_game\include\;$(ProjectDir)..\core_game\include\graphics_abstraction</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>lua54.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)/../core_game/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d  "$(ProjectDir)..\core_game\libs\*.dll"  "$(TargetDir)"</Command>
+      <Message>Move the .dll's to the .exe directory</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\core_game;$(ProjectDir)..\core_game\include\;$(ProjectDir)..\core_game\include\graphics_abstraction</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>lua54.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)/../core_game/libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d  "$(ProjectDir)..\core_game\libs\*.dll"  "$(TargetDir)"</Command>
+      <Message>Move the .dll's to the .exe directory</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\core_game\debug_config.h" />
+    <ClInclude Include="..\core_game\source\assets\asset.h" />
+    <ClInclude Include="..\core_game\source\assets\assets_manager.h" />
+    <ClInclude Include="..\core_game\source\assets\behavior_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\collision_config_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\custom_data_assset.h" />
+    <ClInclude Include="..\core_game\source\assets\flipbook_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\input_config_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\load_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\mesh_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\rendering_config_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\scene_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\shader_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\sound_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\sprite_sheet.h" />
+    <ClInclude Include="..\core_game\source\assets\texture_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\tilemap_asset.h" />
+    <ClInclude Include="..\core_game\source\assets\tileset_asset.h" />
+    <ClInclude Include="..\core_game\source\audio\audio_manager.h" />
+    <ClInclude Include="..\core_game\source\behaviors\behaviors_database.h" />
+    <ClInclude Include="..\core_game\source\behaviors\behaviors_manager.h" />
+    <ClInclude Include="..\core_game\source\behaviors\behavior_functions.h" />
+    <ClInclude Include="..\core_game\source\behaviors\frame.h" />
+    <ClInclude Include="..\core_game\source\behaviors\register_shared.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\add_component_functions.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\audio_functions.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\collision_functions.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\components_functions.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\engine_functions.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\entities_functions.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\entity_reference.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\input_functions.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\require.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\utilities.h" />
+    <ClInclude Include="..\core_game\source\common\common.h" />
+    <ClInclude Include="..\core_game\source\common\crash.h" />
+    <ClInclude Include="..\core_game\source\components\behavior.h" />
+    <ClInclude Include="..\core_game\source\components\camera.h" />
+    <ClInclude Include="..\core_game\source\components\collider.h" />
+    <ClInclude Include="..\core_game\source\components\dynamics.h" />
+    <ClInclude Include="..\core_game\source\components\flipbook.h" />
+    <ClInclude Include="..\core_game\source\components\listener.h" />
+    <ClInclude Include="..\core_game\source\components\mesh.h" />
+    <ClInclude Include="..\core_game\source\components\sound_emitter.h" />
+    <ClInclude Include="..\core_game\source\components\sprite.h" />
+    <ClInclude Include="..\core_game\source\components\static_mesh.h" />
+    <ClInclude Include="..\core_game\source\components\tilemap.h" />
+    <ClInclude Include="..\core_game\source\entities\component.h" />
+    <ClInclude Include="..\core_game\source\entities\entity.h" />
+    <ClInclude Include="..\core_game\source\entities\scene.h" />
+    <ClInclude Include="..\core_game\source\entities\world.h" />
+    <ClInclude Include="..\core_game\source\filesystem\filesystem.h" />
+    <ClInclude Include="..\core_game\source\input\input_manager.h" />
+    <ClInclude Include="..\core_game\source\input\input_mappings.h" />
+    <ClInclude Include="..\core_game\source\input\key.h" />
+    <ClInclude Include="..\core_game\source\mods\mod.h" />
+    <ClInclude Include="..\core_game\source\mods\mods_manager.h" />
+    <ClInclude Include="..\core_game\source\physics\collision.h" />
+    <ClInclude Include="..\core_game\source\physics\collision_solver.h" />
+    <ClInclude Include="..\core_game\source\physics\dynamics_manager.h" />
+    <ClInclude Include="..\core_game\source\rendering\flipbooks_manager.h" />
+    <ClInclude Include="..\core_game\source\rendering\renderer.h" />
+    <ClInclude Include="..\core_game\source\rendering\render_config.h" />
+    <ClInclude Include="..\core_game\source\rendering\transformations_buffer_iterator.h" />
+    <ClInclude Include="..\core_game\source\utilities\equal_to.h" />
+    <ClInclude Include="..\core_game\source\utilities\hash_string.h" />
+    <ClInclude Include="..\core_game\source\window\window_manager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\core_game\include\miniaudio\miniaudio.c" />
+    <ClCompile Include="..\core_game\include\opengl_3_3_api\source\opengl\glad.c" />
+    <ClCompile Include="..\core_game\include\stb\stb_image.cpp" />
+    <ClCompile Include="..\core_game\main.cpp" />
+    <ClCompile Include="..\core_game\source\assets\assets_manager.cpp" />
+    <ClCompile Include="..\core_game\source\assets\behavior_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\collision_config_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\custom_data_assset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\flipbook_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\input_config_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\load_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\mesh_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\rendering_config_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\scene_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\shader_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\sound_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\sprite_sheet.cpp" />
+    <ClCompile Include="..\core_game\source\assets\texture_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\tilemap_asset.cpp" />
+    <ClCompile Include="..\core_game\source\assets\tileset_asset.cpp" />
+    <ClCompile Include="..\core_game\source\audio\audio_manager.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors\behaviors_database.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors\behaviors_manager.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors\register_shared.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\add_component_functions.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\audio_functions.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\collision_functions.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\components_functions.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\engine_functions.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\entities_functions.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\entity_reference.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\input_functions.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\require.cpp" />
+    <ClCompile Include="..\core_game\source\common\common.cpp" />
+    <ClCompile Include="..\core_game\source\common\crash.cpp" />
+    <ClCompile Include="..\core_game\source\components\behavior.cpp" />
+    <ClCompile Include="..\core_game\source\components\camera.cpp" />
+    <ClCompile Include="..\core_game\source\components\collider.cpp" />
+    <ClCompile Include="..\core_game\source\components\dynamics.cpp" />
+    <ClCompile Include="..\core_game\source\components\flipbook.cpp" />
+    <ClCompile Include="..\core_game\source\components\listener.cpp" />
+    <ClCompile Include="..\core_game\source\components\mesh.cpp" />
+    <ClCompile Include="..\core_game\source\components\sound_emitter.cpp" />
+    <ClCompile Include="..\core_game\source\components\sprite.cpp" />
+    <ClCompile Include="..\core_game\source\components\static_mesh.cpp" />
+    <ClCompile Include="..\core_game\source\components\tilemap.cpp" />
+    <ClCompile Include="..\core_game\source\entities\component.cpp" />
+    <ClCompile Include="..\core_game\source\entities\entity.cpp" />
+    <ClCompile Include="..\core_game\source\entities\scene.cpp" />
+    <ClCompile Include="..\core_game\source\entities\world.cpp" />
+    <ClCompile Include="..\core_game\source\filesystem\filesystem.cpp" />
+    <ClCompile Include="..\core_game\source\input\input_manager.cpp" />
+    <ClCompile Include="..\core_game\source\input\input_mappings.cpp" />
+    <ClCompile Include="..\core_game\source\input\key.cpp" />
+    <ClCompile Include="..\core_game\source\mods\mods_manager.cpp" />
+    <ClCompile Include="..\core_game\source\physics\collision.cpp" />
+    <ClCompile Include="..\core_game\source\physics\collision_solver.cpp" />
+    <ClCompile Include="..\core_game\source\physics\dynamics_manager.cpp" />
+    <ClCompile Include="..\core_game\source\rendering\flipbooks_manager.cpp" />
+    <ClCompile Include="..\core_game\source\rendering\renderer.cpp" />
+    <ClCompile Include="..\core_game\source\window\window_manager.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

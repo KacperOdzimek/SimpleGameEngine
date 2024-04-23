@@ -1,6 +1,10 @@
-*Vs
 core_game/include/*
 *mods
 *packed
 *saved
 debug_config.h
+vs/*
+!vs/SimpleGameEngine.sln
+!vs/vs.vcxproj.filters
+!vs/vs.vcxproj
+!vs/vs.vcxproj.user
