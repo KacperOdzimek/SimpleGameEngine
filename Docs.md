@@ -227,10 +227,25 @@ All api functions uses following naming convention:
 ``'\_' + letter indication of manipulated submodule / indication of the function + '\_' + rest of the name``
 For example: ``_a_set_volume``, means ``audio\_subsystem::set\_volume``
 
+Engine functions may also return some custom types:  
+``entity`` is a lua wraper for std::weak_ptr<entities::entity>.   
+``render_config`` is actually a specialised table that represents C++ rendering::render_config struct. It must contains:
+```
+{
+    string shader, //a shader asset to use
+    string mesh,   //a mesh asset to render
+    table textures : { //a set of texture / sprtie_sheet / tilemap / flipbook assets that will be passed to the gpu when drawing
+                       //this field is optional
+        <any key> : string,
+        <any other key> : string,
+    }
+}
+```
+
 ## Entities Functions
 Entities functions uses _e prefix.  
 
-``entity_ref _e_create()``             : creates entity inside current scene (See *TODO*) and returns reference to it.    
+``entity_ref _e_create()`` : creates entity inside current scene (See *TODO*) and returns reference to it.    
 ``nil _e_kill(entity_ref e)``   : kills entity *e*    
 ``nil _e_is_alive(entity_ref e)`` : checks if entity *e* is still alive (has not been killed)  
 ``table _e_call(entity_ref e, string event_name, table args)`` : calls event of given name on all behaviors components inside the entity. Returns table of event calls return values. (See *TODO*)  
@@ -246,7 +261,7 @@ Add component functions uses _e_add prefix.
 
 ``nil _e_add_behavior(entity_ref e, integer/string name, string behavior_asset)`` : adds behavior component to the entity.  
 ``nil _e_add_camera(entity_ref e, integer/string name, number ortho_width)`` : adds camera component with given ortho width.  
-``nil _e_add_static_mesh(entity_ref e, integer/string name, rendering_config rc)`` : adds static_mesh component to the entity.  
+``nil _e_add_static_mesh(entity_ref e, integer/string name, render_config rc)`` : adds static_mesh component to the entity.  
 ``nil _e_add_collider(entity_ref e, integer/string name, number extend_x, number extend_y)`` : adds collider component with given extend to the entity.  
 ``nil _e_add_sprite(entity_ref e, integer/string name, string sprite_sheet_asset, integer sprite_id, string collision_preset_name)`` : adds sprite component to the entity.  
 ``nil _e_add_flipbook(entity_ref e, integer/string name, string sprite_sheet_asset, string flipbook_animation, string collision_preset_name)`` : adds flipbook component to the entity.  
@@ -269,8 +284,8 @@ any mesh component (static_mesh, sprite, flipbook, tilemap) functions (_c_m):
 ``nil _c_m_set_offset([Comp], number offset_x, number offset_y)``  
 
 static_mesh component (_c_sm):   
-``rendering_config _c_sm_get_render_config([Comp])``  
-``nil _c_sm_set_render_config([Comp], rendering_config rc)``  
+``render_config _c_sm_get_render_config([Comp])``  
+``nil _c_sm_set_render_config([Comp], render_config rc)``  
 
 sprite component (_c_s):  
 ``integer _c_s_get_sprite([Comp])``  
