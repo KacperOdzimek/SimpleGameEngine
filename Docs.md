@@ -5,8 +5,8 @@
  Once the mod is loaded, SGE loads a scene gived in mod/manifest.json in "start_scene" field. 
 ### Entities, components and assets
  In SGE, game objects are called **entities**. Entities are composites made of **components**.
- Components allows entity to interact with engine subsystems like the renderer or audio system.
- They can be also added and removed from the entities at runtime. 
+ Components allows entities to interact with engine subsystems, for instance colliders affects the collision system.
+ Components can be also added and removed from the entities at runtime. 
 
  Often components needs additional data to work, eg. sprite needs an image.
  This data is stored inside **assets**. Assets are automatically loaded when needed, and unloaded when not.
