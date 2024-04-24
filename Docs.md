@@ -2,7 +2,7 @@
 ### Loading a game
  SGE dynamically loads one selected game (in code named mod) from the "mods" folder.
  Mods must met some requirements, eg. contains all the config files. (See *TODO*)
- Once the mod is loaded, SGE loads scene gived in mod/manifest.json in "start_scene" field. 
+ Once the mod is loaded, SGE loads a scene gived in mod/manifest.json in "start_scene" field. 
 ### Entities, components and assets
  In SGE, game objects are called **entities**. Entities are composites made of **components**.
  Components allows entity to interact with engine subsystems like the renderer or audio system.
