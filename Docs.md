@@ -18,16 +18,18 @@
 
  There are 10 types of components:
  
- -*behavior* : links *behavior asset* to the entity therefore adding logic to the owner  
- -*camera* : allows renderer to render game objects to the screen  
- -*collider* : adds collision to the entity  
- -*dynamics* : handles forces, gravitation etc.  
- -*static mesh* : remders given *mesh asset* with given *shader asset* and given set of *texture assets*  
- -*sprite* : renders sprite + adds collision  
- -*flipbook* : renders flipbook (animations made of sprites) + adds collision  
- -*tilemap* : renders *tilemap asset* using textures from *tileset asset* + adds collision   
- -*sound emitter* : emitts *sound asset* in owner's position  
- -*listener* : represents sound listener in world space  
+```yaml
+behavior        : links behavior asset to the entity therefore adding logic to the owner  
+camera          : allows renderer to render game objects to the screen  
+collider        : adds collision to the entity  
+dynamics        : handles forces, gravitation etc.  
+static mesh     : remders given mesh asset with given shader asset and given set of texture assets  
+sprite          : renders sprite + adds collision  
+flipbook        : renders flipbook (animations made of sprites) + adds collision  
+tilemap         : renders tilemap asset using textures from tileset asset + adds collision   
+sound emitter   : emitts sound asset in owner's position  
+listener        : represents sound listener in world space    
+```
 
  ## Assets in detail
   Each asset is represented by .json file, consisting of "asset_type" field, with string determining asset type, and additional asset-type-dependant data.  
@@ -225,20 +227,29 @@
 # Engine API
 SGE exposes api, through which lua scripts can manipulate the engine.  
 All api functions uses following naming convention:   
-``'\_' + letter indication of manipulated submodule / indication of the function + '\_' + rest of the name``
-For example: ``_a_set_volume``, means ``audio\_subsystem::set\_volume``
+```py
+_ + short indication of manipulated submodule or component + _ + rest of the name
+```
+For example: 
+```py
+_a_set_volume
+```
+means 
+```py
+engine => audio_subsystem => set_volume
+```
 
 Engine functions may also return some custom types:  
-``entity`` is a lua wraper for std::weak_ptr<entities::entity>.   
-``render_config`` is actually a specialised table that represents C++ rendering::render_config struct. It must contains:
 ```yaml
+entity, entity_ref : lua wraper for std::weak_ptr<entities::entity>   
+render_config : a table that represents c++ rendering::render_config structure. It must contains:
 {
     string shader : a shader asset to use
     string mesh   : a mesh asset to render
     table textures : a set of texture / sprtie_sheet / tilemap / flipbook assets that will be passed to the gpu when drawing (optional)
     { 
         <any key> : string,
-        <any other key> : string,
+        <any other key> : string
     }
 }
 ```
@@ -282,7 +293,7 @@ nil             _e_add_sound_emitter(entity_ref e, integer | string name)       
 ## Components Functions
 Components functions uses _c\_ +  max. 2 letters indicating targetet component type prefix.  
 Many functions are just obvious getters and setters so they descriptions are omitted.  
-Also, because each of the functions takes as the first two arguments ``entity_ref e, integer/string component_name`` to shorten and simplify the docs those args are represented by \[Comp] in functions decriptions.  
+Also, because each of the functions always takes as the first two arguments ```entity_ref e, integer/string component_name``` to shorten and simplify the docs those args are represented by \[Comp] in functions decriptions.  
 
 any mesh component (static_mesh, sprite, flipbook, tilemap) functions (_c_m):  
 
@@ -367,7 +378,7 @@ nil             _c_cl_set_layer_offset([Comp], integer new_layer_offset)    --as
 dynamics component (_c_d): 
 
 ```lua
-nil             _c_d_add_force([Comp], number x, number y) -                                --adds (x, y) force  
+nil             _c_d_add_force([Comp], number x, number y)                                  --adds (x, y) force  
 nil             _c_d_add_movement_input([Comp], number dir_x, number dir_y, number speed)   --adds force in normalized (dir_x, dir_y) direction multiplied by speed
 
 number          _c_d_get_drag([Comp])                                                       --returns movement drag  
@@ -531,7 +542,7 @@ When you have it done, go back to your glfw binaries and then move `glfw3.lib` f
 ### STB_IMAGE
 Inside the `repo/core_game/include` directory create a new folder named `stb`. Inside it create two files: `stb_image.h` and `stb_image.cpp`. 
 Open the `stb_image.cpp` file and paste in the following code:
-```
+```cpp
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 ```
@@ -544,7 +555,7 @@ Open the repo, go into the `include` folder and then copy the `nlohmann` folder 
 ### MINIAUDIO
 Inside the `repo/core_game/include` directory create a new folder named `miniaudio`. Inside it create two files: `miniaudio.h` and `miniaudio.c`. 
 Open the `miniaudio.c` file and paste in the following code:
-```
+```cpp
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 ```
@@ -571,7 +582,7 @@ You can compile the engine in two configurations:
 ### Debug 
 In order to build in debug you need to create a ``debug_config.h`` in the ``repo/core_game`` folder (the folder containing ``main.cpp`` file).  
 The ``debug_config.h`` should look like this:
-```c
+```cpp
 const std::string debug_mods_directory =			{ Absolute Path };    //Folder containing all the mods
 const std::string debug_core_asssets_directory =	        { Absolute Path };    //Folder containing engine assets; repo/core_game/assets
 const std::string debug_loaded_mod =				{ Absolute Path };    //Folder containing mod to be loaded; Should be a subfolder of debug_mods_directory
