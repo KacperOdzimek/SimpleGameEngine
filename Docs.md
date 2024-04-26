@@ -249,14 +249,18 @@ Entities functions uses _e prefix.
 ```lua 
 entity_ref      _e_create()                                             --creates entity inside current scene (See *TODO*) and returns reference to it.
 nil             _e_kill(entity_ref e)                                   --kills entity *e*    
-nil             _e_is_alive(entity_ref e)                               --checks if entity *e* is still alive (has not been killed)  
-table           _e_call(entity_ref e, string event_name, table args)    --calls event of given name on all behaviors components inside the entity. Returns table of event calls return values. (See *TODO*)  
+nil             _e_is_alive(entity_ref e)                               --checks if entity *e* is still alive (has not been killed)
+
+table           _e_call(entity_ref e, string event_name, table args)    --calls event of given name on all behaviors components inside the entity. Returns table of event calls return values. (See *TODO*)
+
 nil             _e_teleport(entity_ref e, number x, number y)           --moves entity *e* to the postion *(x, y)* without checking the collision.  
-bool            _e_sweep(entity_ref e, number x, number y)              --moves entity *e* to the position *(x, y)* while checking the collision. Returns true, if entity has collided with other entity.  
-number, number  _e_get_location(entity_ref e)                           --returns (x, y) position of the *e* entity  
-nil             _e_kill_component(entity_ref e, integer | string name)  --removes compononent of the given name from the entity.  
+bool            _e_sweep(entity_ref e, number x, number y)              --moves entity *e* to the position *(x, y)* while checking the collision. Returns true, if entity has collided with other entity.
+
+number, number  _e_get_location(entity_ref e)                           --returns (x, y) position of the *e* entity
 integer         _e_get_layer(entity_ref e)                              --returns layer on which the entity is located  
 nil             _e_set_layer(entity_ref e, integer new_layer)           --sets layer on which the entity is located
+
+nil             _e_kill_component(entity_ref e, integer | string name)  --removes compononent of the given name from the entity.  
 ```
 
 ## Add Component Function
@@ -281,113 +285,155 @@ Many functions are just obvious getters and setters so they descriptions are omi
 Also, because each of the functions takes as the first two arguments ``entity_ref e, integer/string component_name`` to shorten and simplify the docs those args are represented by \[Comp] in functions decriptions.  
 
 any mesh component (static_mesh, sprite, flipbook, tilemap) functions (_c_m):  
+
 ```lua
 bool            _c_m_get_visible([Comp])  
-nil             _c_m_set_visible([Comp], bool visible)  
+nil             _c_m_set_visible([Comp], bool visible)
+
 number, number  _c_m_get_scale([Comp])  
-nil             _c_m_set_scale([Comp], number scale_x, number scale_y)  
+nil             _c_m_set_scale([Comp], number scale_x, number scale_y)
+
 number, number  _c_m_get_offset([Comp])  
 nil             _c_m_set_offset([Comp], number offset_x, number offset_y)   
 ```
 
-static_mesh component (_c_sm):   
+static_mesh component (_c_sm):  
+
 ```lua
 render_config   _c_sm_get_render_config([Comp])  
 nil             _c_sm_set_render_config([Comp], render_config rc)
 ```
 
 sprite component (_c_s):  
+
 ```lua
 integer         _c_s_get_sprite([Comp])  
-nil             _c_s_set_sprite([Comp], integer new_sprite)  
+nil             _c_s_set_sprite([Comp], integer new_sprite)
+
 nil             _c_s_set_shader([Comp], string new_shader)  
 ```
 
 flipbook component (_c_f):
+
 ```lua
 integer         _c_f_get_animation([Comp])                                      --returns current flipbook animation hashed name   
-nil             _c_f_set_animation([Comp], string/integer animation_name)       --sets animation of given name as current   
+nil             _c_f_set_animation([Comp], string/integer animation_name)       --sets animation of given name as current
+  
 bool            _c_f_get_looping([Comp])  
 nil             _c_f_set_looping([Comp], bool looping)
 ```
 
 camera component (_c_c):  
+
 ```lua
 number          _c_c_get_ortho_width([Comp])    
-nil             _c_c_set_ortho_width([Comp], number new_ortho)    
+nil             _c_c_set_ortho_width([Comp], number new_ortho)
+
 number          _c_c_get_lowest_layer([Comp])                               --returns number of the deepest rendered layer  
-nil             _c_c_set_lowest_layer([Comp], number new_lowest_layer)      --sets number of the deepest rendered layer  
+nil             _c_c_set_lowest_layer([Comp], number new_lowest_layer)      --sets number of the deepest rendered layer
+
 number          _c_c_get_highest_layer([Comp])                              --returns number of the highest rendered layer  
-nil             _c_c_set_highest_layer([Comp], number new_highest_layer)    --sets number of the highest rendered layer  
+nil             _c_c_set_highest_layer([Comp], number new_highest_layer)    --sets number of the highest rendered layer
+
 bool            _c_c_get_active([Comp])                                     --returns whether this camera component is currently used for rendering  
 nil             _c_c_set_active([Comp])                                     --makes camera component used for rendering
 ```
 
-behavior component (_c_b):  
+behavior component (_c_b): 
+
 ```lua
 string          _c_b_get_behavior([Comp])                               --returns currently used behavior asset  
-nil             _c_b_set_behavior([Comp], string behavior_asset_path)   --assign new behavior asset to the component  
+nil             _c_b_set_behavior([Comp], string behavior_asset_path)   --assign new behavior asset to the component
+
 nil | value     _c_b_call([Comp], string event_name, table args)        --calls function named "event\_" + event_name implemented in behavior asset. If not implemented returns nil. 
 ```
 
-collider component (_c_cl):  
+collider component (_c_cl): 
+
 ```lua
 string          _c_cl_get_collision_preset([Comp])                          --returns collision preset used by collider  
-nil             _c_cl_set_collision_preset([Comp], string new_preset_name)  --asigns new collision preset to the collider  
+nil             _c_cl_set_collision_preset([Comp], string new_preset_name)  --asigns new collision preset to the collider
+
 number, number  _c_cl_get_offset([Comp])                                    --returns (x, y) offset from owner   
-nil             _c_cl_set_offset([Comp], number x, number y)                --asigns new (x, y) offset from owning entity  
+nil             _c_cl_set_offset([Comp], number x, number y)                --asigns new (x, y) offset from owning entity
+
 number, number  _c_cl_get_extend([Comp])                                    --returns (x, y) collider extend   
-nil             _c_cl_set_extend([Comp], number x, number y)                --asigns new (x, y) collider extend  
+nil             _c_cl_set_extend([Comp], number x, number y)                --asigns new (x, y) collider extend
+
 integer         _c_cl_get_layer_offset([Comp])                              --returns collider's layer offset from owning entity layer  
 nil             _c_cl_set_layer_offset([Comp], integer new_layer_offset)    --asigns layer offset
 ```
 
-dynamics component (_c_d):  
+dynamics component (_c_d): 
+
 ```lua
 nil             _c_d_add_force([Comp], number x, number y) -                                --adds (x, y) force  
-nil             _c_d_add_movement_input([Comp], number dir_x, number dir_y, number speed)   --adds force in normalized (dir_x, dir_y) direction multiplied by speed  
+nil             _c_d_add_movement_input([Comp], number dir_x, number dir_y, number speed)   --adds force in normalized (dir_x, dir_y) direction multiplied by speed
+
 number          _c_d_get_drag([Comp])                                                       --returns movement drag  
-nil             _c_d_set_drag([Comp], number new_drag)                                      --assigns new movement drag  
+nil             _c_d_set_drag([Comp], number new_drag)                                      --assigns new movement drag
+
 number          _c_d_get_mass([Comp])                                                       --returns assigned mass  
-nil             _c_d_set_mass([Comp], number new_mass)                                      --assigns new mass  
+nil             _c_d_set_mass([Comp], number new_mass)                                      --assigns new mass
+
 bool            _c_d_get_use_max_vel([Comp])                                                --returns whether to limit velocity to max_velocity  
 nil             _c_d_set_use_max_vel([Comp], bool use)                                      --sets whether to limit velocity to max_velocity
+
 number          _c_d_get_max_vel([Comp])                                                    --returns max_velocity  
-nil             _c_d_get_vel([Comp], number new_max_vel)                                    --assigns new max_velocity  
+nil             _c_d_get_vel([Comp], number new_max_vel)                                    --assigns new max_velocity
+
 number, number  _c_d_get_vel([Comp])                                                        --returns (x, y) velocity  
-nil             _c_d_set_vel([Comp], number x, number, y)                                   --assigns new (x, y) velocity  
+nil             _c_d_set_vel([Comp], number x, number, y)                                   --assigns new (x, y) velocity
+
 bool            _c_d_get_gravity_enabled([Comp])                                            --returns whether the gravity force is applied on the component
 nil             _c_d_set_gravity_enabled([Comp], bool enabled)                              --sets whether to apply gravity force on the component
+
 bool            _c_d_get_grounded([Comp])                                                   --returns whether entity is currently standing on the ground. Valid only if the project is not - topdown
 ```  
 
 tilemap component (_c_t):  
-``number _c_t_get_layers_stride([Comp])`` : returns stride between tilemap layers  
-``nil _c_t_set_layers_stride([Comp], number new_stride)`` : assigns new stride between tilemap layers  
+
+```lua
+number          _c_t_get_layers_stride([Comp])                          --returns stride between tilemap layers  
+nil             _c_t_set_layers_stride([Comp], number new_stride)       --assigns new stride between tilemap layers   
+```
 
 listener component (_c_l):
-``bool _c_l_get_active([Comp])`` : returns whether the sound captured by this listener gets streamed to audio output
-``nil _c_l_set_active([Comp])``  
+
+```lua
+bool            _c_l_get_active([Comp])    --returns whether the sound captured by this listener will be streamed to the audio output
+nil             _c_l_set_active([Comp])    --sets whether the sound captured by this listener will be streamed to the audio output   
+```
 
 sound_emmiter component (_c_se):  
-``nil _c_se_emit_sound([Comp], string sound_asset_to_emmit, number volume_precent)`` : emmits sound at the owner's world position, that can be captured by a listener component  
+
+```lua
+nil             _c_se_emit_sound([Comp], string sound_asset_to_emmit, number volume_precent)    --emmits sound at the owner's world position, that can be captured by a listener component   
+```
 
 ## Input Functions
 Input functions uses _i prefix.  
 
-``bool _i_action(string action_name)`` : returns the state of given action; true if pressed and false if not  
-``bool _i_action_just_pressed(string action_name)`` : returns if action was pressed in this exact frame  
-``bool _i_action_just_relased(string action_name)`` : returns if action was relased in this exact frame  
-``number _i_axis(string axis_name)`` : returns the state of the given axis mapping  
-``nil _i_set_mouse_visible(bool visible)``  
+```lua
+bool            _i_action(string action_name)                   --returns the state of given action; true if pressed and false if not  
+bool            _i_action_just_pressed(string action_name)      --returns if action was pressed in this exact frame  
+bool            _i_action_just_relased(string action_name)      --returns if action was relased in this exact frame
+ 
+number          _i_axis(string axis_name)                       --returns the state of the given axis mapping
+
+nil             _i_set_mouse_visible(bool visible)  
+```
 
 ## Collision Functions
 Collision functions uses _cl prefix. 
 
-``trace_result _cl_trace(string trace_collision_preset, number start_x, number start_y, number end_x, number end_y)`` : casts a trace from (start_x, start_y) to (end_x, end_y) and returns if it has hitten any collider. The result is a table : 
+```lua
+trace_result    _cl_trace(string trace_collision_preset, number start_x, number start_y, number end_x, number end_y) --casts a trace from (start_x, start_y) to (end_x, end_y) and returns if it has hitten any collider
 ```
+The result is a table : 
+```yaml
 {
-   entity : {hited entity or a nil},
+   entity   : {hited entity or a nil},
    distance : {hit distance from (start_x, start_y) or a nil}
 }
 ```
@@ -395,36 +441,58 @@ Collision functions uses _cl prefix.
 ## Audio Functions
 Audio functions uses _a prefix.   
 
-``nil _a_play_sound(string sound_asset)`` : simply plays given sound  
-``nil _a_set_volume(number new_volume_precent)`` : assigns new global volume  
-``nil _a_play_sound_at_channel(string sound_asset, integer/string channel_name, bool looping)`` : creates playback object i.e.channel that allows to control the sound playback, and starts to play given sound on it  
-``nil _a_set_volume_at_channel(integer/string channel_name, number new_volume_precent)`` : assigns additional volume modyficator to the channel  
-``nil _a_resume_channel(integer/string channel_name)`` : resumes the playback  
-``nil _a_stop_channel(integer/string channel_name)`` : stops the playback  
-``nil _a_set_channel_position(integer/string channel_name, number x, number y, number layer)`` : puts given channel in the position in space. After calling, the sound is affected by the audio rolloff  
+```lua
+nil             _a_set_volume(number new_volume_precent)                                                    --assigns new global volume
+
+nil             _a_play_sound(string sound_asset)                                                           --simply plays given sound
+
+nil             _a_play_sound_at_channel(string sound_asset, integer | string channel_name, bool looping)   --creates playback object i.e.channel that allows to control the sound playback, and starts to play given sound on it  
+nil             _a_set_volume_at_channel(integer | string channel_name, number new_volume_precent)          --assigns additional volume modyficator to the channel  
+nil             _a_resume_channel(integer | string channel_name)                                            --resumes the playback  
+nil             _a_stop_channel(integer | string channel_name)                                              --stops the playback  
+nil             _a_set_channel_position(integer | string channel_name, number x, number y, number layer)    --puts given channel in the position in space. After calling, the sound is affected by the audio rolloff   
+```
 
 ## Engine Functions
-Engine functions uses _en prefix. 
-``nil _en_load_scene(integer/string scene_name, string scene_asset, number x_world_offset, number y_world_offset)`` : creates a scene from the given *scene_asset*, and then registers it using *scene_name*, so other functions can refer to this exact scene instance using this name. Also offsets all entities in the new scene by (*x_world_offset*, *y_world_offset*).  
-``nil _en_unload_scene(integer/string scene_name)`` : unloads the scene with all the entities in it   
-``table _en_get_entities_in_scene(integer/string scene_name)`` : returns a table containing references to all the entities in the scene.  
-``nil _en_create_entities_from_tilemap(string tilemap_asset, function creator_function)`` : tiled's object layers integration. For every object on any of the object layers in the tilemap, it creates entity and calls *creator_function* with table of arguments, so it can process the entity further.  
-Table of arguments contains:  
+Engine functions uses _en prefix.  
+
+```lua
+nil             _en_load_scene(integer | string scene_name, string scene_asset, number x_world_offset, number y_world_offset)   --creates a scene from the given scene_asset, and then registers it using scene_name, so other functions can refer to this exact scene instance using this name. Also offsets all entities in the new scene by (x_world_offset, y_world_offset)  
+nil             _en_unload_scene(integer | string scene_name)                                                                   --unloads the scene with all the entities in it   
+table           _en_get_entities_in_scene(integer | string scene_name)                                                          --returns a table containing references to all the entities in the scene
+
+number, number  _en_viewport_to_world(number v_x, number v_y)                                                                   --translates (v_x, v_y) viewport coordinates into world coordinates 
+ 
+table           _en_load_custom_data(string custom_data_asset)                                                                  --loads and return the content of the given custom data asset  
+
+number          _en_time_period_to_physics(number time)                                                                         --multiplies time by physics_time_dilation modyficator and returns  
+nil             _en_set_physics_time_dilation(number new_dilation)                                                              --sets global physics time dilation modyfiactor. This change affects dynamics components, but not the delta_time argument passed into the on_update functions   
+
+nil             _en_save_data(string filename, table data)                                                                      --saves data as a filename + .json file in the saved engine directory   
+bool            _en_data_exists(string filename)                                                                                --return whether a file with the given filename exists   
+table           _en_load_data(string filename)                                                                                  --restores data saved using _en_save_data from the given file 
+
+nil             _en_create_entities_from_tilemap(string tilemap_asset, func creator_function)                                   --tiled's object layers integration. For every object on any of the object layers in the tilemap, it creates entity and calls creator_function (2) with table of arguments (1), so it can process the entity further
 ```
-entity_ref entity = created entity
-string name = tiled object name
-string class = tiled object class
-number x, y = world space entity position (in engine units)
-number layer = entity's layer
+ 
+(1) Table of arguments contains:
 
-(if object is a box)
-number width, height = object dimensions (in engine units)
-
-+ all additional object properties
+```yaml
+{
+    entity_ref entity : created entity
+    string name       : tiled object name
+    string class      : tiled object class
+    number x, y       : world space entity position (in engine units)
+    number layer      : entity's layer
+    number width, height = object dimensions (in engine units; nil if object is not a box)
+    
+    + all additional user-definied object properties   
+}
 ```
 If the objects derives from a tiled template, the default object properties will be passed, unless the object instance overrides them    
-Example *creator_function*:
-```
+
+(2) Example *creator_function*:
+```lua
 function creator(args)
     if args.class == "cactus" then
         cactus.make_cactus(args.entity)
@@ -432,14 +500,7 @@ function creator(args)
         tree.make_tree(args.entity)
     end
 end
-```
-``number, number _en_viewport_to_world(number v_x, number v_y)`` : translated (v_x, v_y) viewport coordinates into world coordinates  
-``table _en_load_custom_data(string custom_data_asset)`` : loads and return the content of the given custom data asset  
-``number _en_time_period_to_physics(number time)`` : multiplies *time* by *physics_time_dilation* modyficator and returns  
-``nil _en_set_physics_time_dilation(number new_dilation)`` : sets global physics time dilation modyfiactor. This change affects dynamics components, but not the delta_time argument passed into the *on_update* functions   
-``nil _en_save_data(string filename, table data)`` : saves *data* as a *filename* + .json file in the *saved* engine directory   
-``bool _en_data_exists(string filename)`` : return whether a file with the given filename exists   
-``table _en_load_data(string filename)`` : restores data saved using *_en_save_data* from the given file  
+``` 
 
 # Building
 ## Dependencies  
