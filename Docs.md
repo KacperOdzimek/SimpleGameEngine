@@ -477,6 +477,13 @@ After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/cor
 
 ### GRAPHICS ABSTRACTION OPENGL 3.3
 
+### Build
+Once you have all depedencies installed, open Vs folder an launch the solution. Now you can compile the engine.
+Building in release:
+- Select "release" build configuration
+- Build
+- (TODO PIERCING TOGETHER)
+
 
 
 
