@@ -241,14 +241,14 @@ engine => audio_subsystem => set_volume
 
 Engine functions may also return some custom types:  
 ```yaml
-entity, entity_ref : lua wraper for std::weak_ptr<entities::entity>   
-render_config : a table that represents c++ rendering::render_config structure. It must contains:
+entity, entity_ref      : lua wraper for std::weak_ptr<entities::entity>   
+render_config           : a table that represents c++ rendering::render_config structure. It must contains:
 {
-    string shader : a shader asset to use
-    string mesh   : a mesh asset to render
-    table textures : a set of texture / sprtie_sheet / tilemap / flipbook assets that will be passed to the gpu when drawing (optional)
+    string shader       : a shader asset to use
+    string mesh         : a mesh asset to render
+    table textures      : a set of texture / sprtie_sheet / tilemap / flipbook assets that will be passed to the gpu when drawing (optional)
     { 
-        <any key> : string,
+        <any key>       : string,
         <any other key> : string
     }
 }
