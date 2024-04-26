@@ -1,8 +1,9 @@
 ## Architecture
-### Loading a game
+### Loading games
  SGE dynamically loads one selected game (in code named mod) from the "mods" folder.
  Mods must met some requirements, eg. contains all the config files. (See *TODO*)
  Once the mod is loaded, SGE loads a scene gived in mod/manifest.json in "start_scene" field. 
+ 
 ### Entities, components and assets
  In SGE, game objects are called **entities**. Entities are composites made of **components**.
  Components allows entities to interact with engine subsystems, for instance colliders affects the collision system.
@@ -478,14 +479,20 @@ After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/cor
 ### GRAPHICS ABSTRACTION OPENGL 3.3
 
 ### Build
-Once you have all depedencies installed, open Vs folder an launch the solution. Now you can compile the engine.
-Building in release:
-- Select "release" build configuration
-- Build
-- (TODO PIERCING TOGETHER)
+Once you have all depedencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
+You can compile the engine in two configurations:  
+- Debug, used for developing mods and the engine itself. In this configuration program does create a console window once launched. Also, it directly loads one specyfic mod, given in the ``debug_config.h`` file (details below). Furthermore it does not require packing the engine for shipping, as all the paths required by the engine, instead of being relative to ``main.cpp`` can be specified in ``debug_config.h``.
+- Relase, as the name suggest, intended for shipping. It does not create a console window once launched. Also it does contains (but not yet) a mod selection feature. To run it requires additional program structure (details below, in *shipping the relase*)
 
-
-
+### Debug 
+In order to build in debug you need to create a ``debug_config.h`` in the ``repo/core_game`` folder (the folder containing ``main.cpp`` file).  
+The ``debug_config.h`` should look like this:
+```c
+const std::string debug_mods_directory =			{ Absolute Path };    //Folder containing all the mods
+const std::string debug_core_asssets_directory =	        { Absolute Path };    //Folder containing engine assets; repo/core_game/assets
+const std::string debug_loaded_mod =				{ Absolute Path };    //Folder containing mod to be loaded; Should be a subfolder of debug_mods_directory
+const std::string debug_saved_directory =			{ Absolute Path };    //An empty folder for mods to save their data
+```
 
 
 
