@@ -1,10 +1,10 @@
-## Architecture
-### Loading games
+# Architecture
+## Loading games
  SGE dynamically loads one selected game (in code named mod) from the "mods" folder.
  Mods must met some requirements, eg. contains all the config files. (See *TODO*)
  Once the mod is loaded, SGE loads a scene gived in mod/manifest.json in "start_scene" field. 
  
-### Entities, components and assets
+## Entities, components and assets
  In SGE, game objects are called **entities**. Entities are composites made of **components**.
  Components allows entities to interact with engine subsystems, for instance colliders affects the collision system.
  Components can be also added and removed from the entities at runtime. 
@@ -262,17 +262,17 @@ nil             _e_set_layer(entity_ref e, integer new_layer)           --sets l
 ## Add Component Function
 Add component functions uses _e_add prefix.  
 
-```
-``nil _e_add_behavior(entity_ref e, integer/string name, string behavior_asset)`` : adds behavior component to the entity.  
-``nil _e_add_camera(entity_ref e, integer/string name, number ortho_width)`` : adds camera component with given ortho width.  
-``nil _e_add_static_mesh(entity_ref e, integer/string name, render_config rc)`` : adds static_mesh component to the entity.  
-``nil _e_add_collider(entity_ref e, integer/string name, number extend_x, number extend_y)`` : adds collider component with given extend to the entity.  
-``nil _e_add_sprite(entity_ref e, integer/string name, string sprite_sheet_asset, integer sprite_id, string collision_preset_name)`` : adds sprite component to the entity.  
-``nil _e_add_flipbook(entity_ref e, integer/string name, string sprite_sheet_asset, string flipbook_animation, string collision_preset_name)`` : adds flipbook component to the entity.  
-``nil _e_add_tilemap(entity_ref e, integer/string name, string tilemap_asset, string tileset_asset, string collision_preset_name)`` : adds tilemap component to the entity.  
-``nil _e_add_dynamics(entity_ref e, integer/string name)`` : adds dynamics component to the entity.   
-``nil _e_add_listener(entity_ref e, integer/string name)`` : adds listener component to the entity.  
-``nil _e_add_sound_emitter(entity_ref e, integer/string name)`` : adds sound emmiter component to the entity.
+```lua
+nil             _e_add_behavior(entity_ref e, integer | string name, string behavior_asset)                                                               --adds behavior component to the entity.  
+nil             _e_add_camera(entity_ref e, integer | string name, number ortho_width)                                                                    --adds camera component with given ortho width.  
+nil             _e_add_static_mesh(entity_ref e, integer | string name, render_config rc)                                                                 --adds static_mesh component to the entity.  
+nil             _e_add_collider(entity_ref e, integer | string name, number extend_x, number extend_y)                                                    --adds collider component with given extend to the entity.  
+nil             _e_add_sprite(entity_ref e, integer | string name, string sprite_sheet_asset, integer sprite_id, string collision_preset_name)            --adds sprite component to the entity.  
+nil             _e_add_flipbook(entity_ref e, integer | string name, string sprite_sheet_asset, string flipbook_animation, string collision_preset_name)  --adds flipbook component to the entity.  
+nil             _e_add_tilemap(entity_ref e, integer | string name, string tilemap_asset, string tileset_asset, string collision_preset_name)             --adds tilemap component to the entity.  
+nil             _e_add_dynamics(entity_ref e, integer | string name)                                                                                      --adds dynamics component to the entity.   
+nil             _e_add_listener(entity_ref e, integer | string name)                                                                                      --adds listener component to the entity.  
+nil             _e_add_sound_emitter(entity_ref e, integer | string name)                                                                                 --adds sound emmiter component to the entity.
 ```
 
 ## Components Functions
@@ -281,69 +281,85 @@ Many functions are just obvious getters and setters so they descriptions are omi
 Also, because each of the functions takes as the first two arguments ``entity_ref e, integer/string component_name`` to shorten and simplify the docs those args are represented by \[Comp] in functions decriptions.  
 
 any mesh component (static_mesh, sprite, flipbook, tilemap) functions (_c_m):  
-``bool _c_m_get_visible([Comp])``  
-``nil _c_m_set_visible([Comp], bool visible)``  
-``number, number _c_m_get_scale([Comp])``  
-``nil _c_m_set_scale([Comp], number scale_x, number scale_y)``  
-``number, number _c_m_get_offset([Comp])``  
-``nil _c_m_set_offset([Comp], number offset_x, number offset_y)``  
+```lua
+bool            _c_m_get_visible([Comp])  
+nil             _c_m_set_visible([Comp], bool visible)  
+number, number  _c_m_get_scale([Comp])  
+nil             _c_m_set_scale([Comp], number scale_x, number scale_y)  
+number, number  _c_m_get_offset([Comp])  
+nil             _c_m_set_offset([Comp], number offset_x, number offset_y)   
+```
 
 static_mesh component (_c_sm):   
-``render_config _c_sm_get_render_config([Comp])``  
-``nil _c_sm_set_render_config([Comp], render_config rc)``  
+```lua
+render_config   _c_sm_get_render_config([Comp])  
+nil             _c_sm_set_render_config([Comp], render_config rc)
+```
 
 sprite component (_c_s):  
-``integer _c_s_get_sprite([Comp])``  
-``nil _c_s_set_sprite([Comp], integer new_sprite)``  
-``nil _c_s_set_shader([Comp], string new_shader)``  
+```lua
+integer         _c_s_get_sprite([Comp])  
+nil             _c_s_set_sprite([Comp], integer new_sprite)  
+nil             _c_s_set_shader([Comp], string new_shader)  
+```
 
 flipbook component (_c_f):
-``integer _c_f_get_animation([Comp])`` : returns current flipbook animation hashed name   
-``nil _c_f_set_animation([Comp], string/integer animation_name)`` : sets animation of given name as current   
-``bool _c_f_get_looping([Comp])``  
-``nil _c_f_set_looping([Comp], bool looping)``  
+```lua
+integer         _c_f_get_animation([Comp])                                      --returns current flipbook animation hashed name   
+nil             _c_f_set_animation([Comp], string/integer animation_name)       --sets animation of given name as current   
+bool            _c_f_get_looping([Comp])  
+nil             _c_f_set_looping([Comp], bool looping)
+```
 
 camera component (_c_c):  
-``number _c_c_get_ortho_width([Comp])``    
-``nil _c_c_set_ortho_width([Comp], number new_ortho)``    
-``number _c_c_get_lowest_layer([Comp])`` : returns number of the deepest rendered layer  
-``nil  _c_c_set_lowest_layer([Comp], number new_lowest_layer)`` : sets number of the deepest rendered layer  
-``number _c_c_get_highest_layer([Comp])`` : returns number of the highest rendered layer  
-``nil  _c_c_set_highest_layer([Comp], number new_highest_layer)`` : sets number of the highest rendered layer  
-``bool _c_c_get_active([Comp])`` : returns whether this camera component is currently used for rendering  
-``nil _c_c_set_active([Comp])`` :  makes camera component used for rendering  
+```lua
+number          _c_c_get_ortho_width([Comp])    
+nil             _c_c_set_ortho_width([Comp], number new_ortho)    
+number          _c_c_get_lowest_layer([Comp])                               --returns number of the deepest rendered layer  
+nil             _c_c_set_lowest_layer([Comp], number new_lowest_layer)      --sets number of the deepest rendered layer  
+number          _c_c_get_highest_layer([Comp])                              --returns number of the highest rendered layer  
+nil             _c_c_set_highest_layer([Comp], number new_highest_layer)    --sets number of the highest rendered layer  
+bool            _c_c_get_active([Comp])                                     --returns whether this camera component is currently used for rendering  
+nil             _c_c_set_active([Comp])                                     --makes camera component used for rendering
+```
 
 behavior component (_c_b):  
-``string _c_b_get_behavior([Comp])`` : returns currently used behavior asset  
-``nil _c_b_set_behavior([Comp], string behavior_asset_path)`` : assign new behavior asset to the component  
-``nil/value _c_b_call([Comp], string event_name, table args)`` : calls function named "event\_" + event_name implemented in behavior asset. If not implemented returns nil.  
+```lua
+string          _c_b_get_behavior([Comp])                               --returns currently used behavior asset  
+nil             _c_b_set_behavior([Comp], string behavior_asset_path)   --assign new behavior asset to the component  
+nil | value     _c_b_call([Comp], string event_name, table args)        --calls function named "event\_" + event_name implemented in behavior asset. If not implemented returns nil. 
+```
 
 collider component (_c_cl):  
-``string _c_cl_get_collision_preset([Comp])`` : returns collision preset used by collider  
-``nil _c_cl_set_collision_preset([Comp], string new_preset_name)`` : asigns new collision preset to the collider  
-``number, number _c_cl_get_offset([Comp])`` : returns (x, y) offset from owner   
-``nil _c_cl_set_offset([Comp], number x, number y)`` : asigns new (x, y) offset from owning entity  
-``number, number _c_cl_get_extend([Comp])`` : returns (x, y) collider extend   
-``nil _c_cl_set_extend([Comp], number x, number y)`` : asigns new (x, y) collider extend  
-``integer _c_cl_get_layer_offset([Comp])`` : returns collider's layer offset from owning entity layer  
-``nil _c_cl_set_layer_offset([Comp], integer new_layer_offset)`` : asigns layer offset  
+```lua
+string          _c_cl_get_collision_preset([Comp])                          --returns collision preset used by collider  
+nil             _c_cl_set_collision_preset([Comp], string new_preset_name)  --asigns new collision preset to the collider  
+number, number  _c_cl_get_offset([Comp])                                    --returns (x, y) offset from owner   
+nil             _c_cl_set_offset([Comp], number x, number y)                --asigns new (x, y) offset from owning entity  
+number, number  _c_cl_get_extend([Comp])                                    --returns (x, y) collider extend   
+nil             _c_cl_set_extend([Comp], number x, number y)                --asigns new (x, y) collider extend  
+integer         _c_cl_get_layer_offset([Comp])                              --returns collider's layer offset from owning entity layer  
+nil             _c_cl_set_layer_offset([Comp], integer new_layer_offset)    --asigns layer offset
+```
 
 dynamics component (_c_d):  
-``nil _c_d_add_force([Comp], number x, number y)`` : adds (x, y) force  
-``nil _c_d_add_movement_input([Comp], number dir_x, number dir_y, number speed)`` : adds force in normalized (dir_x, dir_y) direction multiplied by speed  
-``number _c_d_get_drag([Comp])`` : returns movement drag  
-``nil _c_d_set_drag([Comp], number new_drag)`` : assigns new movement drag  
-``number _c_d_get_mass([Comp])`` : returns assigned mass  
-``nil _c_d_set_mass([Comp], number new_mass)`` : assigns new mass  
-``bool _c_d_get_use_max_vel([Comp])`` : returns whether to limit velocity to the max_velocity  
-``nil _c_d_set_use_max_vel([Comp], bool use)``    
-``number _c_d_get_max_vel([Comp])`` : returns max_velocity  
-``nil _c_d_get_vel([Comp], number new_max_vel)`` : assigns new max velocity  
-``number, number _c_d_get_vel([Comp])`` : returns (x, y) velocity  
-``nil _c_d_set_vel([Comp], number x, number, y)`` : assigns new (x, y) velocity  
-``bool _c_d_get_gravity_enabled([Comp])``  
-``nil _c_d_set_gravity_enabled([Comp], bool enabled)``  
-``bool _c_d_get_grounded([Comp])`` : returns whether entity is currently standing on the ground. Valid only if the project is not - topdown  
+```lua
+nil             _c_d_add_force([Comp], number x, number y) -                                --adds (x, y) force  
+nil             _c_d_add_movement_input([Comp], number dir_x, number dir_y, number speed)   --adds force in normalized (dir_x, dir_y) direction multiplied by speed  
+number          _c_d_get_drag([Comp])                                                       --returns movement drag  
+nil             _c_d_set_drag([Comp], number new_drag)                                      --assigns new movement drag  
+number          _c_d_get_mass([Comp])                                                       --returns assigned mass  
+nil             _c_d_set_mass([Comp], number new_mass)                                      --assigns new mass  
+bool            _c_d_get_use_max_vel([Comp])                                                --returns whether to limit velocity to max_velocity  
+nil             _c_d_set_use_max_vel([Comp], bool use)                                      --sets whether to limit velocity to max_velocity
+number          _c_d_get_max_vel([Comp])                                                    --returns max_velocity  
+nil             _c_d_get_vel([Comp], number new_max_vel)                                    --assigns new max_velocity  
+number, number  _c_d_get_vel([Comp])                                                        --returns (x, y) velocity  
+nil             _c_d_set_vel([Comp], number x, number, y)                                   --assigns new (x, y) velocity  
+bool            _c_d_get_gravity_enabled([Comp])                                            --returns whether the gravity force is applied on the component
+nil             _c_d_set_gravity_enabled([Comp], bool enabled)                              --sets whether to apply gravity force on the component
+bool            _c_d_get_grounded([Comp])                                                   --returns whether entity is currently standing on the ground. Valid only if the project is not - topdown
+```  
 
 tilemap component (_c_t):  
 ``number _c_t_get_layers_stride([Comp])`` : returns stride between tilemap layers  
@@ -425,6 +441,7 @@ end
 ``bool _en_data_exists(string filename)`` : return whether a file with the given filename exists   
 ``table _en_load_data(string filename)`` : restores data saved using *_en_save_data* from the given file  
 
+# Building
 ## Dependencies  
 SGE uses following libraries:   
 [glm](https://github.com/g-truc/glm) - linear algebra  
@@ -482,7 +499,7 @@ After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/cor
 
 ### GRAPHICS ABSTRACTION OPENGL 3.3
 
-### Build
+## Build
 Once you have all depedencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
 You can compile the engine in two configurations:  
 - Debug, used for developing mods and the engine itself. In this configuration program does create a console window once launched. Also, it directly loads one specyfic mod, given in the ``debug_config.h`` file (details below). Furthermore it does not require packing the engine for shipping, as all the paths required by the engine, instead of being relative to ``main.cpp`` can be specified in ``debug_config.h``.
