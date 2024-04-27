@@ -1,0 +1,12 @@
+{
+    "asset_type" : "input_config",
+
+    "action_mappings" : {
+        "left" : ["A"],
+        "right" : ["D"],
+        "up" : ["W"],
+        "down" : ["S"]
+    },
+
+    "axis_mappings" : {}
+}

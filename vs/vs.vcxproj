@@ -151,6 +151,9 @@ if not exist $(ProjectDir)..\build\saved mkdir $(ProjectDir)..\build\saved
 mkdir $(ProjectDir)..\build\assets
 xcopy /y /d /i /e  "$(ProjectDir)..\core_game\assets"  "$(ProjectDir)..\build\assets"
 
+mkdir $(ProjectDir)..\build\mod_selection
+xcopy /y /d /i /e  "$(ProjectDir)..\core_game\mod_selection"  "$(ProjectDir)..\build\mod_selection"
+
 if not exist $(ProjectDir)..\build\mods mkdir $(ProjectDir)..\build\mods</Command>
       <Message>Packing for shipping</Message>
     </PostBuildEvent>

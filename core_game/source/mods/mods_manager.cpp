@@ -15,19 +15,53 @@
 
 #include "source/utilities/hash_string.h"
 
+#include "../../debug_config.h"
+
 static std::string current_mod_name = "";
+
+void load_mod_implementation(std::string mod_folder);
 
 void mods::mods_manager::load_mod(std::string mod_name)
 {
-	std::string mod_folder_name = filesystem::get_global_mod_path(mod_name);
+	std::string mod_folder = filesystem::get_global_mod_path(mod_name);
+	load_mod_implementation(mod_folder);
+}
 
-	filesystem::set_mod_assets_directory(mod_folder_name);
+void mods::mods_manager::load_mod_selection_mod()
+{
+#ifdef _DEBUG 
+	std::string path = debug_mod_selection_mod_path;
+#else
+	std::string path = filesystem::get_main_dir() + "mod_selection/";
+#endif	
+
+	load_mod_implementation(path);
+}
+
+void mods::mods_manager::unload_mod()
+{
+	common::world = std::make_unique<entities::world>();
+	common::assets_manager = std::make_unique<assets::assets_manager>();
+	common::assets_manager->load_required_core_assets();
+	common::behaviors_manager = std::make_unique<behaviors::behaviors_manager>();
+
+	current_mod_name = "";
+}
+
+std::string mods::mods_manager::get_current_mod_folder_name()
+{
+	return current_mod_name;
+}
+
+void load_mod_implementation(std::string mod_folder)
+{
+	filesystem::set_mod_assets_directory(mod_folder);
 	auto manifest_file = filesystem::load_file("mod/manifest.json");
 	nlohmann::json manifest = nlohmann::json::parse(manifest_file);
 	manifest_file.close();
 
-	size_t index = mod_folder_name.find_last_of('/');
-	current_mod_name = mod_folder_name.substr(index + 1, mod_folder_name.size());
+	size_t index = mod_folder.find_last_of('/');
+	current_mod_name = mod_folder.substr(index + 1, mod_folder.size());
 	filesystem::ensure_mod_saves_folder_exist(current_mod_name);
 
 	if (!(manifest.contains("start_scene") && manifest.at("start_scene").is_string()))
@@ -79,19 +113,4 @@ void mods::mods_manager::load_mod(std::string mod_name)
 		glm::vec2(0, 0),
 		assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset("mod" + start_scene))
 	);
-}
-
-void mods::mods_manager::unload_mod()
-{
-	common::world = std::make_unique<entities::world>();
-	common::assets_manager = std::make_unique<assets::assets_manager>();
-	common::assets_manager->load_required_core_assets();
-	common::behaviors_manager = std::make_unique<behaviors::behaviors_manager>();
-
-	current_mod_name = "";
-}
-
-std::string mods::mods_manager::get_current_mod_folder_name()
-{
-	return current_mod_name;
 }

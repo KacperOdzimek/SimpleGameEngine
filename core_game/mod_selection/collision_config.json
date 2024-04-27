@@ -1,0 +1,14 @@
+{
+    "asset_type" : "collision_config",
+
+    "body_types" : {
+        "ignore" : 0
+    },
+
+    "collision_presets" : {
+        "ignore" : {
+            "body_type" : "ignore",
+            "responses" : {}
+        }
+    }
+}

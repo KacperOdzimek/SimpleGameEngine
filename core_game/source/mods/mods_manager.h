@@ -10,6 +10,7 @@ namespace mods
 	{
 	public:
 		void load_mod(std::string mod_name);
+		void load_mod_selection_mod();
 		void unload_mod();
 		std::string get_current_mod_folder_name();
 	};

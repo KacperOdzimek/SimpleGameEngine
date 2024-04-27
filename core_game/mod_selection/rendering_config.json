@@ -1,0 +1,10 @@
+{
+    "asset_type" : "rendering_config",
+    "default_sprite_shader_override" : "core/sprite_shader",
+    "use_pixel_aligned_camera" : true,
+    "background_color" : [
+        0.09411764705, 
+        0.07843137254, 
+        0.14509803921
+    ]
+}

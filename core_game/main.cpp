@@ -56,7 +56,7 @@ int main()
 #if _DEBUG
 		common::mods_manager->load_mod(debug_loaded_mod);
 #else
-		common::mods_manager->load_mod("game");
+		common::mods_manager->load_mod_selection_mod();
 #endif
 
 		while (!common::window_manager->should_close())
@@ -74,6 +74,8 @@ int main()
 				break;
 			case common::program_state::pending_for_mod_quit:
 				common::mods_manager->unload_mod();
+				common::mods_manager->load_mod_selection_mod();
+				common::state = common::program_state::executing_logic;
 				break;
 			};
 

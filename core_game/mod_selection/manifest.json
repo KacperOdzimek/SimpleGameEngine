@@ -1,0 +1,8 @@
+{
+    "name" : "mod_selection",
+    "start_scene" : "/start_scene",
+    "pixels_per_unit" : 8,
+    "audio_rolloff" : 10,
+    "top_down" : true,
+    "gravitational_acceleration" : 0
+}
