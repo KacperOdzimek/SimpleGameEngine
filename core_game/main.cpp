@@ -23,7 +23,7 @@ constexpr double frame_time = (60.0f / 1000.0f);
 #ifndef _DEBUG 
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #else
-//Included in .gitignore, needs to be created for each download
+//Included in .gitignore, needs to be created for each clone
 #include "debug_config.h"
 #endif
 
@@ -46,7 +46,7 @@ int main()
 			std::string path = filesystem::get_main_dir();
 			filesystem::set_mods_directory(path + "mods/");
 			filesystem::set_core_assets_directory(path + "assets/");
-			filesystem::set_core_assets_directory(path + "saved/");
+			filesystem::set_saved_directory(path + "saved/");
 		}
 #endif	
 
