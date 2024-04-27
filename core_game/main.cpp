@@ -46,7 +46,7 @@ int main()
 			std::string path = filesystem::get_main_dir();
 			filesystem::set_mods_directory(path + "mods/");
 			filesystem::set_core_assets_directory(path + "assets/");
-			filesystem::set_core_assets_directory(path + "saved/");
+			filesystem::set_saved_directory(path + "saved/");
 		}
 #endif	
 
