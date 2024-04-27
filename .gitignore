@@ -9,8 +9,10 @@ vs/*
 !vs/vs.vcxproj
 !vs/vs.vcxproj.user
 
-!core_game/include
 core_game/include/*
 
 !core_game/include/graphics_abstraction
+!core_game/include/graphics_abstraction/*
+
 !core_game/include/opengl_3_3_api
+!core_game/include/opengl_3_3_api/*
