@@ -576,8 +576,8 @@ After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/cor
 ## Build
 Once you have all depedencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
 You can compile the engine in two configurations:  
-- Debug, used for developing mods and the engine itself. In this configuration program does create a console window once launched. Also, it directly loads one specyfic mod, given in the ``debug_config.h`` file (details below). Furthermore it does not require packing the engine for shipping, as all the paths required by the engine, instead of being relative to ``main.cpp`` can be specified in ``debug_config.h``.
-- Relase, as the name suggest, intended for shipping. It does not create a console window once launched. Also it does contains (but not yet) a mod selection feature. To run it requires additional program structure (details below, in *shipping the relase*)
+- Debug, used for developing mods and the engine itself. In this configuration program does create a console window once launched. Also, it requires user to manually specify assets / mods paths in the ``debug config.h`` file rather than using paths relative to the .exe file like the release does.
+- Relase, as the name suggest, intended for shipping. It does not create a console window once launched. Also it does contains (but not yet) a mod selection feature.
 
 ### Debug 
 In order to build in debug you need to create a ``debug_config.h`` in the ``repo/core_game`` folder (the folder containing ``main.cpp`` file).  
@@ -588,23 +588,7 @@ const std::string debug_core_asssets_directory =	        { Absolute Path };    /
 const std::string debug_loaded_mod =				{ Absolute Path };    //Folder containing mod to be loaded; Should be a subfolder of debug_mods_directory
 const std::string debug_saved_directory =			{ Absolute Path };    //An empty folder for mods to save their data
 ```
+Once you have all the paths configured you can attempt to run the engine.  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### Release
+There are no extra steps required to build in release. Compiled app will be saved in ``repo/build`` with all required folders and dlls, so you can just copy content of this folder and ship.
