@@ -35,6 +35,14 @@ assets_manager::~assets_manager()
     delete impl;
 }
 
+void assets_manager::load_required_core_assets()
+{
+    load_asset("core/square_mesh");
+    lock_asset(utilities::hash_string("core/square_mesh"));
+    load_asset("core/sprite_shader");
+    lock_asset(utilities::hash_string("core/sprite_shader"));
+}
+
 std::weak_ptr<asset> assets_manager::get_asset(uint32_t hashed_name)
 {
     auto itr = impl->assets.find({ hashed_name });

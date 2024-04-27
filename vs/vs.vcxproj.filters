@@ -25,9 +25,6 @@
     <Filter Include="source\entities">
       <UniqueIdentifier>{a45cc6ee-e1f5-4552-a5c7-03d4dbaa917c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\filesystem">
-      <UniqueIdentifier>{85ad88ba-cd2f-41d8-8854-e7bc7970be6d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="source\input">
       <UniqueIdentifier>{6a3b0fa9-13a8-4036-ac2a-8e809613c539}</UniqueIdentifier>
     </Filter>
@@ -48,6 +45,9 @@
     </Filter>
     <Filter Include="libs_impl">
       <UniqueIdentifier>{7941bcca-5c1f-44e8-bc2d-8c3f549b06b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\input\filesystem">
+      <UniqueIdentifier>{85ad88ba-cd2f-41d8-8854-e7bc7970be6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -203,7 +203,7 @@
       <Filter>source\entities</Filter>
     </ClInclude>
     <ClInclude Include="..\core_game\source\filesystem\filesystem.h">
-      <Filter>source\filesystem</Filter>
+      <Filter>source\input\filesystem</Filter>
     </ClInclude>
     <ClInclude Include="..\core_game\source\input\input_manager.h">
       <Filter>source\input</Filter>
@@ -249,6 +249,9 @@
     </ClInclude>
     <ClInclude Include="..\core_game\source\window\window_manager.h">
       <Filter>source\window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core_game\source\behaviors_shared\mods_functions.h">
+      <Filter>source\behaviors_shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -392,7 +395,7 @@
       <Filter>source\entities</Filter>
     </ClCompile>
     <ClCompile Include="..\core_game\source\filesystem\filesystem.cpp">
-      <Filter>source\filesystem</Filter>
+      <Filter>source\input\filesystem</Filter>
     </ClCompile>
     <ClCompile Include="..\core_game\source\input\input_manager.cpp">
       <Filter>source\input</Filter>
@@ -432,6 +435,9 @@
     </ClCompile>
     <ClCompile Include="..\core_game\include\opengl_3_3_api\source\opengl\glad.c">
       <Filter>libs_impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\core_game\source\behaviors_shared\mods_functions.cpp">
+      <Filter>source\behaviors_shader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -8,6 +8,7 @@
 #include "source/common/common.h"
 #include "source/assets/assets_manager.h"
 #include "source/entities/world.h"
+#include "source/behaviors/behaviors_manager.h"
 #include "source/input/input_manager.h"
 #include "source/audio/audio_manager.h"
 #include "source/rendering/renderer.h"
@@ -16,8 +17,10 @@
 
 static std::string current_mod_name = "";
 
-void mods::mods_manager::load_mod(std::string mod_folder_name)
+void mods::mods_manager::load_mod(std::string mod_name)
 {
+	std::string mod_folder_name = filesystem::get_global_mod_path(mod_name);
+
 	filesystem::set_mod_assets_directory(mod_folder_name);
 	auto manifest_file = filesystem::load_file("mod/manifest.json");
 	nlohmann::json manifest = nlohmann::json::parse(manifest_file);
@@ -80,9 +83,10 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 
 void mods::mods_manager::unload_mod()
 {
-	common::assets_manager->unlock_asset(utilities::hash_string("mod/input_config"));
-	common::assets_manager->unlock_asset(utilities::hash_string("mod/collision_config"));
-	common::assets_manager->unlock_asset(utilities::hash_string("mod/rendering_config"));
+	common::world = std::make_unique<entities::world>();
+	common::assets_manager = std::make_unique<assets::assets_manager>();
+	common::assets_manager->load_required_core_assets();
+	common::behaviors_manager = std::make_unique<behaviors::behaviors_manager>();
 
 	current_mod_name = "";
 }

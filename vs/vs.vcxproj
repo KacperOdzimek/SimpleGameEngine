@@ -188,6 +188,7 @@ if not exist $(ProjectDir)..\build\mods mkdir $(ProjectDir)..\build\mods</Comman
     <ClInclude Include="..\core_game\source\behaviors_shared\entities_functions.h" />
     <ClInclude Include="..\core_game\source\behaviors_shared\entity_reference.h" />
     <ClInclude Include="..\core_game\source\behaviors_shared\input_functions.h" />
+    <ClInclude Include="..\core_game\source\behaviors_shared\mods_functions.h" />
     <ClInclude Include="..\core_game\source\behaviors_shared\require.h" />
     <ClInclude Include="..\core_game\source\behaviors_shared\utilities.h" />
     <ClInclude Include="..\core_game\source\common\common.h" />
@@ -257,6 +258,7 @@ if not exist $(ProjectDir)..\build\mods mkdir $(ProjectDir)..\build\mods</Comman
     <ClCompile Include="..\core_game\source\behaviors_shared\entities_functions.cpp" />
     <ClCompile Include="..\core_game\source\behaviors_shared\entity_reference.cpp" />
     <ClCompile Include="..\core_game\source\behaviors_shared\input_functions.cpp" />
+    <ClCompile Include="..\core_game\source\behaviors_shared\mods_functions.cpp" />
     <ClCompile Include="..\core_game\source\behaviors_shared\require.cpp" />
     <ClCompile Include="..\core_game\source\common\common.cpp" />
     <ClCompile Include="..\core_game\source\common\crash.cpp" />

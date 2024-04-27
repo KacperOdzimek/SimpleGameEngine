@@ -212,3 +212,8 @@ std::unique_ptr<filesystem::image_file> filesystem::load_image(std::string path)
 
 	return file;
 }
+
+std::string filesystem::get_global_mod_path(std::string mod_name)
+{
+	return mods_path + '/' + mod_name + '/';
+}

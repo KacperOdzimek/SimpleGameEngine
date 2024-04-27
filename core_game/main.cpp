@@ -51,21 +51,31 @@ int main()
 #endif	
 
 		//Load required assets
-		common::assets_manager->load_asset("core/square_mesh");
-		common::assets_manager->lock_asset(utilities::hash_string("core/square_mesh"));
-		common::assets_manager->load_asset("core/sprite_shader");
-		common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
+		common::assets_manager->load_required_core_assets();
 
 #if _DEBUG
 		common::mods_manager->load_mod(debug_loaded_mod);
 #else
-		std::string path = filesystem::get_main_dir();
-		common::mods_manager->load_mod(path + "mods/" + "/game");
+		common::mods_manager->load_mod("game");
 #endif
 
 		while (!common::window_manager->should_close())
 		{
 			double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
+
+			//Exit or load another mod if requested
+			switch (common::state)
+			{
+			case common::program_state::executing_logic: break;
+			case common::program_state::pending_for_mod_load:
+				common::mods_manager->unload_mod();
+				common::mods_manager->load_mod(common::state_info);
+				common::state = common::program_state::executing_logic;
+				break;
+			case common::program_state::pending_for_mod_quit:
+				common::mods_manager->unload_mod();
+				break;
+			};
 
 			//Update flipbooks channels positions
 			common::flipbooks_manager->update();
