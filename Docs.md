@@ -567,12 +567,6 @@ Now go to the [https://luabinaries.sourceforge.net/download.html](https://luabin
 Once you have your .zip, move it to the `repo/core_game/include/lua_5_4_2` and unzip.
 After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/core_game/libs` folder. 
 
-### GRAPHICS ABSTRACTION
-(TODO)
-
-### GRAPHICS ABSTRACTION OPENGL 3.3
-(TODO)
-
 ## Build
 Once you have all depedencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
 You can compile the engine in two configurations:  
