@@ -588,7 +588,7 @@ const std::string debug_core_asssets_directory =	        { Absolute Path };    /
 const std::string debug_loaded_mod =				{ Absolute Path };    //Folder containing mod to be loaded; Should be a subfolder of debug_mods_directory
 const std::string debug_saved_directory =			{ Absolute Path };    //An empty folder for mods to save their data
 ```
-Once you have all the paths configured you can attempt to run the engine.  
+Once you have all the paths configured you can attempt running the engine.  
 
 ### Release
 There are no extra steps required to build in release. Compiled app will be saved in ``repo/build`` with all required folders and dlls, so you can just copy content of this folder and ship.
