@@ -1,7 +1,5 @@
 debug_config.h
-*mods
 *build
-*saved
 vs/*
 
 !vs/SimpleGameEngine.sln
