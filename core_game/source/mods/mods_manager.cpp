@@ -48,9 +48,35 @@ void mods::mods_manager::unload_mod()
 	current_mod_name = "";
 }
 
-std::string mods::mods_manager::get_current_mod_folder_name()
+std::string mods::mods_manager::get_current_mod_name()
 {
 	return current_mod_name;
+}
+
+std::string mods::mods_manager::get_mods_directory()
+{
+#ifdef _DEBUG 
+	return debug_mods_directory;
+#else
+	return filesystem::get_main_dir() + "mods/";
+#endif	
+}
+
+std::vector<std::string> mods::mods_manager::get_all_mods()
+{
+
+
+	auto mods_paths = filesystem::get_all_subfolders(get_mods_directory());
+
+	std::vector<std::string> mods;
+
+	for (auto& path : mods_paths)
+	{
+		std::string name = path.substr(path.find_last_of("/\\") + 1);
+		mods.push_back(name);
+	}
+
+	return mods;
 }
 
 void load_mod_implementation(std::string mod_folder)

@@ -3,6 +3,10 @@
 #include "source/common/common.h"
 #include "source/common/crash.h"
 
+#include "source/rendering/renderer.h"
+
+#include "source/components/camera.h"
+
 #include "glfw/glfw3.h"
 
 #include <thread>
@@ -29,6 +33,9 @@ struct window_manager::implementation
 
     std::function<void(void)> resize_callback;
 
+    double mouse_position_x = 0;
+    double mouse_position_y = 0;
+
     static void glfw_window_resize_callback(GLFWwindow* _window, int _width, int _height)
     {
         common::window_manager->impl->width = _width;
@@ -36,6 +43,12 @@ struct window_manager::implementation
 
         if (common::window_manager->impl->resize_callback)
             common::window_manager->impl->resize_callback();
+    }
+
+    static void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+    {
+        common::window_manager->impl->mouse_position_x = xpos;
+        common::window_manager->impl->mouse_position_y = ypos;
     }
 };
 
@@ -71,6 +84,7 @@ void window_manager::create_window(std::string title, int width, int height, boo
 
     glfwMakeContextCurrent(impl->window);
     glfwSetFramebufferSizeCallback(impl->window, &implementation::glfw_window_resize_callback);
+    glfwSetCursorPosCallback(impl->window, &implementation::glfw_cursor_position_callback);
     glfwSetWindowAspectRatio(impl->window, 16, 9);
 
     glfwSwapInterval(1);
@@ -134,6 +148,18 @@ void window::window_manager::set_mouse_visible(bool visible)
         glfwSetInputMode(impl->window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 }
 
+glm::vec2 window::window_manager::get_mouse_position()
+{
+    if (common::renderer->get_active_camera() == nullptr) return { 0, 0 };
+
+    auto cam = common::renderer->get_active_camera();
+    
+    glm::vec2 ortho = { cam->ortho_width, cam->ortho_width * (9.0f / 16.0f) };
+
+    auto pos =  glm::vec2{ impl->mouse_position_x / impl->width, impl->mouse_position_y / impl->height } * ortho - ortho * (1.0f / 2.0f);
+    return { pos.x, -pos.y };
+}
+
 void window_manager::set_resize_callback(std::function<void()> callback)
 {
     impl->resize_callback = callback;
@@ -155,8 +181,10 @@ input::key_state window_manager::get_key_state(input::key key)
     input::key_state ks;
     ks.key = key;
 
-    if (key.key_type == input::key_type::keyboard || key.key_type == input::key_type::mouse)
+    if (key.key_type == input::key_type::keyboard)
         ks.state = (glfwGetKey(impl->window, key.id) == GLFW_PRESS || glfwGetKey(impl->window, key.id) == GLFW_REPEAT);
+    else if (key.key_type == input::key_type::mouse)
+        ks.state = (glfwGetMouseButton(impl->window, key.id) == GLFW_PRESS || glfwGetMouseButton(impl->window, key.id) == GLFW_REPEAT);
     else
         ks.state = 0;
     return ks;

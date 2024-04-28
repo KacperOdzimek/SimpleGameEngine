@@ -311,7 +311,7 @@ namespace behaviors
 				dump_table_to_json(L, &data, 2, "[_en_save_data]");
 
 				auto file = filesystem::create_file(
-					"saved/" + common::mods_manager->get_current_mod_folder_name() + '/' + filename + ".json"
+					"saved/" + common::mods_manager->get_current_mod_name() + '/' + filename + ".json"
 				);			
 				file << data;
 				file.close();
@@ -326,7 +326,7 @@ namespace behaviors
 				filesystem::set_saved_directory_enabled(true);
 				lua_pushboolean(L, 
 					filesystem::file_exists(
-						"saved/" + common::mods_manager->get_current_mod_folder_name() + '/' + filename + ".json"
+						"saved/" + common::mods_manager->get_current_mod_name() + '/' + filename + ".json"
 				));
 				filesystem::set_saved_directory_enabled(false);
 				return 1;
@@ -338,7 +338,7 @@ namespace behaviors
 				filesystem::set_saved_directory_enabled(true);
 
 				auto file = filesystem::load_file(
-					"saved/" + common::mods_manager->get_current_mod_folder_name()  + '/' + filename + ".json"
+					"saved/" + common::mods_manager->get_current_mod_name()  + '/' + filename + ".json"
 				);
 
 				auto data = nlohmann::json::parse(file);
@@ -348,6 +348,16 @@ namespace behaviors
 
 				filesystem::set_saved_directory_enabled(false);
 
+				return 1;
+			}
+
+			int _en_is_debug(lua_State* L)
+			{
+#ifdef _DEBUG 
+				lua_pushboolean(L, true);
+#else
+				lua_pushboolean(L, false);
+#endif	
 				return 1;
 			}
 
@@ -364,6 +374,7 @@ namespace behaviors
 				lua_register(L, "_en_save_data", _en_save_data);
 				lua_register(L, "_en_data_exists", _en_data_exists);
 				lua_register(L, "_en_load_data", _en_load_data);
+				lua_register(L, "_en_is_debug", _en_is_debug);
 			}
 		}
 	}

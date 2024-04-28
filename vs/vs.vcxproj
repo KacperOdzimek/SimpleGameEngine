@@ -215,7 +215,6 @@ if not exist $(ProjectDir)..\build\mods mkdir $(ProjectDir)..\build\mods</Comman
     <ClInclude Include="..\core_game\source\input\input_manager.h" />
     <ClInclude Include="..\core_game\source\input\input_mappings.h" />
     <ClInclude Include="..\core_game\source\input\key.h" />
-    <ClInclude Include="..\core_game\source\mods\mod.h" />
     <ClInclude Include="..\core_game\source\mods\mods_manager.h" />
     <ClInclude Include="..\core_game\source\physics\collision.h" />
     <ClInclude Include="..\core_game\source\physics\collision_solver.h" />

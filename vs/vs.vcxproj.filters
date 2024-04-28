@@ -214,9 +214,6 @@
     <ClInclude Include="..\core_game\source\input\key.h">
       <Filter>source\input</Filter>
     </ClInclude>
-    <ClInclude Include="..\core_game\source\mods\mod.h">
-      <Filter>source\mods</Filter>
-    </ClInclude>
     <ClInclude Include="..\core_game\source\mods\mods_manager.h">
       <Filter>source\mods</Filter>
     </ClInclude>

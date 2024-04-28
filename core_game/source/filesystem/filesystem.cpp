@@ -117,14 +117,8 @@ std::vector<std::string> filesystem::get_all_subfolders(std::string folder)
 {
 	std::vector<std::filesystem::path> dirs;
 	for (const auto& entry : std::filesystem::directory_iterator(folder))
-	{
-		dirs.push_back(entry);
-		if (std::filesystem::is_directory(entry))
-		{
-			auto subdirs = get_all_subfolders(entry.path().u8string());
-			dirs.insert(dirs.end(), subdirs.begin(), subdirs.end());
-		}
-	}
+		if (entry.is_directory())
+			dirs.push_back(entry);
 
 	std::vector<std::string> result;
 

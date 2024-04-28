@@ -29,10 +29,27 @@ namespace behaviors
 				return 0;
 			}
 
+			int _m_get_all_mods(lua_State* L)
+			{
+				auto mods = common::mods_manager->get_all_mods();
+
+				lua_newtable(L);
+
+				for (int i = 0; i < mods.size(); i++)
+				{
+					lua_pushinteger(L, i);
+					lua_pushstring(L, mods.at(i).c_str());
+					lua_settable(L, -3);
+				}
+
+				return 1;
+			}
+
 			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_m_quit_mod", _m_quit_mod);
 				lua_register(L, "_m_load_mod", _m_load_mod);
+				lua_register(L, "_m_get_all_mods", _m_get_all_mods);
 			}
 		}
 	}
