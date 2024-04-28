@@ -40,6 +40,8 @@ input::key input::get_key_from_key_name(const std::string& str)
 		k.id = GLFW_KEY_RIGHT_CONTROL;
 	else if (str == "Backspace")
 		k.id = GLFW_KEY_BACKSLASH;
+	else if (str == "Escape")
+		k.id = GLFW_KEY_ESCAPE;
 	else if (str == "LPM")
 	{
 		k.id = GLFW_MOUSE_BUTTON_LEFT;

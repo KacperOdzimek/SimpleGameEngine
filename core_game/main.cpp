@@ -63,6 +63,10 @@ int main()
 		{
 			double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
+			bool should_quit_mod = common::window_manager->get_key_state(input::get_key_from_key_name("Escape")).state == 1.0f;
+			if (should_quit_mod)
+				common::state = common::program_state::pending_for_mod_quit;
+
 			//Exit or load another mod if requested
 			switch (common::state)
 			{
@@ -117,6 +121,7 @@ int main()
 	//ensure that entities are destroyed first, as their components 
 	//holds shared pointers to almost every resource in the engine
 	common::world.reset();
+
 	//ensure that assets are destroyed second, as they owns resources, 
 	//that can be only destroyed by other manager class
 	common::assets_manager.reset();
