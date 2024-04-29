@@ -143,7 +143,7 @@ void assets_manager::load_asset(std::string path)
 
     filesystem::set_active_assets_directory_enabled(false);
 
-    if (new_asset == nullptr)
+    if (new_asset.get() == nullptr)
         error_handling::crash(error_handling::error_source::core,
             "[asset_manager::load_asset]", "Failed to load asset: " + path);
 
