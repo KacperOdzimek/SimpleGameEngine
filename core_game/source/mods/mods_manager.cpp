@@ -41,6 +41,7 @@ void mods::mods_manager::load_mod_selection_mod()
 void mods::mods_manager::unload_mod()
 {
 	common::world = std::make_unique<entities::world>();
+	common::behaviors_manager->clear();
 
 	current_mod_name = "";
 }
