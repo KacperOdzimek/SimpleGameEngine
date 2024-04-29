@@ -63,7 +63,9 @@ int main()
 		{
 			double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
 
-			bool should_quit_mod = common::window_manager->get_key_state(input::get_key_from_key_name("Escape")).state == 1.0f;
+			bool should_quit_mod = 
+				common::window_manager->get_key_state(input::get_key_from_key_name("Escape")).state == 1.0f &&
+				common::mods_manager->get_current_mod_name() != "mod_selection";
 			if (should_quit_mod)
 				common::state = common::program_state::pending_for_mod_quit;
 

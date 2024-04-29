@@ -41,9 +41,6 @@ void mods::mods_manager::load_mod_selection_mod()
 void mods::mods_manager::unload_mod()
 {
 	common::world = std::make_unique<entities::world>();
-	common::assets_manager = std::make_unique<assets::assets_manager>();
-	common::assets_manager->load_required_core_assets();
-	common::behaviors_manager = std::make_unique<behaviors::behaviors_manager>();
 
 	current_mod_name = "";
 }
@@ -64,8 +61,6 @@ std::string mods::mods_manager::get_mods_directory()
 
 std::vector<std::string> mods::mods_manager::get_all_mods()
 {
-
-
 	auto mods_paths = filesystem::get_all_subfolders(get_mods_directory());
 
 	std::vector<std::string> mods;

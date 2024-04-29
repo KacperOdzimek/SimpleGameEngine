@@ -32,9 +32,7 @@ namespace entities
 	{
 		for (auto& scene : impl->scenes)
 			if (scene->name == name)
-			{
 				return;
-			}
 
 		auto s = std::make_unique<scene>(name, world_offset, _scene);
 		impl->scenes.push_back(std::move(s));
