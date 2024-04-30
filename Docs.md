@@ -535,14 +535,14 @@ in sprite_id     : index of the sprite to render from a sprite_sheet asset or a 
 ## Mesh component derived
 Here we are going to do a quick overview of the components derived from the mesh component:
 ```yaml
-static_mesh   : the most minimal of the meshes. requires user to manualy specify the render_config
-sprite        : renders entire texture or a selected sprite from a sprite_sheet using
+static_mesh : the most minimal of the meshes. requires user to manualy specify the render_config
+sprite      : renders entire texture or a selected sprite from a sprite_sheet using
        the default_sprite_shader shader asset specified in mod's rendering config,  
        while keeping the pixels_per_unit ratio definied in mod's manifest (unless the scale is changed)  
        If you need to you can change the default shader to other one. (Each sprite is also a collider)  
-flibpook      : renders given animation from the given flipbook asset.
+flibpook    : renders given animation from the given flipbook asset.
        (Each flibpook is also a collider). Derived from sprite.  
-tilemap       : renders a tilemap asset using the given tileset. (Also can collide).
+tilemap     : renders a tilemap asset using the given tileset. (Also can collide).
        Allows user to control the stride between tilemap's layers.
 ```
 
