@@ -546,6 +546,104 @@ tilemap     : renders a tilemap asset using the given tileset. (Also can collide
        Allows user to control the stride between tilemap's layers.
 ```
 
+## Rendering config asset
+This asset configures the work of the renderer. It should contains:
+```yaml
+string default_sprite_shader_override : a shader asset to use as a default sprite shader instead of core/sprite_shader (optional)
+bool use_pixel_aligned_camera,        : whether to allign camera to the pixel grid. Can fix gaps between textures
+array background_color"               : array of 3 numbers representing respectively r, g and b chanels of the rendering clear color
+```
+
+## Writing shaders
+Shaders source must follow certain formating. 
+Lets look at the engine default sprite shader (core/sprite_shader):
+```glsl
+<
+    vec2, vec2
+>
+
+<
+    #version 330 core
+    layout (location = 0) in vec2 aPos;
+    layout (location = 1) in vec2 aTexCoord;
+
+    layout (location = 2) in vec2 pos;
+    layout (location = 3) in vec2 scale;
+    layout (location = 4) in float layer;
+    layout (location = 5) in float sprite_id;
+
+    out vec2 TexCoord;
+
+    uniform mat4 itr_projection;
+    uniform vec4 itr_camera_location;
+    uniform int itr_lowest_layer;
+    uniform int itr_highest_layer;
+    uniform vec2 itr_sprites;
+
+    void main()
+    {  
+        float depth = -1 * (layer - itr_lowest_layer) / (itr_highest_layer - itr_lowest_layer);
+
+        vec2 transformed_pos = (aPos * scale) + pos;
+        vec4 projected_pos = (vec4(transformed_pos, 0, 1.0) - itr_camera_location) * itr_projection;
+        
+        projected_pos.z = depth;
+        gl_Position = projected_pos;
+
+        vec2 unit_sprite = vec2(1, 1) / itr_sprites;
+        TexCoord = vec2(mod(sprite_id, itr_sprites.x), (itr_sprites.y - 1) - floor(sprite_id / itr_sprites.x)) * unit_sprite + aTexCoord * unit_sprite;
+    }
+>
+
+<
+    #version 330 core
+    out vec4 FragColor;
+    in vec2 TexCoord;
+    uniform sampler2D inTexture;
+
+    void main()
+    {
+        vec4 texture_color = texture(inTexture, TexCoord);
+        if (texture_color.w == 0.0)
+            discard;
+        FragColor = texture_color;
+    }
+>
+```
+Shader source consists of 3 things, separated with angle brackets:
+1. Vertex format.
+   Vertex format definies the format of the vertices from the mesh asset.
+   For example, the default *square_mesh* contains 4 vertices, made of for floats: first two for position second two for texture coordinates.
+   In shader, it its represented by vertex format: ``vec2, vec2``, where the first vec2 represents the vertices positions and the second one the UVs.
+   Vertex format, beside the ``vec2`` can contain 
+   ```glsl
+   float, vec2, vec3, vec4
+   ```
+2. Vertex Shader, written in GLSL.  
+   The input if formated so the first elements in the layout are the elements definied in vertex format, and then comes the object transform.  
+   In our case of vertex format ``vec2, vec2`` the input layout should look like:
+   ```glsl
+    layout (location = 0) in vec2 aPos;
+    layout (location = 1) in vec2 aTexCoord;
+
+    layout (location = 2) in vec2 pos;
+    layout (location = 3) in vec2 scale;
+    layout (location = 4) in float layer;
+    layout (location = 5) in float sprite_id;
+   ```
+   Apart from vertices, there are also uniforms:
+   ```glsl
+    uniform mat4 itr_projection;       // projection matrix
+    uniform vec4 itr_camera_location;  // the camera position in world space
+    uniform int itr_lowest_layer;      // the lowest (deepest) layer that should be renderer
+    uniform int itr_highest_layer;     // the highest (highest) layer that should be renderer
+    uniform vec2 itr_sprites;          // indicates how many columns (x) and rows (y) does the first texture have
+   ```
+3. Fragment Shader, written in GLSL.
+   To take access a texture write
+   ```glsl
+     uniform sampler2D inTexture;
+   ```
 
 # Building
 ## Dependencies  
