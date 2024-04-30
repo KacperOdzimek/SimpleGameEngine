@@ -614,7 +614,8 @@ Shader source consists of 3 things, separated with angle brackets:
 1. Vertex format.
    Vertex format definies the format of the vertices from the mesh asset.
    For example, the default *square_mesh* contains 4 vertices, made of for floats: first two for position second two for texture coordinates.
-   In shader, it its represented by vertex format: ``vec2, vec2``, where the first vec2 represents the vertices positions and the second one the UVs.
+   In shader, it its represented by vertex format:
+     ``vec2, vec2``, where the first vec2 represents the vertices positions and the second one the UVs.
    Vertex format, beside the ``vec2`` can contain 
    ```glsl
    float, vec2, vec3, vec4
@@ -644,6 +645,21 @@ Shader source consists of 3 things, separated with angle brackets:
    ```glsl
      uniform sampler2D inTexture;
    ```
+
+# Audio System
+There are 3 ways of playing a sound in the SGE:
+```lua 
+_a_play_sound(string sound_asset) 
+```
+The most simple way is to use _a_play_sound function, however it gives you no control over the playback.
+```lua
+_a_play_sound_at_channel(string sound_asset, integer | string channel_name, bool looping)
+```
+When called, it creates playback object i.e.channel that can be affected using other _a functions.
+```lua
+_c_se_emit_sound(string sound_asset_to_emmit)
+```
+This one does the same as the ``_a_play_sound``, but it does plays the sound it the emmiter location and the emmited sound is affected by the distance to the listener.
 
 # Building
 ## Dependencies  
