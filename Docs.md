@@ -281,7 +281,7 @@ Add component functions uses _e_add prefix.
 nil             _e_add_behavior(entity_ref e, integer | string name, string behavior_asset)                                                               --adds behavior component to the entity.  
 nil             _e_add_camera(entity_ref e, integer | string name, number ortho_width)                                                                    --adds camera component with given ortho width.  
 nil             _e_add_static_mesh(entity_ref e, integer | string name, render_config rc)                                                                 --adds static_mesh component to the entity.  
-nil             _e_add_collider(entity_ref e, integer | string name, number extend_x, number extend_y)                                                    --adds collider component with given extend to the entity.  
+nil             _e_add_collider(entity_ref e, integer | string name, string collision_preset_name, number extend_x, number extend_y)                      --adds collider component with given extend to the entity.  
 nil             _e_add_sprite(entity_ref e, integer | string name, string sprite_sheet_asset, integer sprite_id, string collision_preset_name)            --adds sprite component to the entity.  
 nil             _e_add_flipbook(entity_ref e, integer | string name, string sprite_sheet_asset, string flipbook_animation, string collision_preset_name)  --adds flipbook component to the entity.  
 nil             _e_add_tilemap(entity_ref e, integer | string name, string tilemap_asset, string tileset_asset, string collision_preset_name)             --adds tilemap component to the entity.  
@@ -714,6 +714,45 @@ response = collision_table(a.responses_array[3], b.responses_array[0])
 response = collision_table("collide(2)", "overlap(1)")
 resonse  =  overlap
 ```
+
+## Collision config
+Collision config is an asset that defines the available presets.
+It consists of two parts:
+```yaml
+body_types        : an object containing body types names and theri values
+collision_presets : an object containing complete collision presets
+```
+An example config look like this:
+```json
+{
+    "asset_type" : "collision_config"
+
+    "body_types" : {
+        "wall" : 0,
+        "player" : 1,
+        "enemy" : 2
+    },
+  
+    "collision_presets" : {
+        "player" : {
+            "body_type" : "player",
+            "responses" : {
+               "player" : "ignore",
+               "enemy" : "overlap",
+               "wall" : "collide"
+            }
+        }
+    }
+}
+```
+As you can see it defines 3 body types and a collision preset ``"player"`` that ignores other players, overlap with enemies and collide with walls.
+Now, with this configuration, you can refer to the preset in the code with it's name:
+```lua
+_e_add_collider(player, "sword_collider", "player", 1, 1)
+```
+Such code creates a collider with the ``"player"`` preset.
+
+You can modify this configuration so it suits your needs, but keep in mind that while you can have as many collision presets as you want, the body_types number is restricted to 14, and the bodies values must be in the range \[0, 13].
 
 # Building
 ## Dependencies  
