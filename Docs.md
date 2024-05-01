@@ -530,8 +530,6 @@ Each behavior component also a ``self`` table that behavior asset can access. ``
 self.arrows = 99
 ```
 
-
-
 # Renderer
 ## Mesh components 
 Mesh components is a family of components, derived from abstract ``mesh`` component. When an mesh component is created it *registers* itself to the ``renderer`` using the ``renderer::register_mesh_component`` function. Since now component will be rendered, until it gets killed in some way. Then it *unregisters* itself from the ``renderer`` using the ``renderer::unregister_mesh_component`` and is no longer visible to the rendering system. 
@@ -663,7 +661,7 @@ Shader source consists of 3 things, separated with angle brackets:
 3. Fragment Shader, written in GLSL.
    To take access a texture write
    ```glsl
-     uniform sampler2D inTexture;
+   uniform sampler2D inTexture;
    ```
 
 # Collision System
