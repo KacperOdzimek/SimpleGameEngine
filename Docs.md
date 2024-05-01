@@ -230,7 +230,7 @@ All api functions uses following naming convention:
 ```py
 _ + short indication of manipulated submodule or component + _ + rest of the name
 ```
-For example: 
+For instance: 
 ```py
 _a_set_volume
 ```
@@ -613,7 +613,7 @@ Lets look at the engine default sprite shader (core/sprite_shader):
 Shader source consists of 3 things, separated with angle brackets:
 1. Vertex format.
    Vertex format definies the format of the vertices from the mesh asset.
-   For example, the default *square_mesh* contains 4 vertices, made of for floats: first two for position second two for texture coordinates.
+   For instance, the default *square_mesh* contains 4 vertices, made of for floats: first two for position second two for texture coordinates.
    In shader, it its represented by vertex format:
      ``vec2, vec2``, where the first vec2 represents the vertices positions and the second one the UVs.
    Vertex format, beside the ``vec2`` can contain 
@@ -664,8 +664,34 @@ This one does the same as the ``_a_play_sound``, but it does plays the sound it 
 # Collision System
 ## Collider
 In order to add collision to a entity, you need to add ``collider`` component, or a derived component (``sprite``, ``flipbook``). Collision is only checked when object is moved by ``_e_sweep`` function.
+
+## Collision responses
+There are three types of interactions between bodies:  
+```yaml
+ignore  : no collision
+overlap : detect collision, but don't stop the body
+collide : detect collision and stop the moving body
+```
+Those are called ``collision responses``. Each collider can come with other response on collision so in order to find the final response for an collision event, engine retrives it from a following lookup table:
+```yaml
+            ignore    overlap   collide:
+
+ignore  :   ignore    ignore    ignore
+
+overlap :   ignore    overlap   overlap
+
+collide :   ignore    overlap   collide
+```
+
 ## Collision Presets
-Collision systems uses so-called ``collision presets``. Collision preset 
+Collision systems uses so-called ``collision presets``. Collision preset is a 32-bit flag, that determines how should collider interact with other colliders.  
+It consists of two parts:  
+```yaml
+(on the most significant bit side)  : 4 bit body type
+(on the least significant bit side) : 28 bit array of collision repsonses
+```
+
+
 
 # Building
 ## Dependencies  
