@@ -33,16 +33,6 @@ listener        : represents sound listener in world space
 
  ## Assets in detail
   Each asset is represented by .json file, consisting of "asset_type" field, with string determining asset type, and additional asset-type-dependant data.  
-  Example sprite_sheet asset:  
-  ```json
-  {
-      "asset_type" : "sprite_sheet",
-      "path" : "$/player_sprite_sheet.png",
-  
-      "sprite_width" : 16,
-      "sprite_height" : 16
-  }
-```
   There are 14 types of assets:  
   
 -*behavior* : represents lua script. (See *TODO*) Example:  
@@ -513,6 +503,33 @@ function creator(args)
 end
 ```
 # Behaviors
+## Behavior Component
+In order to add logic to the entities, you need to add a ``behavior component`` to it. 
+```lua
+_e_add_behavior(entity e, string | integer name, string behavior_asset)
+```
+## Behavior Asset
+Behavior asset should contain a ``path`` field with a path to the .lua file containing the actual logic
+ ```json
+{
+    "asset_type" : "behavior",
+    "path" : "$/controller.lua"
+}
+```
+There are no special requirements in terms of lua scipt. Even a blank one is a correct one. However if you are not satisfied with the blank script you can start adding logic to it.   
+There are five engine functions that behavior can implement:  
+```yaml
+on_init(entity owner)                             : this function is called when the behavior is added to the entity
+on_update(entity owner, number delta_time)        : this function is called every frame. delta_time is the time between frames
+on_destroy(entity owner)                          : this function is called when the behavior is destroyed
+on_collide(entity owner, entity colliding_entity) : this function is called when entity collides with other entity
+on_overlap(entity owner, entity colliding_entity) : this function is called when entity overlaps with other entity
+```
+Each behavior component also a ``self`` table that behavior asset can access. ``self`` stays unchanged between function calls so you can save important data to it.
+```lua
+self.arrows = 99
+```
+
 
 
 # Renderer
