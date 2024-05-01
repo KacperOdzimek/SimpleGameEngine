@@ -668,9 +668,9 @@ In order to add collision to a entity, you need to add ``collider`` component, o
 ## Collision responses
 There are three types of interactions between bodies:  
 ```yaml
-ignore  : no collision
-overlap : detect collision, but don't stop the body
-collide : detect collision and stop the moving body
+ignore  : no collision                               (assigned with value of 0, 00 in bits)
+overlap : detect collision, but don't stop the body  (assigned with value of 1, 01 in bits)
+collide : detect collision and stop the moving body  (assigned with value of 2, 10 in bits)
 ```
 Those are called ``collision responses``. Each collider can come with other response on collision so in order to find the final response for an collision event, engine retrives it from a following lookup table:
 ```yaml
@@ -682,16 +682,38 @@ overlap :   ignore    overlap   overlap
 
 collide :   ignore    overlap   collide
 ```
+In the next subsection I am going to refer to this table as ``collision_table``.
 
 ## Collision Presets
 Collision systems uses so-called ``collision presets``. Collision preset is a 32-bit flag, that determines how should collider interact with other colliders.  
 It consists of two parts:  
 ```yaml
 (on the most significant bit side)  : 4 bit body type
-(on the least significant bit side) : 28 bit array of collision repsonses
+(on the least significant bit side) : 28 bit array of 2-bit collision repsonses, indexed from the LSB side
 ```
+Let *a* be a collision preset of the first collider and *b* a preset of the second one.
+Then the final response of the interaction between those colliders is equal to:
+```lua
+response = collision_table(a.responses_array[b.body_type], b.responses_array[a.body_type])
+```
+A quick case-study:
+Lets assume that:
+```lua
+a.body_type = 0
+a.body_type[3] = collide (2)
+-- then a = 0000 [other 10 responses] 02 xx xx xx
 
-
+b.body_type = 3
+b.body_type[0] = overlap (1)
+-- then b = 0011 [other 10 responses] xx xx xx 01
+```
+Then the final collision response is equal to:
+```lua
+response = collision_table(a.responses_array[b.body_type], b.responses_array[a.body_type])
+response = collision_table(a.responses_array[3], b.responses_array[0])
+response = collision_table("collide(2)", "overlap(1)")
+resonse  =  overlap
+```
 
 # Building
 ## Dependencies  
