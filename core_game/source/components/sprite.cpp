@@ -38,7 +38,7 @@ sprite::sprite(uint32_t _id, std::weak_ptr<assets::texture> _texture, physics::c
 	: component(_id),
 	mesh(_id),
 	collider(
-		_id, preset, get_extend_from_texture(_texture) / 2.0f
+		_id, preset, get_extend_from_texture(_texture) * 2.0f
 	)
 {
 	auto rendering_config = assets::cast_asset<assets::rendering_config>(
