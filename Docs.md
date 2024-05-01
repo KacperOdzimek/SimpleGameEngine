@@ -661,6 +661,12 @@ _c_se_emit_sound(string sound_asset_to_emmit)
 ```
 This one does the same as the ``_a_play_sound``, but it does plays the sound it the emmiter location and the emmited sound is affected by the distance to the listener.
 
+# Collision System
+## Collider
+In order to add collision to a entity, you need to add ``collider`` component, or a derived component (``sprite``, ``flipbook``). Collision is only checked when object is moved by ``_e_sweep`` function.
+## Collision Presets
+Collision systems uses so-called ``collision presets``. Collision preset 
+
 # Building
 ## Dependencies  
 SGE uses following libraries:   
