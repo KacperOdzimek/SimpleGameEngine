@@ -512,6 +512,9 @@ function creator(args)
     end
 end
 ```
+# Behaviors
+
+
 # Renderer
 ## Mesh components 
 Mesh components is a family of components, derived from abstract ``mesh`` component. When an mesh component is created it *registers* itself to the ``renderer`` using the ``renderer::register_mesh_component`` function. Since now component will be rendered, until it gets killed in some way. Then it *unregisters* itself from the ``renderer`` using the ``renderer::unregister_mesh_component`` and is no longer visible to the rendering system. 
@@ -646,21 +649,6 @@ Shader source consists of 3 things, separated with angle brackets:
      uniform sampler2D inTexture;
    ```
 
-# Audio System
-There are 3 ways of playing a sound in the SGE:
-```lua 
-_a_play_sound(string sound_asset) 
-```
-The most simple way is to use _a_play_sound function, however it gives you no control over the playback.
-```lua
-_a_play_sound_at_channel(string sound_asset, integer | string channel_name, bool looping)
-```
-When called, it creates playback object i.e.channel that can be affected using other _a functions.
-```lua
-_c_se_emit_sound(string sound_asset_to_emmit)
-```
-This one does the same as the ``_a_play_sound``, but it does plays the sound it the emmiter location and the emmited sound is affected by the distance to the listener.
-
 # Collision System
 ## Collider
 In order to add collision to a entity, you need to add ``collider`` component, or a derived component (``sprite``, ``flipbook``). Collision is only checked when object is moved by ``_e_sweep`` function.
@@ -753,6 +741,21 @@ _e_add_collider(player, "sword_collider", "player", 1, 1)
 Such code creates a collider with the ``"player"`` preset.
 
 You can modify this configuration so it suits your needs, but keep in mind that while you can have as many collision presets as you want, the body_types number is restricted to 14, and the bodies values must be in the range \[0, 13].
+
+# Audio System
+There are 3 ways of playing a sound in the SGE:
+```lua 
+_a_play_sound(string sound_asset) 
+```
+The most simple way is to use _a_play_sound function, however it gives you no control over the playback.
+```lua
+_a_play_sound_at_channel(string sound_asset, integer | string channel_name, bool looping)
+```
+When called, it creates playback object i.e.channel that can be affected using other _a functions.
+```lua
+_c_se_emit_sound(string sound_asset_to_emmit)
+```
+This one does the same as the ``_a_play_sound``, but it does plays the sound it the emmiter location and the emmited sound is affected by the distance to the listener.
 
 # Building
 ## Dependencies  
