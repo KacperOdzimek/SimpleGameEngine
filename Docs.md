@@ -529,6 +529,20 @@ Each behavior component also a ``self`` table that behavior asset can access. ``
 ```lua
 self.arrows = 99
 ```
+Behaviors can also define ``events``. Events are functions definied as so:
+```lua
+function event_#name# (entity, args)
+```
+Where the *#name#* is replaced with the actuall event name.  
+Events can be called using:  
+```yaml
+_e_call(target_entity, string event_name, table args)                              : tries to call the event on every behavior in the entity
+_c_b_call(target_entity, target_behavior_component, string event_name, table args) : tries to call the event on specified behavior
+```
+The first one will return a table of results. If a behavior doesn't implement the event it just isn't added to the table.  
+The second one will return the called event result, or if the event is not implemented - ``nil``.  
+
+Events system allows you to build families of behaviors, just by implementing events with same names.
 
 # Renderer
 ## Mesh components 
