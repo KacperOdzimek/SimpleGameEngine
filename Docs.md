@@ -800,7 +800,9 @@ _e_add_collider(player, "sword_collider", "player", 1, 1)
 ```
 Such code creates a collider with the ``"player"`` preset.
 
-You can modify this configuration so it suits your needs, but keep in mind that while you can have as many collision presets as you want, the body_types number is restricted to 14, and the bodies values must be in the range \[0, 13].
+You can modify this configuration so it suits your needs, but keep in mind that while you can have as many collision presets as you want, the body_types number is restricted to 14, and the bodies values must be in the range \[0, 13].  
+
+Note that you don't have to define the response for each body in the preset. Not specified ones will automaticaly become ``ignore``.
 
 # Audio System
 There are 3 ways of playing a sound in the SGE:
