@@ -124,8 +124,6 @@ physics::collision_event entities::entity::sweep(glm::vec2 new_location)
 				events.back()->collide_event->distance < events.at(closest_event_id)->collide_event->distance)	//Or this hit is closer than previous
 			)	
 				closest_event_id = static_cast<int>(events.size() - 1);
-
-			continue;
 		}
 		auto m_ptr = dynamic_cast<components::mesh*>(c);
 		if (m_ptr != nullptr)

@@ -1,29 +1,60 @@
 # Architecture
 ## Loading games
- SGE dynamically loads one selected game (in code named mod) from the "mods" folder.
- Mods must met some requirements, eg. contains all the config files. (See *TODO*)
- Once the mod is loaded, SGE loads a scene gived in mod/manifest.json in "start_scene" field. 
+SGE dynamically loads one selected game (in code named mod) from the "mods" folder.
+Mods must met some requirements, eg. contains all the config files. (See *TODO*)
+Once the mod is loaded, SGE loads a scene gived in mod/manifest.json in "start_scene" field. 
+
+## Mod Structure
+Each mod, besides their scripts and assets, must contains a few configuration files so it can be loaded correctly:
+```yaml
+manifest.json         : a file that contains important information about the mod
+collision_config.json : a collision config asset
+input_config.json     : a input config asset
+rendering_config.json : a rendering config asset
+thumbnail.json        : a texture asset with 32x32 pixels mod thumbnail
+```
+Example manifest.json file:
+```json
+{
+    "name" : "game",
+    "start_scene" : "/start_scene",
+    "pixels_per_unit" : 16,
+    "audio_rolloff" : 10,
+    "top_down" : true,
+    "gravitational_acceleration" : 25
+}
+```
+Manifest file fields:
+```yaml
+string name                : the mods name
+string start_scene         : path to the scene that should be loaded when the mod is loaded
+number pixels_per_unit     : defines how should engine translate texture size to the world units when creating for instance a sprite component
+number audio_rolloff       : defines how quick should the sound fade when the listener moves away from the sound source
+bool   top_down            : defines whether the game takes place on a horizontal - horizontal plane or a horizontal - vertical plane. If true the gravity will be applied to the dynamics components
+gravitational_acceleration : gravitation acceletaration in engine_units per seconds
+```
+You can find more informations about the other config files in the subsections dedicated to the systems they configure.
  
 ## Entities, components and assets
- In SGE, game objects are called **entities**. Entities are composites made of **components**.
- Components allows entities to interact with engine subsystems, for instance colliders affects the collision system.
- Components can be also added and removed from the entities at runtime. 
+In SGE, game objects are called **entities**. Entities are composites made of **components**.
+Components allows entities to interact with engine subsystems, for instance colliders affects the collision system.
+Components can be also added and removed from the entities at runtime. 
 
- Often components needs additional data to work, eg. sprite needs an image.
- This data is stored inside **assets**. Assets are automatically loaded when needed, and unloaded when not.
+Often components needs additional data to work, eg. sprite needs an image.
+This data is stored inside **assets**. Assets are automatically loaded when needed, and unloaded when not.
 
 ## Components in detail
- Each components has its own unique name (a 32 bit usingned integer), that differentiate it from other components inside the entity.
- Engine lua api allows passing strings as the components names - passed strings will be auto hashed into integers.
+Each components has its own unique name (a 32 bit usingned integer), that differentiate it from other components inside the entity.
+Engine lua api allows passing strings as the components names - passed strings will be auto hashed into integers.
 
- There are 10 types of components:
+There are 10 types of components:
  
 ```yaml
 behavior        : links behavior asset to the entity therefore adding logic to the owner  
 camera          : allows renderer to render game objects to the screen  
 collider        : adds collision to the entity  
 dynamics        : handles forces, gravitation etc.  
-static mesh     : remders given mesh asset with given shader asset and given set of texture assets  
+static mesh     : renders given mesh asset with given shader asset and given set of texture assets  
 sprite          : renders sprite + adds collision  
 flipbook        : renders flipbook (animations made of sprites) + adds collision  
 tilemap         : renders tilemap asset using textures from tileset asset + adds collision   
@@ -32,18 +63,8 @@ listener        : represents sound listener in world space
 ```
 
  ## Assets in detail
-  Each asset is represented by .json file, consisting of "asset_type" field, with string determining asset type, and additional asset-type-dependant data.  
-  Example sprite_sheet asset:  
-  ```json
-  {
-      "asset_type" : "sprite_sheet",
-      "path" : "$/player_sprite_sheet.png",
-  
-      "sprite_width" : 16,
-      "sprite_height" : 16
-  }
-```
-  There are 14 types of assets:  
+Each asset is represented by .json file, consisting of "asset_type" field, with string determining asset type, and additional asset-type-dependant data.  
+There are 14 types of assets:  
   
 -*behavior* : represents lua script. (See *TODO*) Example:  
  ```json
@@ -230,7 +251,7 @@ All api functions uses following naming convention:
 ```py
 _ + short indication of manipulated submodule or component + _ + rest of the name
 ```
-For example: 
+For instance: 
 ```py
 _a_set_volume
 ```
@@ -281,7 +302,7 @@ Add component functions uses _e_add prefix.
 nil             _e_add_behavior(entity_ref e, integer | string name, string behavior_asset)                                                               --adds behavior component to the entity.  
 nil             _e_add_camera(entity_ref e, integer | string name, number ortho_width)                                                                    --adds camera component with given ortho width.  
 nil             _e_add_static_mesh(entity_ref e, integer | string name, render_config rc)                                                                 --adds static_mesh component to the entity.  
-nil             _e_add_collider(entity_ref e, integer | string name, number extend_x, number extend_y)                                                    --adds collider component with given extend to the entity.  
+nil             _e_add_collider(entity_ref e, integer | string name, string collision_preset_name, number extend_x, number extend_y)                      --adds collider component with given extend to the entity.  
 nil             _e_add_sprite(entity_ref e, integer | string name, string sprite_sheet_asset, integer sprite_id, string collision_preset_name)            --adds sprite component to the entity.  
 nil             _e_add_flipbook(entity_ref e, integer | string name, string sprite_sheet_asset, string flipbook_animation, string collision_preset_name)  --adds flipbook component to the entity.  
 nil             _e_add_tilemap(entity_ref e, integer | string name, string tilemap_asset, string tileset_asset, string collision_preset_name)             --adds tilemap component to the entity.  
@@ -511,7 +532,292 @@ function creator(args)
         tree.make_tree(args.entity)
     end
 end
-``` 
+```
+# Behaviors
+## Behavior Component
+In order to add logic to the entities, you need to add a ``behavior component`` to it. 
+```lua
+_e_add_behavior(entity e, string | integer name, string behavior_asset)
+```
+## Behavior Asset
+Behavior asset should contain a ``path`` field with a path to the .lua file containing the actual logic
+ ```json
+{
+    "asset_type" : "behavior",
+    "path" : "$/controller.lua"
+}
+```
+There are no special requirements in terms of lua scipt. Even a blank one is a correct one. However if you are not satisfied with the blank script you can start adding logic to it.   
+There are five engine functions that behavior can implement:  
+```yaml
+on_init(entity owner)                             : this function is called when the behavior is added to the entity
+on_update(entity owner, number delta_time)        : this function is called every frame. delta_time is the time between frames
+on_destroy(entity owner)                          : this function is called when the behavior is destroyed
+on_collide(entity owner, entity colliding_entity) : this function is called when entity collides with other entity
+on_overlap(entity owner, entity colliding_entity) : this function is called when entity overlaps with other entity
+```
+Each behavior component also a ``self`` table that behavior asset can access. ``self`` stays unchanged between function calls so you can save important data to it.
+```lua
+self.arrows = 99
+```
+Behaviors can also define ``events``. Events are functions definied as so:
+```lua
+function event_#name# (entity, args)
+```
+Where the *#name#* is replaced with the actuall event name.  
+Events can be called using:  
+```yaml
+_e_call(target_entity, string event_name, table args)                              : tries to call the event on every behavior in the entity
+_c_b_call(target_entity, target_behavior_component, string event_name, table args) : tries to call the event on specified behavior
+```
+The first one will return a table of results. If a behavior doesn't implement the event it just isn't added to the table.  
+The second one will return the called event result, or if the event is not implemented - ``nil``.  
+
+Events system allows you to build families of behaviors, just by implementing events with same names.
+
+# Renderer
+## Mesh components 
+Mesh components is a family of components, derived from abstract ``mesh`` component. When an mesh component is created it *registers* itself to the ``renderer`` using the ``renderer::register_mesh_component`` function. Since now component will be rendered, until it gets killed in some way. Then it *unregisters* itself from the ``renderer`` using the ``renderer::unregister_mesh_component`` and is no longer visible to the rendering system. 
+
+## Mesh component contents
+The most important members of the ``mesh`` class are the ``get_render_config`` and ``pass_transformation`` abstract functions. The first one is used by renderer to assign the component to one of the ``rendering pipelines``. Each rendering pipeline represents another configuration (rendering::render_config), i.e. struct of ``{a shader asset, a mesh asset, and a set of textures}``. Each pipeline is drawn in one draw call. The second function is used by renderer to get acquire components's transform. It takes as an argument a reference to a ``transformations_buffer_iterator`` object, through whose ``put`` method, mesh can pass it's transform to the gpu.
+
+## Mesh tranformation
+The data passed by the ``transformations_buffer_iterator`` must follow certain order.
+```yaml
+float position x : world position x 
+float position y : world position y
+
+float scale x    : scale in x axis 
+float scale y    : scale in y axis 
+
+int layer        : layer on which object should be rendered
+in sprite_id     : index of the sprite to render from a sprite_sheet asset or a flipbook asset
+```
+
+## Mesh component derived
+Here we are going to do a quick overview of the components derived from the mesh component:
+```yaml
+static_mesh : the most minimal of the meshes. requires user to manualy specify the render_config
+sprite      : renders entire texture or a selected sprite from a sprite_sheet using
+              the default_sprite_shader shader asset specified in mod's rendering config,  
+              while keeping the pixels_per_unit ratio definied in mod's manifest (unless the scale is changed)  
+              If you need to you can change the default shader to other one. (Each sprite is also a collider)  
+flibpook    : renders given animation from the given flipbook asset.
+              (Each flibpook is also a collider). Derived from sprite.  
+tilemap     : renders a tilemap asset using the given tileset. (Also can collide).
+              Allows user to control the stride between tilemap's layers.
+```
+
+## Rendering config asset
+This asset configures the work of the renderer. It should contains:
+```yaml
+string default_sprite_shader_override : a shader asset to use as a default sprite shader instead of core/sprite_shader (optional)
+bool use_pixel_aligned_camera,        : whether to allign camera to the pixel grid. Can fix gaps between textures
+array background_color"               : array of 3 numbers representing respectively r, g and b chanels of the rendering clear color
+```
+
+## Writing shaders
+Shaders source must follow certain formating. 
+Lets look at the engine default sprite shader (core/sprite_shader):
+```glsl
+<
+    vec2, vec2
+>
+
+<
+    #version 330 core
+    layout (location = 0) in vec2 aPos;
+    layout (location = 1) in vec2 aTexCoord;
+
+    layout (location = 2) in vec2 pos;
+    layout (location = 3) in vec2 scale;
+    layout (location = 4) in float layer;
+    layout (location = 5) in float sprite_id;
+
+    out vec2 TexCoord;
+
+    uniform mat4 itr_projection;
+    uniform vec4 itr_camera_location;
+    uniform int itr_lowest_layer;
+    uniform int itr_highest_layer;
+    uniform vec2 itr_sprites;
+
+    void main()
+    {  
+        float depth = -1 * (layer - itr_lowest_layer) / (itr_highest_layer - itr_lowest_layer);
+
+        vec2 transformed_pos = (aPos * scale) + pos;
+        vec4 projected_pos = (vec4(transformed_pos, 0, 1.0) - itr_camera_location) * itr_projection;
+        
+        projected_pos.z = depth;
+        gl_Position = projected_pos;
+
+        vec2 unit_sprite = vec2(1, 1) / itr_sprites;
+        TexCoord = vec2(mod(sprite_id, itr_sprites.x), (itr_sprites.y - 1) - floor(sprite_id / itr_sprites.x)) * unit_sprite + aTexCoord * unit_sprite;
+    }
+>
+
+<
+    #version 330 core
+    out vec4 FragColor;
+    in vec2 TexCoord;
+    uniform sampler2D inTexture;
+
+    void main()
+    {
+        vec4 texture_color = texture(inTexture, TexCoord);
+        if (texture_color.w == 0.0)
+            discard;
+        FragColor = texture_color;
+    }
+>
+```
+Shader source consists of 3 things, separated with angle brackets:
+1. Vertex format.
+   Vertex format definies the format of the vertices from the mesh asset.
+   For instance, the default *square_mesh* contains 4 vertices, made of for floats: first two for position second two for texture coordinates.
+   In shader, it its represented by vertex format:
+     ``vec2, vec2``, where the first vec2 represents the vertices positions and the second one the UVs.
+   Vertex format, beside the ``vec2`` can contain 
+   ```glsl
+   float, vec2, vec3, vec4
+   ```
+2. Vertex Shader, written in GLSL.  
+   The input if formated so the first elements in the layout are the elements definied in vertex format, and then comes the object transform.  
+   In our case of vertex format ``vec2, vec2`` the input layout should look like:
+   ```glsl
+    layout (location = 0) in vec2 aPos;
+    layout (location = 1) in vec2 aTexCoord;
+
+    layout (location = 2) in vec2 pos;
+    layout (location = 3) in vec2 scale;
+    layout (location = 4) in float layer;
+    layout (location = 5) in float sprite_id;
+   ```
+   Apart from vertices, there are also uniforms:
+   ```glsl
+    uniform mat4 itr_projection;       // projection matrix
+    uniform vec4 itr_camera_location;  // the camera position in world space
+    uniform int itr_lowest_layer;      // the lowest (deepest) layer that should be renderer
+    uniform int itr_highest_layer;     // the highest (highest) layer that should be renderer
+    uniform vec2 itr_sprites;          // indicates how many columns (x) and rows (y) does the first texture have
+   ```
+3. Fragment Shader, written in GLSL.
+   To take access a texture write
+   ```glsl
+   uniform sampler2D inTexture;
+   ```
+
+# Collision System
+## Collider
+In order to add collision to a entity, you need to add ``collider`` component, or a derived component (``sprite``, ``flipbook``). Collision is only checked when object is moved by ``_e_sweep`` function.
+
+## Collision responses
+There are three types of interactions between bodies:  
+```yaml
+ignore  : no collision                               (assigned with value of 0, 00 in bits)
+overlap : detect collision, but don't stop the body  (assigned with value of 1, 01 in bits)
+collide : detect collision and stop the moving body  (assigned with value of 2, 10 in bits)
+```
+Those are called ``collision responses``. Each collider can come with other response on collision so in order to find the final response for an collision event, engine retrives it from a following lookup table:
+```yaml
+            ignore    overlap   collide:
+
+ignore  :   ignore    ignore    ignore
+
+overlap :   ignore    overlap   overlap
+
+collide :   ignore    overlap   collide
+```
+In the next subsection I am going to refer to this table as ``collision_table``.
+
+## Collision Presets
+Collision systems uses so-called ``collision presets``. Collision preset is a 32-bit flag, that determines how should collider interact with other colliders.  
+It consists of two parts:  
+```yaml
+(on the most significant bit side)  : 4 bit body type
+(on the least significant bit side) : 28 bit array of 2-bit collision repsonses, indexed from the LSB side
+```
+Let *a* be a collision preset of the first collider and *b* a preset of the second one.
+Then the final response of the interaction between those colliders is equal to:
+```lua
+response = collision_table(a.responses_array[b.body_type], b.responses_array[a.body_type])
+```
+A quick case-study:
+Lets assume that:
+```lua
+a.body_type = 0
+a.body_type[3] = collide (2)
+-- then a = 0000 [other 10 responses] 02 xx xx xx
+
+b.body_type = 3
+b.body_type[0] = overlap (1)
+-- then b = 0011 [other 10 responses] xx xx xx 01
+```
+Then the final collision response is equal to:
+```lua
+response = collision_table(a.responses_array[b.body_type], b.responses_array[a.body_type])
+response = collision_table(a.responses_array[3], b.responses_array[0])
+response = collision_table("collide(2)", "overlap(1)")
+resonse  =  overlap
+```
+
+## Collision config
+Collision config is an asset that defines the available presets.
+It consists of two parts:
+```yaml
+body_types        : an object containing body types names and theri values
+collision_presets : an object containing complete collision presets
+```
+An example config look like this:
+```json
+{
+    "asset_type" : "collision_config"
+
+    "body_types" : {
+        "wall" : 0,
+        "player" : 1,
+        "enemy" : 2
+    },
+  
+    "collision_presets" : {
+        "player" : {
+            "body_type" : "player",
+            "responses" : {
+               "player" : "ignore",
+               "enemy" : "overlap",
+               "wall" : "collide"
+            }
+        }
+    }
+}
+```
+As you can see it defines 3 body types and a collision preset ``"player"`` that ignores other players, overlap with enemies and collide with walls.
+Now, with this configuration, you can refer to the preset in the code with it's name:
+```lua
+_e_add_collider(player, "sword_collider", "player", 1, 1)
+```
+Such code creates a collider with the ``"player"`` preset.
+
+You can modify this configuration so it suits your needs, but keep in mind that while you can have as many collision presets as you want, the body_types number is restricted to 14, and the bodies values must be in the range \[0, 13].  
+
+Note that you don't have to define the response for each body in the preset. Not specified ones will automaticaly become ``ignore``.
+
+# Audio System
+There are 3 ways of playing a sound in the SGE:
+```lua 
+_a_play_sound(string sound_asset) 
+```
+The most simple way is to use _a_play_sound function, however it gives you no control over the playback.
+```lua
+_a_play_sound_at_channel(string sound_asset, integer | string channel_name, bool looping)
+```
+When called, it creates playback object i.e.channel that can be affected using other _a functions.
+```lua
+_c_se_emit_sound(string sound_asset_to_emmit)
+```
+This one does the same as the ``_a_play_sound``, but it does plays the sound it the emmiter location and the emmited sound is affected by the distance to the listener.
 
 # Building
 ## Dependencies  
@@ -567,7 +873,7 @@ Now go to the [https://luabinaries.sourceforge.net/download.html](https://luabin
 Once you have your .zip, move it to the `repo/core_game/include/lua_5_4_2` and unzip.
 After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/core_game/libs` folder. 
 
-## Build
+## Building
 Once you have all depedencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
 You can compile the engine in two configurations:  
 - Debug, used for developing mods and the engine itself. In this configuration program does create a console window once launched. Also, it requires user to manually specify assets / mods paths in the ``debug config.h`` file rather than using paths relative to the .exe file like the release does.
