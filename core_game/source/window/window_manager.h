@@ -1,6 +1,8 @@
 #pragma once 
 #include "source/input/key.h"
 
+#include "include/glm/vec2.hpp"
+
 #include <functional>
 
 namespace window
@@ -22,6 +24,9 @@ namespace window
 		std::pair<int, int> get_size();
 
 		void set_mouse_visible(bool visible);
+		//returns mouse position in world space
+		glm::vec2 get_mouse_position();
+
 		void set_resize_callback(std::function<void(void)> callback);
 
 		void vsync(double frame_processing_time);

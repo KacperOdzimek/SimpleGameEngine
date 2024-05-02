@@ -51,21 +51,39 @@ int main()
 #endif	
 
 		//Load required assets
-		common::assets_manager->load_asset("core/square_mesh");
-		common::assets_manager->lock_asset(utilities::hash_string("core/square_mesh"));
-		common::assets_manager->load_asset("core/sprite_shader");
-		common::assets_manager->lock_asset(utilities::hash_string("core/sprite_shader"));
+		common::assets_manager->load_required_core_assets();
 
 #if _DEBUG
 		common::mods_manager->load_mod(debug_loaded_mod);
 #else
-		std::string path = filesystem::get_main_dir();
-		common::mods_manager->load_mod(path + "mods/" + "/game");
+		common::mods_manager->load_mod_selection_mod();
 #endif
 
 		while (!common::window_manager->should_close())
 		{
 			double frame_start = ((double)clock()) / (double)CLOCKS_PER_SEC;
+
+			bool should_quit_mod = 
+				common::window_manager->get_key_state(input::get_key_from_key_name("Escape")).state == 1.0f &&
+				common::mods_manager->get_current_mod_name() != "mod_selection";
+			if (should_quit_mod)
+				common::state = common::program_state::pending_for_mod_quit;
+
+			//Exit or load another mod if requested
+			switch (common::state)
+			{
+			case common::program_state::executing_logic: break;
+			case common::program_state::pending_for_mod_load:
+				common::mods_manager->unload_mod();
+				common::mods_manager->load_mod(common::state_info);
+				common::state = common::program_state::executing_logic;
+				break;
+			case common::program_state::pending_for_mod_quit:
+				common::mods_manager->unload_mod();
+				common::mods_manager->load_mod_selection_mod();
+				common::state = common::program_state::executing_logic;
+				break;
+			};
 
 			//Update flipbooks channels positions
 			common::flipbooks_manager->update();
@@ -105,6 +123,7 @@ int main()
 	//ensure that entities are destroyed first, as their components 
 	//holds shared pointers to almost every resource in the engine
 	common::world.reset();
+
 	//ensure that assets are destroyed second, as they owns resources, 
 	//that can be only destroyed by other manager class
 	common::assets_manager.reset();

@@ -1,5 +1,8 @@
 #include "camera.h"
 
+#include "source/common/common.h"
+#include "source/rendering/renderer.h"
+
 #include "source/entities/entity.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,7 +13,12 @@ namespace entities
 	{
 		void camera::on_attach()
 		{
+		}
 
+		camera::~camera()
+		{
+			if (common::renderer->get_active_camera() == this)
+				common::renderer->set_active_camera(nullptr);
 		}
 
 		glm::mat4 camera::get_projection()

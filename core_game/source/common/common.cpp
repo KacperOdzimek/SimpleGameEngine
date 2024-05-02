@@ -14,6 +14,9 @@
 
 namespace common
 {
+	program_state state = program_state::executing_logic;
+	std::string state_info;
+
 	double delta_time = 0.0;
 	double pixels_per_world_unit = 32;
 	float physics_time_dilation_mod = 1.0f;

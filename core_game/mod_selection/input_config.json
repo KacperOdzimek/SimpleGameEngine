@@ -1,0 +1,9 @@
+{
+    "asset_type" : "input_config",
+
+    "action_mappings" : {
+        "click" : ["LPM"]
+    },
+
+    "axis_mappings" : {}
+}

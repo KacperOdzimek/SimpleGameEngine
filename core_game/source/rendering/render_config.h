@@ -34,7 +34,6 @@ struct std::hash<rendering::render_config>
 public:
 	size_t operator()(const rendering::render_config& config) const
 	{
-		//TODO
-		return (uint64_t)config.material.get();
+		return (uint64_t)config.material.get() ^ (uint64_t)config.mesh.get() ^ (uint64_t)config.uid;
 	}
 };

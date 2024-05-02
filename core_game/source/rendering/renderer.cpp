@@ -111,7 +111,10 @@ renderer::~renderer()
     impl->api->free(impl->screen_quad_vertices);
     impl->api->free(impl->screen_quad_vertices_layout);
 
+    impl->api->free(impl->transformations_buffer_layout);
+
     delete impl->api;
+    delete impl;
 }
 
 void renderer::create_main_renderbuffer()

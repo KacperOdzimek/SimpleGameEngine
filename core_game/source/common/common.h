@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <string>
 
 namespace rendering
 {
@@ -50,6 +51,14 @@ namespace mods
 
 namespace common
 {
+	enum class program_state
+	{
+		executing_logic, pending_for_mod_load, pending_for_mod_quit
+	};
+
+	extern program_state state;
+	extern std::string state_info;
+
 	/*
 		previous frame duration
 	*/

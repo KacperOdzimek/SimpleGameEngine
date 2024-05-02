@@ -8,23 +8,82 @@
 #include "source/common/common.h"
 #include "source/assets/assets_manager.h"
 #include "source/entities/world.h"
+#include "source/behaviors/behaviors_manager.h"
 #include "source/input/input_manager.h"
 #include "source/audio/audio_manager.h"
 #include "source/rendering/renderer.h"
 
 #include "source/utilities/hash_string.h"
 
+#include "../../debug_config.h"
+
 static std::string current_mod_name = "";
 
-void mods::mods_manager::load_mod(std::string mod_folder_name)
+void load_mod_implementation(std::string mod_folder);
+
+void mods::mods_manager::load_mod(std::string mod_name)
 {
-	filesystem::set_mod_assets_directory(mod_folder_name);
+	std::string mod_folder = filesystem::get_global_mod_path(mod_name);
+	load_mod_implementation(mod_folder);
+}
+
+void mods::mods_manager::load_mod_selection_mod()
+{
+#ifdef _DEBUG 
+	std::string path = debug_mod_selection_mod_path;
+#else
+	std::string path = filesystem::get_main_dir() + "mod_selection/";
+#endif	
+
+	load_mod_implementation(path);
+}
+
+void mods::mods_manager::unload_mod()
+{
+	common::world = std::make_unique<entities::world>();
+	common::behaviors_manager->clear();
+
+	current_mod_name = "";
+}
+
+std::string mods::mods_manager::get_current_mod_name()
+{
+	return current_mod_name;
+}
+
+std::string mods::mods_manager::get_mods_directory()
+{
+#ifdef _DEBUG 
+	return debug_mods_directory;
+#else
+	return filesystem::get_main_dir() + "mods/";
+#endif	
+}
+
+std::vector<std::string> mods::mods_manager::get_all_mods()
+{
+	auto mods_paths = filesystem::get_all_subfolders(get_mods_directory());
+
+	std::vector<std::string> mods;
+
+	for (auto& path : mods_paths)
+	{
+		std::string name = path.substr(path.find_last_of("/\\") + 1);
+		mods.push_back(name);
+	}
+
+	return mods;
+}
+
+void load_mod_implementation(std::string mod_folder)
+{
+	filesystem::set_mod_assets_directory(mod_folder);
 	auto manifest_file = filesystem::load_file("mod/manifest.json");
 	nlohmann::json manifest = nlohmann::json::parse(manifest_file);
 	manifest_file.close();
 
-	size_t index = mod_folder_name.find_last_of('/');
-	current_mod_name = mod_folder_name.substr(index + 1, mod_folder_name.size());
+	size_t index = mod_folder.find_last_of('/');
+	current_mod_name = mod_folder.substr(index + 1, mod_folder.size());
 	filesystem::ensure_mod_saves_folder_exist(current_mod_name);
 
 	if (!(manifest.contains("start_scene") && manifest.at("start_scene").is_string()))
@@ -76,18 +135,4 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 		glm::vec2(0, 0),
 		assets::cast_asset<assets::scene>(common::assets_manager->safe_get_asset("mod" + start_scene))
 	);
-}
-
-void mods::mods_manager::unload_mod()
-{
-	common::assets_manager->unlock_asset(utilities::hash_string("mod/input_config"));
-	common::assets_manager->unlock_asset(utilities::hash_string("mod/collision_config"));
-	common::assets_manager->unlock_asset(utilities::hash_string("mod/rendering_config"));
-
-	current_mod_name = "";
-}
-
-std::string mods::mods_manager::get_current_mod_folder_name()
-{
-	return current_mod_name;
 }

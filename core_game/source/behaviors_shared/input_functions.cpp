@@ -51,6 +51,16 @@ namespace behaviors
 				return 0;
 			}
 
+			int _i_get_mouse_position(lua_State* L)
+			{
+				auto pos = common::window_manager->get_mouse_position();
+
+				lua_pushnumber(L, pos.x);
+				lua_pushnumber(L, pos.y);
+
+				return 2;
+			}
+
 			void register_shared(lua_State* L)
 			{
 				lua_register(L, "_i_action", _i_action);
@@ -58,6 +68,7 @@ namespace behaviors
 				lua_register(L, "_i_action_just_relased", _i_action_just_relased);
 				lua_register(L, "_i_axis", _i_axis);
 				lua_register(L, "_i_set_mouse_visible", _i_set_mouse_visible);
+				lua_register(L, "_i_get_mouse_position", _i_get_mouse_position);
 			}
 		}
 	}
