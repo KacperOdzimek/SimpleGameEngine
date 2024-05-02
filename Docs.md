@@ -1,22 +1,53 @@
 # Architecture
 ## Loading games
- SGE dynamically loads one selected game (in code named mod) from the "mods" folder.
- Mods must met some requirements, eg. contains all the config files. (See *TODO*)
- Once the mod is loaded, SGE loads a scene gived in mod/manifest.json in "start_scene" field. 
+SGE dynamically loads one selected game (in code named mod) from the "mods" folder.
+Mods must met some requirements, eg. contains all the config files. (See *TODO*)
+Once the mod is loaded, SGE loads a scene gived in mod/manifest.json in "start_scene" field. 
+
+## Mod Structure
+Each mod, besides their scripts and assets, must contains a few configuration files so it can be loaded correctly:
+```yaml
+manifest.json         : a file that contains important information about the mod
+collision_config.json : a collision config asset
+input_config.json     : a input config asset
+rendering_config.json : a rendering config asset
+thumbnail.json        : a texture asset with 32x32 pixels mod thumbnail
+```
+Example manifest.json file:
+```json
+{
+    "name" : "game",
+    "start_scene" : "/start_scene",
+    "pixels_per_unit" : 16,
+    "audio_rolloff" : 10,
+    "top_down" : true,
+    "gravitational_acceleration" : 25
+}
+```
+Manifest file fields:
+```yaml
+string name                : the mods name
+string start_scene         : path to the scene that should be loaded when the mod is loaded
+number pixels_per_unit     : defines how should engine translate texture size to the world units when creating for instance a sprite component
+number audio_rolloff       : defines how quick should the sound fade when the listener moves away from the sound source
+bool   top_down            : defines whether the game takes place on a horizontal - horizontal plane or a horizontal - vertical plane. If true the gravity will be applied to the dynamics components
+gravitational_acceleration : gravitation acceletaration in engine_units per seconds
+```
+You can find more informations about the other config files in the subsections dedicated to the systems they configure.
  
 ## Entities, components and assets
- In SGE, game objects are called **entities**. Entities are composites made of **components**.
- Components allows entities to interact with engine subsystems, for instance colliders affects the collision system.
- Components can be also added and removed from the entities at runtime. 
+In SGE, game objects are called **entities**. Entities are composites made of **components**.
+Components allows entities to interact with engine subsystems, for instance colliders affects the collision system.
+Components can be also added and removed from the entities at runtime. 
 
- Often components needs additional data to work, eg. sprite needs an image.
- This data is stored inside **assets**. Assets are automatically loaded when needed, and unloaded when not.
+Often components needs additional data to work, eg. sprite needs an image.
+This data is stored inside **assets**. Assets are automatically loaded when needed, and unloaded when not.
 
 ## Components in detail
- Each components has its own unique name (a 32 bit usingned integer), that differentiate it from other components inside the entity.
- Engine lua api allows passing strings as the components names - passed strings will be auto hashed into integers.
+Each components has its own unique name (a 32 bit usingned integer), that differentiate it from other components inside the entity.
+Engine lua api allows passing strings as the components names - passed strings will be auto hashed into integers.
 
- There are 10 types of components:
+There are 10 types of components:
  
 ```yaml
 behavior        : links behavior asset to the entity therefore adding logic to the owner  
@@ -32,8 +63,8 @@ listener        : represents sound listener in world space
 ```
 
  ## Assets in detail
-  Each asset is represented by .json file, consisting of "asset_type" field, with string determining asset type, and additional asset-type-dependant data.  
-  There are 14 types of assets:  
+Each asset is represented by .json file, consisting of "asset_type" field, with string determining asset type, and additional asset-type-dependant data.  
+There are 14 types of assets:  
   
 -*behavior* : represents lua script. (See *TODO*) Example:  
  ```json
