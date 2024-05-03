@@ -453,7 +453,8 @@ bool            _i_action_just_relased(string action_name)      --returns if act
  
 number          _i_axis(string axis_name)                       --returns the state of the given axis mapping
 
-nil             _i_set_mouse_visible(bool visible)  
+nil             _i_set_mouse_visible(bool visible)              --makes mouse visible or not
+number, number  _i_get_mouse_position()                         --returns mouse position in world space
 ```
 
 ## Collision Functions
@@ -505,6 +506,8 @@ bool            _en_data_exists(string filename)                                
 table           _en_load_data(string filename)                                                                                  --restores data saved using _en_save_data from the given file 
 
 nil             _en_create_entities_from_tilemap(string tilemap_asset, func creator_function)                                   --tiled's object layers integration. For every object on any of the object layers in the tilemap, it creates entity and calls creator_function (2) with table of arguments (1), so it can process the entity further
+
+bool            _en_is_debug()                                                                                                  --returns true if the engine was built in the debug configuration
 ```
  
 (1) Table of arguments contains:
@@ -885,8 +888,8 @@ The ``debug_config.h`` should look like this:
 ```cpp
 const std::string debug_mods_directory =			{ Absolute Path };    //Folder containing all the mods
 const std::string debug_core_asssets_directory =	        { Absolute Path };    //Folder containing engine assets; repo/core_game/assets
-const std::string debug_loaded_mod =				{ Absolute Path };    //Folder containing mod to be loaded; Should be a subfolder of debug_mods_directory
 const std::string debug_saved_directory =			{ Absolute Path };    //An empty folder for mods to save their data
+const std::string debug_loaded_mod =				{ Folder Name };      //Name of the folder containing the desired mod
 ```
 Once you have all the paths configured you can attempt running the engine.  
 
