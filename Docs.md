@@ -807,6 +807,74 @@ You can modify this configuration so it suits your needs, but keep in mind that 
 
 Note that you don't have to define the response for each body in the preset. Not specified ones will automaticaly become ``ignore``.
 
+# Input System
+Input system allows user to check the keyboard and mouse state.
+## Input Mappings
+Input system groups buttons into *mappings*. There are two types of mappings:
+```yaml
+action mapping : to check whether at least one button from the group is pressed
+axis mapping   : to check the sum of the values assigned to the pressed buttons
+```
+Action mappings are declared in the ``input_config.json`` file like so:
+```json
+"action_mappings" : {
+    "jump" : ["Space"]
+}
+```
+Once we have the mapping defined in the configuration file we can check for it's state using ``_i_action`` functions, for instance:
+```lua
+local should_jump = _i_action_just_pressed("jump")
+```
+Axis mappings are declared like so:
+```json
+"axis_mappings" : {
+    "move_right" : {
+        "D" : 1,
+        "A" : -1
+    }
+}
+```
+Once declared, their states can be retrieved using the ``_i_axis`` function:
+```lua
+local moxe_on_x = _i_axis("move_right")
+```
+Now the ``moxe_on_x`` variable is a number equal to the sum of the values assigned to the pressed buttons.
+For example, when both ``D`` and ``A`` buttons are pressed ``move_on_x`` is equal to ``1 + (-1)`` so ``move_on_x = 0``.
+When only the ``D`` is pressed ``move_on_x`` is equal to ``1 + 0`` so ``move_on_x = 1``
+And when only the ``A`` button is pressed ``move_on_x`` is equal to ``0 + (-1)`` so ``move_on_x = -1``
+
+## Input Config
+Example ``input_config.json`` file:
+```json
+{
+    "asset_type" : "input_config",
+
+    "action_mappings" : {
+        "pause" : ["Space", "Enter"]
+    },
+
+    "axis_mappings" : {
+        "move_up" : {
+            "W" : 1,
+            "S" : -1
+        },
+
+        "move_right" : {
+            "D" : 1,
+            "A" : -1
+        }
+    }
+}
+```
+Following buttons can be used in mappings:
+```yaml
+Letters from A to Z
+Digits from 0 to 9
+Space, Enter, LShift, RShift, Tab, LCtrl, RCtrl, Backspace,
+Escape (reserved by engine)
+LPM, RPM (Left and right mouse buttons)
+```
+
 # Audio System
 There are 3 ways of playing a sound in the SGE:
 ```lua 
