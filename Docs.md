@@ -714,10 +714,10 @@ The ``name`` passed in as the first argument is a unique user definied name of t
 Mesh components is a family of components, derived from abstract ``mesh`` component. When an mesh component is created it *registers* itself to the ``renderer`` using the ``renderer::register_mesh_component`` function. Since now component will be rendered, until it gets killed in some way. Then it *unregisters* itself from the ``renderer`` using the ``renderer::unregister_mesh_component`` and is no longer visible to the rendering system. 
 
 ## Mesh component contents
-The most important members of the ``mesh`` class are the ``get_render_config`` and ``pass_transformation`` abstract functions. The first one is used by renderer to assign the component to one of the ``rendering pipelines``. Each rendering pipeline represents another configuration (rendering::render_config), i.e. struct of ``{a shader asset, a mesh asset, and a set of textures}``. Each pipeline is drawn in one draw call. The second function is used by renderer to get acquire components's transform. It takes as an argument a reference to a ``transformations_buffer_iterator`` object, through whose ``put`` method, mesh can pass it's transform to the gpu.
+The most important members of the ``mesh`` class are the ``get_render_config`` and ``pass_transformation`` abstract functions. The first one is used by renderer to assign the component to one of the ``rendering pipelines``. Each rendering pipeline represents another configuration (rendering::render_config), i.e. struct of ``{a shader asset, a mesh asset, and a set of textures}``. Each pipeline is drawn in one draw call. The second function is used by renderer to get acquire components's transform. It takes as an argument a reference to a ``transformations_buffer_stream`` object, through whose ``put`` method, mesh can pass it's transform to the gpu.
 
 ## Mesh tranformation
-The data passed by the ``transformations_buffer_iterator`` must follow certain order.
+The data passed by the ``transformations_buffer_stream`` must follow certain order.
 ```yaml
 float position x : world position x 
 float position y : world position y
