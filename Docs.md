@@ -1,5 +1,55 @@
 # Table of contents
-- [Architecture](#Renderer)
+- [Architecture](#Architecture)
+  - [Loading games](#Loading-games)
+  - [Mod Structure](#Mod-Structure)
+  - [Entities, components and assets](#Entities,-components-and-assets)
+  - [Components in detail](#Components-in-detail)
+  - [Assets in detail](#Assets-in-detail)
+  - [Paths in assets](#Paths-in-assets)
+- [Engine API](#Engine-API)
+  - [Entities Functions](#Entities-Functions)
+  - [Add Component Functions](#Add-Component-Functions)
+  - [Components Functions](#Components-Functions)
+  - [Input Functions](#Input-Functions)
+  - [Collision Functions](#Collision-Functions)
+  - [Audio Functions](#Audio-Functions)
+  - [Engine Functions](#Engine-Functions)
+  - [Mods Functions](#Mods-Functions)
+- [Behaviors](#Behaviors)
+  - [Behavior Component](#Behavior-Component)
+  - [Behavior Asset](#Behavior-Asset)
+- [Scenes](#Scenes)
+  - [Scene Asset](#Scene-Asset)
+  - [Loading scenes](#Loading-scenes)
+- [Renderer](#Renderer)
+  - [Mesh components](#Mesh-components)
+  - [Mesh component contents](#Mesh-component-contents)
+  - [Mesh tranformation](#Mesh-tranformation)
+  - [Mesh component derived](#Mesh-component-derived)
+  - [Rendering config asset](#Rendering-config-asset)
+  - [Writing shaders](#Writing-shaders)
+  - [Sheets' and tilesets' sprites numbering](#Sheets'-and-tilesets'-sprites-numbering)
+- [Collision System](#Collision-System)
+  - [Collider](#Collider)
+  - [Collision responses](#Collision-responses)
+  - [Collision Presets](#Collision-Presets)
+  - [Collision config](#Collision-config)
+- [Input System](#Input-System)
+  - [Input Mappings](#Input-Mappings)
+  - [Input Config](#Input-Config)
+- [Audio System](#Audio-System)
+- [Building](#Building)
+  - [Dependencies](#Dependencies)
+  - [Installing the dependencies](#Installing-the-dependencies)
+      - [GLM](#GLM)
+      - [GLFW](#GLFW)
+      - [STB_IMAGE](#STB_IMAGE)
+      - [NLOHMANN JSON](#NLOHMANN-JSON)
+      - [MINIAUDIO](#MINIAUDIO)
+      - [LUA](#LUA)
+  - [Compiling](#Compiling)
+      - [Debug](#Debug)
+      - [Release](#Release)
 
 # Architecture
 ## Loading games
@@ -284,8 +334,7 @@ Example asset path looks like this then:
 ```lua
 "mod/textures/player_sprite_sheet
 ```
-
-Engine functions may also return some custom types:  
+Functions may also return some custom types:  
 ```yaml
 entity, entity_ref      : lua wraper for std::weak_ptr<entities::entity>   
 render_config           : a table that represents c++ rendering::render_config structure. It must contains:
@@ -320,7 +369,7 @@ nil             _e_set_layer(entity_ref e, integer new_layer)           --sets l
 nil             _e_kill_component(entity_ref e, integer | string name)  --removes compononent of the given name from the entity.  
 ```
 
-## Add Component Function
+## Add Component Functions
 Add component functions uses _e_add prefix.  
 
 ```lua
@@ -652,7 +701,7 @@ These snippets show well how does the scene asset work - it is just a lua script
 - Is does not have ``self`` table
 - There are no entity / scene object passed in the ``on_`` functions.
 
-## Loading the scenes
+## Loading scenes
 Scenes can be loaded and unloaded with following functions:
 ```yaml
 _en_load_scene, _en_unload_scene
@@ -974,6 +1023,8 @@ _c_se_emit_sound(string sound_asset_to_emmit)
 This one does the same as the ``_a_play_sound``, but it does plays the sound it the emmiter location and the emmited sound is affected by the distance to the listener.
 
 # Building
+This tutorial explains how to build the engine on 64 bit windows machine wit visual studio.
+
 ## Dependencies  
 SGE uses following libraries:   
 [glm](https://github.com/g-truc/glm) - linear algebra  
@@ -983,8 +1034,7 @@ SGE uses following libraries:
 [miniaudio](https://miniaud.io/) - audio library  
 [lua 5.4.2](https://luabinaries.sourceforge.net/download.html) - lua  
 
-## Building the engine  
-This tutorial explains how to build the engine on 64 bit windows machine.  
+## Installing the dependencies 
 In order to build the engine from source you first need to clone this repo.  
 From now we will refer to the repo folder as `repo/`.  
 Once you have it, go to `repo/core_game` and create `include` and `libs` folders inside.  
@@ -1027,8 +1077,8 @@ Now go to the [https://luabinaries.sourceforge.net/download.html](https://luabin
 Once you have your .zip, move it to the `repo/core_game/include/lua_5_4_2` and unzip.
 After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/core_game/libs` folder. 
 
-## Building
-Once you have all depedencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
+## Compiling
+Once you have all dependencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
 You can compile the engine in two configurations:  
 - Debug, used for developing mods and the engine itself. In this configuration program does create a console window once launched. Also, it requires user to manually specify assets / mods paths in the ``debug config.h`` file rather than using paths relative to the .exe file like the release does.
 - Relase, as the name implies, is intended for shipping. It does not create a console window once launched. Also it does contains (but not yet) a mod selection feature.
