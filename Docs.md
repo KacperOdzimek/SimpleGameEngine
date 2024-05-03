@@ -38,6 +38,7 @@
   - [Input Mappings](#Input-Mappings)
   - [Input Config](#Input-Config)
 - [Audio System](#Audio-System)
+- [Save System](#Save-System)
 - [Building](#Building)
   - [Dependencies](#Dependencies)
   - [Installing the dependencies](#Installing-the-dependencies)
@@ -1021,6 +1022,15 @@ When called, it creates playback object i.e.channel that can be affected using o
 _c_se_emit_sound(string sound_asset_to_emmit)
 ```
 This one does the same as the ``_a_play_sound``, but it does plays the sound it the emmiter location and the emmited sound is affected by the distance to the listener.
+
+# Save System
+SGE provides a system for saving the game data. 
+It consists of three functions:
+```yaml
+_en_data_exists : returns whether the given save file exists inside the saved/{mod_name} folder
+_en_save_data   : saves given table as a .json file inside the saved/{mod_name} folder
+_en_load_data   : loads the table back from the save file
+```
 
 # Building
 This tutorial explains how to build the engine on 64 bit windows machine wit visual studio.
