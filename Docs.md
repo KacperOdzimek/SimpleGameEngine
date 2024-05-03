@@ -578,6 +578,53 @@ The second one will return the called event result, or if the event is not imple
 
 Events system allows you to build families of behaviors, just by implementing events with same names.
 
+# Scenes
+Each entity belongs to some *scene*, which are owned by the *world*.   
+Each world contains a ``persistent scene`` that is created automatically when the mod is loaded. It cannot by removed by mod. All the entities created by the ``_e_create`` function called from behavior component will by possesed by it. Beside this scene user can create additional ones using the ``scene asset``.
+
+## Scene Asset
+```json
+{
+    "asset_type" : "scene",
+    "path" : "/scene.lua"
+}
+```
+```lua
+function on_init()
+   local camera = _e_create()
+   _e_add_camera(camera, "camera", 16)
+   _c_c_set_active(camera, "camera")
+
+    [..]
+end
+
+function on_update(dt)
+    if _en_is_debug() then
+        print("scene updated!")
+    end
+
+    [..]
+end
+
+function on_destroy()
+    if _en_is_debug() then
+        print("scene destroyed!")
+    end
+
+    [..]
+end
+```
+These snippets show well how does the scene asset work - it is just a lua script. It behaves just like a normal behavior except:
+- Is does not have ``self`` table
+- There are no entity / scene object passed in the ``on_`` functions.
+
+## Loading the scenes
+Scenes can be loaded and unloaded with following functions:
+```yaml
+_en_load_scene, _en_unload_scene
+```
+The ``name`` passed in as the first argument is a unique user definied name of this particular instance of the scene.
+
 # Renderer
 ## Mesh components 
 Mesh components is a family of components, derived from abstract ``mesh`` component. When an mesh component is created it *registers* itself to the ``renderer`` using the ``renderer::register_mesh_component`` function. Since now component will be rendered, until it gets killed in some way. Then it *unregisters* itself from the ``renderer`` using the ``renderer::unregister_mesh_component`` and is no longer visible to the rendering system. 
