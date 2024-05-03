@@ -948,7 +948,7 @@ After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/cor
 Once you have all depedencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
 You can compile the engine in two configurations:  
 - Debug, used for developing mods and the engine itself. In this configuration program does create a console window once launched. Also, it requires user to manually specify assets / mods paths in the ``debug config.h`` file rather than using paths relative to the .exe file like the release does.
-- Relase, as the name suggest, intended for shipping. It does not create a console window once launched. Also it does contains (but not yet) a mod selection feature.
+- Relase, as the name implies, is intended for shipping. It does not create a console window once launched. Also it does contains (but not yet) a mod selection feature.
 
 ### Debug 
 In order to build in debug you need to create a ``debug_config.h`` in the ``repo/core_game`` folder (the folder containing ``main.cpp`` file).  
