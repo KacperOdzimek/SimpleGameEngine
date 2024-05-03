@@ -463,7 +463,7 @@ Collision functions uses _cl prefix.
 ```lua
 trace_result    _cl_trace(string trace_collision_preset, number start_x, number start_y, number end_x, number end_y) --casts a trace from (start_x, start_y) to (end_x, end_y) and returns if it has hitten any collider
 ```
-The result is a table : 
+The trace_result is a table : 
 ```yaml
 {
    entity   : {hited entity or a nil},
