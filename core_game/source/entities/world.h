@@ -15,6 +15,6 @@ namespace entities
 		void create_scene(uint32_t name, glm::vec2 world_offset, std::weak_ptr<assets::scene> scene);
 		void remove_scene(uint32_t name);
 		scene* get_scene(uint32_t name);
-		scene* get_dynamic_scene();
+		scene* get_persistent_scene();
 	};
 }

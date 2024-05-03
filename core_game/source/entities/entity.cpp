@@ -18,7 +18,7 @@
 entities::entity::entity()
 {
 	self = std::shared_ptr<entity>{ this };
-	common::world->get_dynamic_scene()->entities.push_back(self);
+	common::world->get_persistent_scene()->entities.push_back(self);
 }
 
 entities::entity::entity(scene* parent_scene)
@@ -27,7 +27,7 @@ entities::entity::entity(scene* parent_scene)
 	parent_scene->entities.push_back(self);
 
 	auto f = common::behaviors_manager->get_current_frame();
-	if (f->scene_context != common::world->get_dynamic_scene())
+	if (f->scene_context != common::world->get_persistent_scene())
 		location += f->scene_context->world_offset;
 }
 
@@ -83,7 +83,7 @@ const glm::vec2& entities::entity::get_location()
 void entities::entity::teleport(glm::vec2 new_location)
 {
 	auto f = common::behaviors_manager->get_current_frame();
-	if (f->scene_context != common::world->get_dynamic_scene())
+	if (f->scene_context != common::world->get_persistent_scene())
 		new_location += f->scene_context->world_offset;
 
 	location = new_location;
