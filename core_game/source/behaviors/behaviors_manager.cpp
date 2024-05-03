@@ -60,7 +60,6 @@ struct behaviors::behaviors_manager::implementation
     std::unordered_map<std::string, int> loaded_modules;
 };
 
-
 /*
     allocate implementation and lua_State
 */
@@ -130,6 +129,20 @@ void behaviors::behaviors_manager::require_module(const std::string& relative_pa
     }
     int module_index = impl->loaded_modules.at(relative_path);
     lua_rawgeti(impl->L, LUA_REGISTRYINDEX, module_index);
+}
+
+void behaviors::behaviors_manager::clear()
+{
+    for (auto& module : impl->loaded_modules)
+        luaL_unref(impl->L, LUA_REGISTRYINDEX, module.second);
+    impl->loaded_modules.clear();
+    impl->frames_stack.clear();
+    lua_close(impl->L);
+
+    lua_State* L = luaL_newstate();
+    luaL_openlibs(L);
+    behaviors::register_shared(L);
+    impl->L = L;
 }
 
 void behaviors::behaviors_manager::call_update_functions()

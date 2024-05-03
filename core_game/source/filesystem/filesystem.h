@@ -55,7 +55,7 @@ namespace filesystem
 	std::string get_owning_folder(std::string path);
 	/*
 	get_global_path
-	returns on-drive path version of the given path
+	returns absolute path of the given path
 	*/
 	std::string get_global_path(std::string path);
 	/*
@@ -100,4 +100,9 @@ namespace filesystem
 	loads image
 	*/
 	std::unique_ptr<image_file> load_image(std::string path_with_extension);
+	/*
+	get_global_mod_path
+	returns absolute path to the given mod
+	*/
+	std::string get_global_mod_path(std::string mod_name);
 };

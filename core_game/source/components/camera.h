@@ -15,6 +15,7 @@ namespace entities
 		{
 		public:
 			camera(uint32_t _id, float _ortho_width) : ortho_width(_ortho_width), component(_id) {}
+			~camera();
 			/*
 				viewport x width
 			*/

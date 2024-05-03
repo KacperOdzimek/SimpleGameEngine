@@ -44,7 +44,10 @@ namespace behaviors
 	public:
 		behaviors_manager();
 		~behaviors_manager();
-
+		/*
+			clear
+		*/
+		void clear();
 		/*
 			call_update_functions
 			calls on_update on every registered behavior component

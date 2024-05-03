@@ -6,14 +6,14 @@ namespace entities
 {
 	struct world::implementation
 	{
-		std::unique_ptr<scene> dynamic_scene;
+		std::unique_ptr<scene> persistent_scene;
 		std::list<std::unique_ptr<scene>> scenes;
 	};
 
 	world::world()
 	{
 		impl = new implementation;
-		impl->dynamic_scene = std::make_unique<scene>(0, glm::vec2(0, 0));
+		impl->persistent_scene = std::make_unique<scene>(0, glm::vec2(0, 0));
 	}
 
 	world::~world()
@@ -23,7 +23,7 @@ namespace entities
 
 	void world::update()
 	{
-		impl->dynamic_scene->update();
+		impl->persistent_scene->update();
 		for (auto& scene : impl->scenes)
 			scene->update();
 	}
@@ -32,9 +32,7 @@ namespace entities
 	{
 		for (auto& scene : impl->scenes)
 			if (scene->name == name)
-			{
 				return;
-			}
 
 		auto s = std::make_unique<scene>(name, world_offset, _scene);
 		impl->scenes.push_back(std::move(s));
@@ -58,8 +56,8 @@ namespace entities
 		return nullptr;
 	}
 
-	scene* world::get_dynamic_scene()
+	scene* world::get_persistent_scene()
 	{
-		return impl->dynamic_scene.get();
+		return impl->persistent_scene.get();
 	}
 }

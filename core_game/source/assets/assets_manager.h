@@ -14,6 +14,8 @@ namespace assets
 		assets_manager();
 		~assets_manager();
 
+		void load_required_core_assets();
+
 		void load_asset(std::string local_path);
 		std::weak_ptr<asset> get_asset(uint32_t hashed_name);
 		std::weak_ptr<asset> safe_get_asset(std::string path);
