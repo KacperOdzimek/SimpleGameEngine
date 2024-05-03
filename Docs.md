@@ -1,3 +1,6 @@
+# Table of contents
+- [Architecture](#Renderer)
+
 # Architecture
 ## Loading games
 SGE dynamically loads one selected game (in code named mod) from the "mods" folder.
