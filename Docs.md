@@ -711,6 +711,8 @@ Shader source consists of 3 things, separated with angle brackets:
    ```glsl
    uniform sampler2D inTexture;
    ```
+## Sheets' and tilesets' sprites numbering
+Sprites and tiles are numbered from left to right, from top to down starting at 1.
 
 # Collision System
 ## Collider
