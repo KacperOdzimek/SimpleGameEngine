@@ -80,6 +80,9 @@ void mods::mods_manager::load_mod(std::string mod_folder_name)
 
 void mods::mods_manager::unload_mod()
 {
+	common::audio_manager.reset();
+	common::audio_manager = std::make_unique<audio::audio_manager>();
+
 	common::assets_manager->unlock_asset(utilities::hash_string("mod/input_config"));
 	common::assets_manager->unlock_asset(utilities::hash_string("mod/collision_config"));
 	common::assets_manager->unlock_asset(utilities::hash_string("mod/rendering_config"));
