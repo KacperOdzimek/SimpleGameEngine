@@ -3,13 +3,13 @@
 
 namespace rendering
 {
-	struct transformations_buffer_iterator
+	struct transformations_buffer_stream
 	{
 	private:
 		void* begining;
 		void* current_position;
 	public:
-		transformations_buffer_iterator(void* _begining) : begining(_begining), current_position(_begining) {};
+		transformations_buffer_stream(void* _begining) : begining(_begining), current_position(_begining) {};
 		inline void put(float&& v)
 		{
 			*(reinterpret_cast<float*>(current_position)) = v;

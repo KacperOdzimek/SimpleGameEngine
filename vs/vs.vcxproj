@@ -222,7 +222,7 @@ if not exist $(ProjectDir)..\build\mods mkdir $(ProjectDir)..\build\mods</Comman
     <ClInclude Include="..\core_game\source\rendering\flipbooks_manager.h" />
     <ClInclude Include="..\core_game\source\rendering\renderer.h" />
     <ClInclude Include="..\core_game\source\rendering\render_config.h" />
-    <ClInclude Include="..\core_game\source\rendering\transformations_buffer_iterator.h" />
+    <ClInclude Include="..\core_game\source\rendering\transformations_buffer_stream.h" />
     <ClInclude Include="..\core_game\source\utilities\equal_to.h" />
     <ClInclude Include="..\core_game\source\utilities\hash_string.h" />
     <ClInclude Include="..\core_game\source\window\window_manager.h" />

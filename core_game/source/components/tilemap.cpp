@@ -35,7 +35,7 @@ tilemap::tilemap(
 	_config.uid = common::renderer->get_new_uid();
 }
 
-void tilemap::pass_transformation(rendering::transformations_buffer_iterator& tbi)
+void tilemap::pass_transformation(rendering::transformations_buffer_stream& tbi)
 {
 	int layer_counter = 0;
 

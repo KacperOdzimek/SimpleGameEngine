@@ -32,7 +32,7 @@ entities::components::static_mesh::~static_mesh()
 	common::renderer->unregister_mesh_component(this);
 }
 
-void entities::components::static_mesh::pass_transformation(rendering::transformations_buffer_iterator& tbi)
+void entities::components::static_mesh::pass_transformation(rendering::transformations_buffer_stream& tbi)
 {
 	if (visible)
 	{

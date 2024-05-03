@@ -77,7 +77,7 @@ void sprite::set_shader(std::weak_ptr<assets::shader> new_shader)
 	common::renderer->register_mesh_component(this);
 }
 
-void sprite::pass_transformation(rendering::transformations_buffer_iterator& tbi)
+void sprite::pass_transformation(rendering::transformations_buffer_stream& tbi)
 {
 	if (visible)
 	{

@@ -5,7 +5,7 @@ namespace input
 {
 	enum class key_type
 	{
-		mouse, keyboard, gamepad
+		mouse, keyboard
 	};
 
 	struct key

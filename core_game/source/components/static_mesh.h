@@ -22,7 +22,7 @@ namespace entities
 				pass_transformation
 				passes mesh transformation to the buffer on the GPU
 			*/
-			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
+			virtual void pass_transformation(rendering::transformations_buffer_stream& tbi) override;
 		public:
 			virtual const rendering::render_config& get_render_config() override;
 			void set_render_config(const rendering::render_config& rc);

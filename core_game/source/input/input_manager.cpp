@@ -66,17 +66,7 @@ void input_manager::update_mappings_states()
 
 	std::vector<key_state> states;
 	for (auto& k : impl->keys_to_check)
-	{
-		switch (k.key_type)
-		{
-		case input::key_type::keyboard: case input::key_type::mouse:
-			states.push_back(common::window_manager->get_key_state(k));
-			break;
-		case input::key_type::gamepad:
-			//TODO
-			break;
-		}
-	}
+		states.push_back(common::window_manager->get_key_state(k));
 	
 	std::vector<key> pressed_keys;
 	for (auto& k : states)

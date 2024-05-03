@@ -1,7 +1,7 @@
 #pragma once
 #include "source/entities/component.h"
 
-#include "source/rendering/transformations_buffer_iterator.h"
+#include "source/rendering/transformations_buffer_stream.h"
 #include "source/rendering/render_config.h"
 
 #include <cstdint>
@@ -25,7 +25,7 @@ namespace entities
 			friend entities::entity;
 			friend rendering::renderer;
 		protected:
-			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) = 0;
+			virtual void pass_transformation(rendering::transformations_buffer_stream& tbi) = 0;
 			void mark_pipeline_dirty();
 			bool visible = true;
 			glm::vec2 offset = { 0, 0 };

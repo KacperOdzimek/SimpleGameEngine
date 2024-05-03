@@ -46,7 +46,7 @@
     <Filter Include="libs_impl">
       <UniqueIdentifier>{7941bcca-5c1f-44e8-bc2d-8c3f549b06b5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\input\filesystem">
+    <Filter Include="source\filesystem">
       <UniqueIdentifier>{85ad88ba-cd2f-41d8-8854-e7bc7970be6d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -203,7 +203,7 @@
       <Filter>source\entities</Filter>
     </ClInclude>
     <ClInclude Include="..\core_game\source\filesystem\filesystem.h">
-      <Filter>source\input\filesystem</Filter>
+      <Filter>source\filesystem</Filter>
     </ClInclude>
     <ClInclude Include="..\core_game\source\input\input_manager.h">
       <Filter>source\input</Filter>
@@ -235,7 +235,7 @@
     <ClInclude Include="..\core_game\source\rendering\renderer.h">
       <Filter>source\rendering</Filter>
     </ClInclude>
-    <ClInclude Include="..\core_game\source\rendering\transformations_buffer_iterator.h">
+    <ClInclude Include="..\core_game\source\rendering\transformations_buffer_stream.h">
       <Filter>source\rendering</Filter>
     </ClInclude>
     <ClInclude Include="..\core_game\source\utilities\equal_to.h">
@@ -392,7 +392,7 @@
       <Filter>source\entities</Filter>
     </ClCompile>
     <ClCompile Include="..\core_game\source\filesystem\filesystem.cpp">
-      <Filter>source\input\filesystem</Filter>
+      <Filter>source\filesystem</Filter>
     </ClCompile>
     <ClCompile Include="..\core_game\source\input\input_manager.cpp">
       <Filter>source\input</Filter>

@@ -20,7 +20,7 @@ namespace entities
 			void set_sprite_id(int sprite_id);
 
 			void set_shader(std::weak_ptr<assets::shader> new_shader);
-			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
+			virtual void pass_transformation(rendering::transformations_buffer_stream& tbi) override;
 			virtual void on_attach() override;
 			virtual const rendering::render_config& get_render_config() override;
 			virtual uint32_t get_instances_amount() override;

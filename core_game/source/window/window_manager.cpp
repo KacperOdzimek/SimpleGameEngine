@@ -168,7 +168,7 @@ void window_manager::set_resize_callback(std::function<void()> callback)
 void window_manager::vsync(double frame_processing_time)
 {
     if (!impl->fullscreen) return;
-
+    return;
     double frame_time = (1.0 / impl->fullscreen_refresh_rate);
     double sleep_time = frame_time - frame_processing_time;
 

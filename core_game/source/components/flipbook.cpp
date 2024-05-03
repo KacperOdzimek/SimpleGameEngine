@@ -40,7 +40,7 @@ void flipbook::set_animation(uint32_t new_animation)
 	mark_pipeline_dirty();
 }
 
-void flipbook::pass_transformation(rendering::transformations_buffer_iterator& tbi)
+void flipbook::pass_transformation(rendering::transformations_buffer_stream& tbi)
 {
 	if (visible)
 	{

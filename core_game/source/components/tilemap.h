@@ -23,7 +23,7 @@ namespace entities
 			rendering::render_config _config;
 			physics::collision_preset preset = 0;
 			unsigned int layers_stride = 1;
-			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi) override;
+			virtual void pass_transformation(rendering::transformations_buffer_stream& tbi) override;
 			void build_colliders();
 		public:
 			unsigned int get_layers_stride() { return layers_stride; };

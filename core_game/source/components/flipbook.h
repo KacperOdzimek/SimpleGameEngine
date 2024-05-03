@@ -19,7 +19,7 @@ namespace entities
 
 			const uint32_t& get_animation() { return current_flipbook_animation; }
 			void set_animation(uint32_t new_animation);
-			virtual void pass_transformation(rendering::transformations_buffer_iterator& tbi);
+			virtual void pass_transformation(rendering::transformations_buffer_stream& tbi);
 
 			void move_playback(float time);
 		};

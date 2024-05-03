@@ -2,7 +2,7 @@
 
 #include "source/common/crash.h"
 #include "source/rendering/render_config.h"
-#include "source/rendering/transformations_buffer_iterator.h"
+#include "source/rendering/transformations_buffer_stream.h"
 
 #include "source/common/common.h"
 #include "source/window/window_manager.h"
@@ -270,19 +270,19 @@ void renderer::update_transformations()
         uint32_t buffer_size = pipeline.second.transformations_buffer->get_size();
 
         void* buffer_begin = pipeline.second.transformations_buffer->open_data_stream();
-        transformations_buffer_iterator tbi{ buffer_begin };
+        transformations_buffer_stream tbs{ buffer_begin };
 
         uint32_t instances_to_add = 0;
 
         for (auto& mesh : pipeline.second.meshes)
         {
-            if ((buffer_size - tbi.get_data_size()) / impl->transformations_buffer_layout->get_vertex_size() < mesh->get_instances_amount())
+            if ((buffer_size - tbs.get_data_size()) / impl->transformations_buffer_layout->get_vertex_size() < mesh->get_instances_amount())
                 instances_to_add += mesh->get_instances_amount();
             else
-                mesh->pass_transformation(tbi);
+                mesh->pass_transformation(tbs);
         }
 
-        pipeline.second.visible_instances = tbi.get_data_size() / impl->transformations_buffer_layout->get_vertex_size();
+        pipeline.second.visible_instances = tbs.get_data_size() / impl->transformations_buffer_layout->get_vertex_size();
         pipeline.second.transformations_buffer->close_data_stream();
 
         if (instances_to_add != 0)
