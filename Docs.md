@@ -1,3 +1,57 @@
+# Table of contents
+- [Architecture](#Architecture)
+  - [Loading games](#Loading-games)
+  - [Mod Structure](#Mod-Structure)
+  - [Entities, components and assets](#Entities-components-and-assets)
+  - [Components in detail](#Components-in-detail)
+  - [Assets in detail](#Assets-in-detail)
+  - [Paths in assets](#Paths-in-assets)
+- [Engine API](#Engine-API)
+  - [Entities Functions](#Entities-Functions)
+  - [Add Component Functions](#Add-Component-Functions)
+  - [Components Functions](#Components-Functions)
+  - [Input Functions](#Input-Functions)
+  - [Collision Functions](#Collision-Functions)
+  - [Audio Functions](#Audio-Functions)
+  - [Engine Functions](#Engine-Functions)
+  - [Mods Functions](#Mods-Functions)
+- [Behaviors](#Behaviors)
+  - [Behavior Component](#Behavior-Component)
+  - [Behavior Asset](#Behavior-Asset)
+- [Scenes](#Scenes)
+  - [Scene Asset](#Scene-Asset)
+  - [Loading scenes](#Loading-scenes)
+- [Renderer](#Renderer)
+  - [Mesh components](#Mesh-components)
+  - [Mesh component contents](#Mesh-component-contents)
+  - [Mesh tranformation](#Mesh-tranformation)
+  - [Mesh component derived](#Mesh-component-derived)
+  - [Rendering config asset](#Rendering-config-asset)
+  - [Writing shaders](#Writing-shaders)
+  - [Sheets' and tilesets' sprites numbering](#Sheets-and-tilesets-sprites-numbering)
+- [Collision System](#Collision-System)
+  - [Collider](#Collider)
+  - [Collision responses](#Collision-responses)
+  - [Collision Presets](#Collision-Presets)
+  - [Collision config](#Collision-config)
+- [Input System](#Input-System)
+  - [Input Mappings](#Input-Mappings)
+  - [Input Config](#Input-Config)
+- [Audio System](#Audio-System)
+- [Save System](#Save-System)
+- [Building](#Building)
+  - [Dependencies](#Dependencies)
+  - [Installing the dependencies](#Installing-the-dependencies)
+      - [GLM](#GLM)
+      - [GLFW](#GLFW)
+      - [STB_IMAGE](#STB_IMAGE)
+      - [NLOHMANN JSON](#NLOHMANN-JSON)
+      - [MINIAUDIO](#MINIAUDIO)
+      - [LUA](#LUA)
+  - [Compiling](#Compiling)
+      - [Debug](#Debug)
+      - [Release](#Release)
+
 # Architecture
 ## Loading games
 SGE dynamically loads one selected game (in code named mod) from the "mods" folder.
@@ -245,6 +299,14 @@ There are 14 types of assets:
     ]
 }
 ```
+
+## Paths in assets
+All the ``path``s fileds should be populated with paths to the resource. User can define the path in two ways:
+```yaml
+absolute : relative to package the asset is in (core / mod). Then the path starts with "/"
+relative : relative to the .json file. Then the path starts with "$/"
+```
+
 # Engine API
 SGE exposes api, through which lua scripts can manipulate the engine.  
 All api functions uses following naming convention:   
@@ -259,8 +321,21 @@ means
 ```py
 engine => audio_subsystem => set_volume
 ```
-
-Engine functions may also return some custom types:  
+When a funtion requires user to pass an asset path user should format the path like so:
+```py
+package + "/" + path [without the .json extension]
+```
+``Package`` is a symbol that is used to abstract from the concrete system path.
+There are two packages:
+```yaml
+core : the engine's asset directory
+mod  : the mod's directory
+```
+Example asset path looks like this then:
+```lua
+"mod/textures/player_sprite_sheet
+```
+Functions may also return some custom types:  
 ```yaml
 entity, entity_ref      : lua wraper for std::weak_ptr<entities::entity>   
 render_config           : a table that represents c++ rendering::render_config structure. It must contains:
@@ -295,7 +370,7 @@ nil             _e_set_layer(entity_ref e, integer new_layer)           --sets l
 nil             _e_kill_component(entity_ref e, integer | string name)  --removes compononent of the given name from the entity.  
 ```
 
-## Add Component Function
+## Add Component Functions
 Add component functions uses _e_add prefix.  
 
 ```lua
@@ -453,7 +528,8 @@ bool            _i_action_just_relased(string action_name)      --returns if act
  
 number          _i_axis(string axis_name)                       --returns the state of the given axis mapping
 
-nil             _i_set_mouse_visible(bool visible)  
+nil             _i_set_mouse_visible(bool visible)              --makes mouse visible or not
+number, number  _i_get_mouse_position()                         --returns mouse position in world space
 ```
 
 ## Collision Functions
@@ -462,7 +538,7 @@ Collision functions uses _cl prefix.
 ```lua
 trace_result    _cl_trace(string trace_collision_preset, number start_x, number start_y, number end_x, number end_y) --casts a trace from (start_x, start_y) to (end_x, end_y) and returns if it has hitten any collider
 ```
-The result is a table : 
+The trace_result is a table : 
 ```yaml
 {
    entity   : {hited entity or a nil},
@@ -505,6 +581,8 @@ bool            _en_data_exists(string filename)                                
 table           _en_load_data(string filename)                                                                                  --restores data saved using _en_save_data from the given file 
 
 nil             _en_create_entities_from_tilemap(string tilemap_asset, func creator_function)                                   --tiled's object layers integration. For every object on any of the object layers in the tilemap, it creates entity and calls creator_function (2) with table of arguments (1), so it can process the entity further
+
+bool            _en_is_debug()                                                                                                  --returns true if the engine was built in the debug configuration
 ```
  
 (1) Table of arguments contains:
@@ -533,6 +611,15 @@ function creator(args)
     end
 end
 ```
+
+## Mods Functions
+Mods functions uses _m prefix.
+```lua
+nil             _m_quit_mod()                          --returns to the mod selection page; equivalent of pressing escape           
+nil             _m_load_mod(string mod_folder_name)    --returns the given mod
+table           _m_get_all_mods()                      --returns table of all the mods in the mods directory
+```
+
 # Behaviors
 ## Behavior Component
 In order to add logic to the entities, you need to add a ``behavior component`` to it. 
@@ -574,6 +661,53 @@ The first one will return a table of results. If a behavior doesn't implement th
 The second one will return the called event result, or if the event is not implemented - ``nil``.  
 
 Events system allows you to build families of behaviors, just by implementing events with same names.
+
+# Scenes
+Each entity belongs to some *scene*, which are owned by the *world*.   
+Each world contains a ``persistent scene`` that is created automatically when the mod is loaded. It cannot by removed by mod. All the entities created by the ``_e_create`` function called from behavior component will by possesed by it. Beside this scene user can create additional ones using the ``scene asset``.
+
+## Scene Asset
+```json
+{
+    "asset_type" : "scene",
+    "path" : "/scene.lua"
+}
+```
+```lua
+function on_init()
+   local camera = _e_create()
+   _e_add_camera(camera, "camera", 16)
+   _c_c_set_active(camera, "camera")
+
+    [..]
+end
+
+function on_update(dt)
+    if _en_is_debug() then
+        print("scene updated!")
+    end
+
+    [..]
+end
+
+function on_destroy()
+    if _en_is_debug() then
+        print("scene destroyed!")
+    end
+
+    [..]
+end
+```
+These snippets show well how does the scene asset work - it is just a lua script. It behaves just like a normal behavior except:
+- Is does not have ``self`` table
+- There are no entity / scene object passed in the ``on_`` functions.
+
+## Loading scenes
+Scenes can be loaded and unloaded with following functions:
+```yaml
+_en_load_scene, _en_unload_scene
+```
+The ``name`` passed in as the first argument is a unique user definied name of this particular instance of the scene.
 
 # Renderer
 ## Mesh components 
@@ -708,6 +842,8 @@ Shader source consists of 3 things, separated with angle brackets:
    ```glsl
    uniform sampler2D inTexture;
    ```
+## Sheets' and tilesets' sprites numbering
+Sprites and tiles are numbered from left to right, from top to down starting at 1.
 
 # Collision System
 ## Collider
@@ -804,6 +940,74 @@ You can modify this configuration so it suits your needs, but keep in mind that 
 
 Note that you don't have to define the response for each body in the preset. Not specified ones will automaticaly become ``ignore``.
 
+# Input System
+Input system allows user to check the keyboard and mouse state.
+## Input Mappings
+Input system groups buttons into *mappings*. There are two types of mappings:
+```yaml
+action mapping : to check whether at least one button from the group is pressed
+axis mapping   : to check the sum of the values assigned to the pressed buttons
+```
+Action mappings are declared in the ``input_config.json`` file like so:
+```json
+"action_mappings" : {
+    "jump" : ["Space"]
+}
+```
+Once we have the mapping defined in the configuration file we can check for it's state using ``_i_action`` functions, for instance:
+```lua
+local should_jump = _i_action_just_pressed("jump")
+```
+Axis mappings are declared like so:
+```json
+"axis_mappings" : {
+    "move_right" : {
+        "D" : 1,
+        "A" : -1
+    }
+}
+```
+Once declared, their states can be retrieved using the ``_i_axis`` function:
+```lua
+local moxe_on_x = _i_axis("move_right")
+```
+Now the ``moxe_on_x`` variable is a number equal to the sum of the values assigned to the pressed buttons.
+For example, when both ``D`` and ``A`` buttons are pressed ``move_on_x`` is equal to ``1 + (-1)`` so ``move_on_x = 0``.
+When only the ``D`` is pressed ``move_on_x`` is equal to ``1 + 0`` so ``move_on_x = 1``
+And when only the ``A`` button is pressed ``move_on_x`` is equal to ``0 + (-1)`` so ``move_on_x = -1``
+
+## Input Config
+Example ``input_config.json`` file:
+```json
+{
+    "asset_type" : "input_config",
+
+    "action_mappings" : {
+        "pause" : ["Space", "Enter"]
+    },
+
+    "axis_mappings" : {
+        "move_up" : {
+            "W" : 1,
+            "S" : -1
+        },
+
+        "move_right" : {
+            "D" : 1,
+            "A" : -1
+        }
+    }
+}
+```
+Following buttons can be used in mappings:
+```yaml
+Letters from A to Z
+Digits from 0 to 9
+Space, Enter, LShift, RShift, Tab, LCtrl, RCtrl, Backspace,
+Escape (reserved by engine)
+LPM, RPM (Left and right mouse buttons)
+```
+
 # Audio System
 There are 3 ways of playing a sound in the SGE:
 ```lua 
@@ -819,7 +1023,18 @@ _c_se_emit_sound(string sound_asset_to_emmit)
 ```
 This one does the same as the ``_a_play_sound``, but it does plays the sound it the emmiter location and the emmited sound is affected by the distance to the listener.
 
+# Save System
+SGE provides a system for saving the game data. 
+It consists of three functions:
+```yaml
+_en_data_exists : returns whether the given save file exists inside the saved/{mod_name} folder
+_en_save_data   : saves given table as a .json file inside the saved/{mod_name} folder
+_en_load_data   : loads the table back from the save file
+```
+
 # Building
+This tutorial explains how to build the engine on 64 bit windows machine wit visual studio.
+
 ## Dependencies  
 SGE uses following libraries:   
 [glm](https://github.com/g-truc/glm) - linear algebra  
@@ -829,8 +1044,7 @@ SGE uses following libraries:
 [miniaudio](https://miniaud.io/) - audio library  
 [lua 5.4.2](https://luabinaries.sourceforge.net/download.html) - lua  
 
-## Building the engine  
-This tutorial explains how to build the engine on 64 bit windows machine.  
+## Installing the dependencies 
 In order to build the engine from source you first need to clone this repo.  
 From now we will refer to the repo folder as `repo/`.  
 Once you have it, go to `repo/core_game` and create `include` and `libs` folders inside.  
@@ -873,11 +1087,11 @@ Now go to the [https://luabinaries.sourceforge.net/download.html](https://luabin
 Once you have your .zip, move it to the `repo/core_game/include/lua_5_4_2` and unzip.
 After doing that pick `lua54.lib` and `lua54.dll` and move them to the `repo/core_game/libs` folder. 
 
-## Building
-Once you have all depedencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
+## Compiling
+Once you have all dependencies installed, open Vs folder an launch the solution. Now we can finaly get to compiling the project.  
 You can compile the engine in two configurations:  
 - Debug, used for developing mods and the engine itself. In this configuration program does create a console window once launched. Also, it requires user to manually specify assets / mods paths in the ``debug config.h`` file rather than using paths relative to the .exe file like the release does.
-- Relase, as the name suggest, intended for shipping. It does not create a console window once launched. Also it does contains (but not yet) a mod selection feature.
+- Relase, as the name implies, is intended for shipping. It does not create a console window once launched. Also it does contains (but not yet) a mod selection feature.
 
 ### Debug 
 In order to build in debug you need to create a ``debug_config.h`` in the ``repo/core_game`` folder (the folder containing ``main.cpp`` file).  
@@ -885,8 +1099,8 @@ The ``debug_config.h`` should look like this:
 ```cpp
 const std::string debug_mods_directory =			{ Absolute Path };    //Folder containing all the mods
 const std::string debug_core_asssets_directory =	        { Absolute Path };    //Folder containing engine assets; repo/core_game/assets
-const std::string debug_loaded_mod =				{ Absolute Path };    //Folder containing mod to be loaded; Should be a subfolder of debug_mods_directory
 const std::string debug_saved_directory =			{ Absolute Path };    //An empty folder for mods to save their data
+const std::string debug_loaded_mod =				{ Folder Name };      //Name of the folder containing the desired mod
 ```
 Once you have all the paths configured you can attempt running the engine.  
 
