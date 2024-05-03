@@ -558,6 +558,15 @@ function creator(args)
     end
 end
 ```
+
+## Mods Functions
+Mods functions uses _m prefix.
+```lua
+nil             _m_quit_mod()                          --returns to the mod selection page; equivalent of pressing escape           
+nil             _m_load_mod(string mod_folder_name)    --returns the given mod
+table           _m_get_all_mods()                      --returns table of all the mods in the mods directory
+```
+
 # Behaviors
 ## Behavior Component
 In order to add logic to the entities, you need to add a ``behavior component`` to it. 
