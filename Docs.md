@@ -245,6 +245,14 @@ There are 14 types of assets:
     ]
 }
 ```
+
+## Paths in assets
+All the ``path``s fileds should be populated with paths to the resource. User can define the path in two ways:
+```yaml
+absolute : relative to package the asset is in (core / mod). Then the path starts with "/"
+relative : relative to the .json file. Then the path starts with "$/"
+```
+
 # Engine API
 SGE exposes api, through which lua scripts can manipulate the engine.  
 All api functions uses following naming convention:   
@@ -258,6 +266,20 @@ _a_set_volume
 means 
 ```py
 engine => audio_subsystem => set_volume
+```
+When a funtion requires user to pass an asset path user should format the path like so:
+```py
+package + "/" + path [without the .json extension]
+```
+``Package`` is a symbol that is used to abstract from the concrete system path.
+There are two packages:
+```yaml
+core : the engine's asset directory
+mod  : the mod's directory
+```
+Example asset path looks like this then:
+```lua
+"mod/textures/player_sprite_sheet
 ```
 
 Engine functions may also return some custom types:  
