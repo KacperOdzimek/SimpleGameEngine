@@ -12,7 +12,7 @@ namespace graphics_abstraction
 	public:
 		object() {};		
 	protected:
-		~object() {};
+		virtual ~object() {};
 		api* owner = nullptr;
 		virtual void bind(internal::pipeline& pipeline) = 0;
 		virtual void free() = 0;
@@ -22,6 +22,8 @@ namespace graphics_abstraction
 	{
 		friend api;
 	protected:
+		virtual ~builder() {};
+
 		virtual object* build_abs(api*& api) = 0;						//Implement as final in abstraction
 																		//Check if arguments are sufficient etc.
 

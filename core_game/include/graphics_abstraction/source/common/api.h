@@ -30,7 +30,7 @@ namespace graphics_abstraction
 		/*
 			creating resources
 		*/
-
+		virtual ~api() {};
 		virtual object* build(builder* builder, bool destroy_builder = true) final
 		{
 			auto obj = builder->build(this);

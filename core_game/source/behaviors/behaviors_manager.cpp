@@ -24,6 +24,7 @@ extern "C"
 
 #include <unordered_map>
 #include <vector>
+#include <memory>
 
 struct behaviors::behaviors_manager::implementation
 {
@@ -204,8 +205,8 @@ void behaviors::behaviors_manager::destroy_functions_table(const std::string& ta
 
 void behaviors::behaviors_manager::pass_entity_arg(std::weak_ptr<entities::entity>* entity)
 {
-    auto* data = (std::weak_ptr<::entities::entity>*)(lua_newuserdata(impl->L, sizeof(entity)));
-    new(data) std::weak_ptr<::entities::entity>(*entity);
+    void* data = (lua_newuserdata(impl->L, sizeof(*entity)));
+    auto ptr = new(data) std::weak_ptr<::entities::entity>(*entity);
     luaL_getmetatable(impl->L, "entity");
     lua_setmetatable(impl->L, -2);
 }
