@@ -1,4 +1,4 @@
-# SimpleGameEnigne
+# SimpleGameEngine 
  Simple Game Engine written in C++, with Lua as a game logic language.  
  Can be used to develop 2D games, both with top-down and side view.
 
