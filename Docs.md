@@ -698,7 +698,7 @@ function on_destroy()
     [..]
 end
 ```
-These snippets show well how does the scene asset work - it is just a lua script. It behaves just like a normal behavior except:
+These snippets show well how does the scene asset work - it is just a lua script. It behaves similarly to a normal behavior except:
 - Is does not have ``self`` table
 - There are no entity / scene object passed in the ``on_`` functions.
 
